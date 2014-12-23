@@ -1,0 +1,58 @@
+<RelativeLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:fab="http://schemas.android.com/apk/res-auto"
+        android:id="@+id/container"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:animateLayoutChanges="true">
+
+        <android.support.v7.widget.Toolbar
+                android:id="@+id/toolbar"
+        android:layout_height="160dp"
+        android:layout_width="match_parent"
+        android:minHeight="?attr/actionBarSize"
+        android:background="@color/primary"
+                />
+        <com.rengwuxian.materialedittext.MaterialEditText
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/title"
+                app:floatingLabel="highlight"
+                android:layout_alignParentTop="true"
+                android:layout_centerHorizontal="true"
+                android:layout_marginTop="50dp"
+                android:layout_marginRight="30dp"
+                android:layout_marginLeft="30dp"
+                android:textSize="30sp"
+                android:hint="Title"
+                app:baseColor="@color/accent"
+                app:primaryColor="#E3F2FD"
+                />
+        <!--<com.getbase.floatingactionbutton.FloatingActionButton
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                fab:fab_icon="@drawable/send"
+                android:id="@+id/sendButton"
+                fab:fab_colorNormal="#E91E63"
+                fab:fab_colorPressed="#C2185B" android:layout_alignParentBottom="true"
+                android:layout_alignParentRight="true" android:layout_alignParentEnd="true"
+                android:layout_marginRight="16dp" android:layout_marginBottom="16dp"/>-->
+        <com.rengwuxian.materialedittext.MaterialEditText
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/description"
+                app:floatingLabel="highlight"
+                android:textSize="20sp"
+                android:hint="Description"
+                app:baseColor="#000000"
+                app:primaryColor="#455A64"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentStart="true"
+                android:layout_margin="30dp" android:layout_below="@+id/imageView"/>
+        <ImageView
+                android:layout_width="match_parent"
+                android:layout_height="150dp"
+                android:id="@+id/imageView" android:layout_below="@+id/toolbar" android:layout_centerHorizontal="true"/>
+
+</RelativeLayout>

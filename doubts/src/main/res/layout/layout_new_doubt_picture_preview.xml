@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+             android:layout_width="match_parent"
+             android:layout_height="match_parent"
+        android:theme="@style/AppTheme.PicturePreview">
+
+    <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/imageView" android:layout_gravity="left|top"/>
+    <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_centerInParent="true">
+        <Button
+                android:layout_width="80dp"
+                android:layout_height="80dp"
+                android:id="@+id/notokayButton" android:layout_gravity="left|bottom" android:layout_margin="20dp"
+                android:background="@drawable/picture_notokay"/>
+        <Button
+                android:layout_width="80dp"
+                android:layout_height="80dp"
+                android:id="@+id/okayButton" android:layout_gravity="right|bottom" android:layout_margin="20dp"
+                android:background="@drawable/picture_okay"/>
+    </FrameLayout>
+</RelativeLayout>

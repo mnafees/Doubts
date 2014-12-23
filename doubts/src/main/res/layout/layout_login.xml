@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<RelativeLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:theme="@style/LoginRegisterTheme"
+        android:label="Login"
+        android:background="@drawable/bg_test">
+
+    <ImageView android:layout_width="300dp" android:layout_height="200dp" android:src="@drawable/doubts_logo_new"
+               android:id="@+id/logo"
+               android:layout_marginTop="85dp"
+               android:layout_alignParentTop="true" android:layout_alignRight="@+id/gplusLogin"
+               android:layout_alignEnd="@+id/gplusLogin"/>
+    <ImageView android:layout_width="312dp" android:layout_height="wrap_content" android:id="@+id/gplusLogin"
+               android:src="@drawable/login_view_paper_google"
+               android:layout_marginTop="40dp"
+               android:layout_below="@+id/logo" android:layout_centerHorizontal="true" android:clickable="true"/>
+    <com.facebook.widget.LoginButton
+            xmlns:fb="http://schemas.android.com/apk/res-auto"
+            android:id="@+id/fbLogin"
+            android:layout_width="312dp"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/gplusLogin"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="10dp"
+            fb:login_text=""
+            fb:logout_text=""/>
+
+</RelativeLayout>

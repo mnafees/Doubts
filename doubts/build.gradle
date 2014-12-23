@@ -1,0 +1,53 @@
+apply plugin: 'com.android.application'
+
+buildscript {
+    repositories {
+        jcenter()
+    }
+    dependencies {
+        classpath 'com.android.tools.build:gradle:1.0.0'
+    }
+}
+
+repositories {
+    jcenter()
+    maven {
+        url "https://repo.commonsware.com.s3.amazonaws.com"
+    }
+}
+
+android {
+    compileSdkVersion 21
+    buildToolsVersion "21.1.0"
+
+    defaultConfig {
+        applicationId "solutions.doubts"
+        minSdkVersion 14
+        targetSdkVersion 21
+        versionCode 1
+        versionName "Alpha"
+    }
+    packagingOptions {
+        exclude 'META-INF/LICENSE'
+        exclude 'META-INF/LICENSE-FIREBASE.txt'
+        exclude 'META-INF/NOTICE'
+    }
+    lintOptions {
+        abortOnError false
+    }
+}
+
+dependencies {
+    compile 'com.commonsware.cwac:camera:0.6.+'
+    compile 'com.getbase:floatingactionbutton:1.1.0'
+    compile 'com.rengwuxian.materialedittext:library:1.4.3'
+    compile 'com.firebase:firebase-client-android:2.0.0+'
+    compile 'com.android.support:cardview-v7:21.0.+'
+    compile 'com.android.support:recyclerview-v7:21.0.+'
+    compile 'com.android.support:palette-v7:21.0.+'
+    compile 'com.android.support:appcompat-v7:21.0.+'
+    compile 'com.google.android.gms:play-services:6.1.+'
+    compile 'com.android.support:support-v4:21.0.+'
+    //compile fileTree(dir: 'libs', include: ['*.jar'])
+    compile project(':facebook')
+}

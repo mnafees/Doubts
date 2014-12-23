@@ -1,0 +1,30 @@
+<resources>
+
+    <color name="primary">#2196F3</color>
+    <color name="primaryDark">#1976D2</color>
+    <color name="accent">#ffffff</color>
+    <color name="windowBackground">#ffffff</color>
+    <color name="windowBackgroundLoginRegister">#2196F3</color>
+    <color name="textEditBottom">#ffffff</color>
+
+    <!-- Base application theme. -->
+    <style name="AppTheme" parent="@style/Theme.AppCompat.NoActionBar">
+        <item name="colorPrimary">@color/primary</item>
+        <item name="colorPrimaryDark">@color/primaryDark</item>
+        <item name="colorAccent">@color/accent</item>
+        <item name="android:windowBackground">@color/windowBackground</item>
+        <item name="android:textColorPrimary">@color/accent</item>
+        <item name="colorControlNormal">@color/accent</item>
+        <item name="colorControlActivated">@color/textEditBottom</item>
+        <item name="colorControlHighlight">@color/textEditBottom</item>
+    </style>
+
+    <style name="LoginRegisterTheme" parent="AppTheme">
+        <item name="android:actionBarStyle">@android:color/transparent</item>
+    </style>
+
+    <style name="AppTheme.PicturePreview" parent="AppTheme">
+        <item name="android:windowBackground">@android:color/black</item>
+    </style>
+
+</resources>
