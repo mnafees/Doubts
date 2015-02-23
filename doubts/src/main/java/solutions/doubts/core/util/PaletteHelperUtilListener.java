@@ -9,6 +9,6 @@ import android.support.v7.graphics.Palette;
 
 public interface PaletteHelperUtilListener {
 
-    void onPaletteGenerated(Palette palette);
+    void onPaletteGenerated(PaletteHelperUtil.ColorHolder colorHolder);
 
 }

@@ -15,6 +15,7 @@ import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.graphics.Palette;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -31,6 +32,7 @@ import solutions.doubts.core.util.PaletteHelperUtil;
 import solutions.doubts.core.util.PaletteHelperUtilListener;
 
 public class ProfileActivity extends ActionBarActivity implements PaletteHelperUtilListener {
+    public static final String TAG = "ProfileActivity";
 
     private CircleImageView imageView;
     private Toolbar topContainer;
@@ -38,6 +40,7 @@ public class ProfileActivity extends ActionBarActivity implements PaletteHelperU
     private ViewPager viewPager;
     private TextView name;
     private TextView bio;
+    private PaletteHelperUtil.ColorHolder mColorHolder;
 
     private final PaletteHelperUtil paletteHelperUtil = new PaletteHelperUtil();
 
@@ -84,6 +87,11 @@ public class ProfileActivity extends ActionBarActivity implements PaletteHelperU
         setImage();
 
         this.topContainer = (Toolbar)findViewById(R.id.topContainer);
+
+        if(savedInstanceState != null) {
+            mColorHolder = (PaletteHelperUtil.ColorHolder) savedInstanceState.getSerializable("colorHolder");
+            setThemeColors(mColorHolder);
+        }
     }
 
     public void setImage(/* final String url */) {
@@ -134,28 +142,33 @@ public class ProfileActivity extends ActionBarActivity implements PaletteHelperU
     }
 
     @Override
-    public void onPaletteGenerated(Palette palette) {
-        if (palette.getLightVibrantSwatch() != null &&
-                palette.getVibrantSwatch() != null &&
-                palette.getDarkVibrantSwatch() != null) {
-
-
-            // change the color of the status bar
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                getWindow().setStatusBarColor(palette.getDarkVibrantSwatch().getRgb());
-            }
-
-            // change the color of the main toolbar
-            this.topContainer.setBackgroundColor(palette.getVibrantSwatch().getRgb());
-            this.name.setTextColor(palette.getVibrantSwatch().getBodyTextColor());
-            this.bio.setTextColor(palette.getVibrantSwatch().getTitleTextColor());
-
-            // change the color of the tab host
-            this.tabHost.setPrimaryColor(palette.getLightVibrantSwatch().getRgb());
-            this.tabHost.setIconColor(palette.getLightVibrantSwatch().getBodyTextColor());
-            this.tabHost.setAccentColor(palette.getLightVibrantSwatch().getTitleTextColor());
-            this.tabHost.setSelectedNavigationItem(this.viewPager.getCurrentItem());
-        }
+    public void onPaletteGenerated(PaletteHelperUtil.ColorHolder colorHolder) {
+        mColorHolder = colorHolder;
+        setThemeColors(mColorHolder);
     }
 
+    private void setThemeColors(PaletteHelperUtil.ColorHolder colorHolder) {
+        // change the color of the status bar
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            getWindow().setStatusBarColor(colorHolder.backgroundSecondary);
+            getWindow().setNavigationBarColor(colorHolder.backgroundSecondary);
+        }
+
+        // change the color of the main toolbar
+        this.topContainer.setBackgroundColor(colorHolder.background);
+        this.name.setTextColor(colorHolder.bodyText);
+        this.bio.setTextColor(colorHolder.titleText);
+
+        // change the color of the tab host
+        this.tabHost.setPrimaryColor(colorHolder.primary);
+        this.tabHost.setIconColor(colorHolder.icon);
+        this.tabHost.setAccentColor(colorHolder.accent);
+        this.tabHost.setSelectedNavigationItem(this.viewPager.getCurrentItem());
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        outState.putSerializable("colorHolder", mColorHolder);
+        super.onSaveInstanceState(outState);
+    }
 }
