@@ -6,15 +6,9 @@
 package solutions.doubts.core.util;
 
 import android.graphics.Bitmap;
-import android.os.Build;
 import android.support.v7.graphics.Palette;
 
-import java.io.Serializable;
-
 public class PaletteHelperUtil {
-    public class ColorHolder implements Serializable {
-        public int bodyText, titleText, primary, icon, accent, background, backgroundSecondary;
-    }
 
     private PaletteHelperUtilListener listener;
     private ColorHolder mColorHolder = new ColorHolder();

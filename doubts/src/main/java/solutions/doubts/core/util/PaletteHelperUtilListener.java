@@ -5,10 +5,8 @@
 
 package solutions.doubts.core.util;
 
-import android.support.v7.graphics.Palette;
-
 public interface PaletteHelperUtilListener {
 
-    void onPaletteGenerated(PaletteHelperUtil.ColorHolder colorHolder);
+    void onPaletteGenerated(ColorHolder colorHolder);
 
 }

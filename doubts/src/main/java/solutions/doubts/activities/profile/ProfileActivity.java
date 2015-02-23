@@ -13,9 +13,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBarActivity;
-import android.support.v7.graphics.Palette;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -28,6 +26,7 @@ import com.squareup.picasso.Transformation;
 import de.hdodenhof.circleimageview.CircleImageView;
 import it.neokree.materialtabs.MaterialTabHost;
 import solutions.doubts.R;
+import solutions.doubts.core.util.ColorHolder;
 import solutions.doubts.core.util.PaletteHelperUtil;
 import solutions.doubts.core.util.PaletteHelperUtilListener;
 
@@ -40,7 +39,7 @@ public class ProfileActivity extends ActionBarActivity implements PaletteHelperU
     private ViewPager viewPager;
     private TextView name;
     private TextView bio;
-    private PaletteHelperUtil.ColorHolder mColorHolder;
+    private ColorHolder mColorHolder;
 
     private final PaletteHelperUtil paletteHelperUtil = new PaletteHelperUtil();
 
@@ -89,7 +88,7 @@ public class ProfileActivity extends ActionBarActivity implements PaletteHelperU
         this.topContainer = (Toolbar)findViewById(R.id.topContainer);
 
         if(savedInstanceState != null) {
-            mColorHolder = (PaletteHelperUtil.ColorHolder) savedInstanceState.getSerializable("colorHolder");
+            mColorHolder = (ColorHolder) savedInstanceState.getSerializable("colorHolder");
             setThemeColors(mColorHolder);
         }
     }
@@ -142,12 +141,12 @@ public class ProfileActivity extends ActionBarActivity implements PaletteHelperU
     }
 
     @Override
-    public void onPaletteGenerated(PaletteHelperUtil.ColorHolder colorHolder) {
+    public void onPaletteGenerated(ColorHolder colorHolder) {
         mColorHolder = colorHolder;
         setThemeColors(mColorHolder);
     }
 
-    private void setThemeColors(PaletteHelperUtil.ColorHolder colorHolder) {
+    private void setThemeColors(ColorHolder colorHolder) {
         // change the color of the status bar
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             getWindow().setStatusBarColor(colorHolder.backgroundSecondary);
