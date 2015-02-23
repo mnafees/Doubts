@@ -1,30 +1,57 @@
 <resources>
 
-    <color name="primary">#2196F3</color>
-    <color name="primaryDark">#1976D2</color>
+    <color name="primary">#673AB7</color>
+    <color name="primaryLight">#7E57C2</color>
+    <color name="primaryDark">#512DA8</color>
     <color name="accent">#ffffff</color>
     <color name="windowBackground">#ffffff</color>
-    <color name="windowBackgroundLoginRegister">#2196F3</color>
     <color name="textEditBottom">#ffffff</color>
+    <color name="pink">#EC407A</color>
+    <color name="pink_pressed">#F48FB1</color>
+    <color name="grey">#757575</color>
+    <color name="lightGrey">#BDBDBD</color>
 
     <!-- Base application theme. -->
     <style name="AppTheme" parent="@style/Theme.AppCompat.NoActionBar">
         <item name="colorPrimary">@color/primary</item>
         <item name="colorPrimaryDark">@color/primaryDark</item>
         <item name="colorAccent">@color/accent</item>
-        <item name="android:windowBackground">@color/windowBackground</item>
         <item name="android:textColorPrimary">@color/accent</item>
         <item name="colorControlNormal">@color/accent</item>
         <item name="colorControlActivated">@color/textEditBottom</item>
         <item name="colorControlHighlight">@color/textEditBottom</item>
     </style>
 
-    <style name="LoginRegisterTheme" parent="AppTheme">
-        <item name="android:actionBarStyle">@android:color/transparent</item>
+    <style name="AppTheme.LoginTheme" parent="AppTheme">
+        <item name="android:background">@color/primary</item>
+        <item name="android:buttonStyle">@style/AppTheme.LoginButton</item>
+        <item name="android:windowActionBar">false</item>
+    </style>
+
+    <style name="AppTheme.ProfileTheme" parent="AppTheme">
+    </style>
+
+    <style name="AppTheme.ProfileTheme.ActionBar">
+        <item name="android:background">@android:color/transparent</item>
     </style>
 
     <style name="AppTheme.PicturePreview" parent="AppTheme">
         <item name="android:windowBackground">@android:color/black</item>
+    </style>
+
+    <!-- Login button -->
+    <style name="AppTheme.LoginButton">
+        <item name="android:gravity">center_vertical|center_horizontal</item>
+        <item name="android:textColor">#ffffff</item>
+        <item name="android:paddingBottom">10dp</item>
+        <item name="android:paddingTop">10dp</item>
+        <item name="android:paddingLeft">25dp</item>
+        <item name="android:paddingRight">25dp</item>
+        <item name="android:textSize">13sp</item>
+        <item name="android:background">@drawable/login_button</item>
+        <item name="android:focusable">true</item>
+        <item name="android:clickable">true</item>
+        <item name="android:textAllCaps">true</item>
     </style>
 
 </resources>

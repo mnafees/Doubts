@@ -1,4 +1,4 @@
-package solutions.doubts;
+/*package solutions.doubts;
 
 import android.content.Context;
 import android.graphics.Bitmap;
@@ -142,4 +142,4 @@ class PreviewCameraHost extends SimpleCameraHost {
     public void setOnPictureTakenListener(OnPictureTakenListener listener) {
         _onPictureTakenListener = listener;
     }
-}
+}*/

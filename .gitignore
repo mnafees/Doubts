@@ -16,3 +16,4 @@ build
 *.gradletasknamecache
 *~
 .metadata
+local.properties
