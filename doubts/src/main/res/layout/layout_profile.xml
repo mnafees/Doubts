@@ -7,29 +7,34 @@
 <RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+<com.github.ksoichiro.android.observablescrollview.ObservableScrollView
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@android:color/white"
+    android:overScrollMode="never"
+    android:scrollbars="none"
+    android:id="@+id/scrollView">
+
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <it.neokree.materialtabs.MaterialTabHost
-        android:id="@+id/materialTabHost"
-        android:layout_width="match_parent"
-        android:layout_height="48dp"
-        app:iconColor="@android:color/white"
-        app:primaryColor="@color/primaryLight"
-        app:accentColor="#D1C4E9"
-        app:hasIcons="true"
-        android:layout_below="@+id/topContainer" />
-
-        <android.support.v4.view.ViewPager
+    <solutions.doubts.activities.profile.ProfileViewPager
             android:id="@+id/viewPager"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_below="@+id/materialTabHost"
-            android:background="@android:color/white"/>
+            android:layout_height="wrap_content"
+            android:background="@android:color/white"
+            android:layout_alignParentBottom="false"
+            android:layout_alignWithParentIfMissing="false"
+        android:layout_marginTop="248dp" />
 
     <android.support.v7.widget.Toolbar
-        android:layout_height="wrap_content"
+        android:layout_height="@dimen/profile_top_container_height"
         android:layout_width="match_parent"
         android:id="@+id/topContainer"
         app:contentInsetStart="0dp"
@@ -43,27 +48,18 @@
         android:paddingBottom="13dp"
             android:paddingTop="13dp">
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textAppearance="?android:attr/textAppearanceLarge"
-                android:text="Mohammed Nafees"
-                android:id="@+id/name"
-                android:layout_gravity="center_horizontal"
-                android:background="@android:color/transparent"
-                android:layout_marginBottom="10dp" />
+        <de.hdodenhof.circleimageview.CircleImageView
+            xmlns:app="http://schemas.android.com/apk/res-auto"
+            android:id="@+id/profileImage"
+            android:layout_width="100dp"
+            android:layout_height="100dp"
+            app:border_width="2dp"
+            app:border_color="@android:color/white"
+            android:layout_gravity="center"
+            android:background="@android:color/transparent"
+            android:layout_marginTop="43dp" />
 
-            <de.hdodenhof.circleimageview.CircleImageView
-                xmlns:app="http://schemas.android.com/apk/res-auto"
-                android:id="@+id/profile_image"
-                android:layout_width="100dp"
-                android:layout_height="100dp"
-                app:border_width="2dp"
-                app:border_color="@android:color/white"
-                android:layout_gravity="center"
-                android:background="@android:color/transparent" />
-
-            <TextView
+        <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textAppearance="?android:attr/textAppearanceMedium"
@@ -71,16 +67,54 @@
                 android:id="@+id/bio"
                 android:layout_gravity="center_horizontal"
                 android:background="@android:color/transparent"
-                android:layout_marginTop="10dp" />
+                android:layout_marginTop="9dp" />
 
         </LinearLayout>
     </android.support.v7.widget.Toolbar>
+
+</RelativeLayout>
+
+</com.github.ksoichiro.android.observablescrollview.ObservableScrollView>
 
     <android.support.v7.widget.Toolbar
         android:layout_height="?attr/actionBarSize"
         android:layout_width="match_parent"
         android:minHeight="?attr/actionBarSize"
         android:id="@+id/actionBar"
-        android:theme="@style/AppTheme.ProfileTheme.ActionBar"/>
+        android:theme="@style/AppTheme.ProfileTheme.ActionBar"
+        android:background="@color/primary" />
+
+    <de.hdodenhof.circleimageview.CircleImageView
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        android:id="@+id/profileImageSmall"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
+        app:border_width="2dp"
+        app:border_color="@android:color/white"
+        android:layout_gravity="center"
+        android:background="@android:color/transparent"
+        android:layout_marginTop="9dp"
+        android:layout_marginLeft="50dp" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:text="Mohammed Nafees"
+        android:id="@+id/name"
+        android:layout_gravity="center_horizontal"
+        android:background="@android:color/transparent"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="10dp" />
+
+<it.neokree.materialtabs.MaterialTabHost
+android:id="@+id/materialTabHost"
+android:layout_width="match_parent"
+android:layout_height="48dp"
+app:iconColor="@android:color/white"
+app:primaryColor="@color/primaryLight"
+app:accentColor="#D1C4E9"
+app:hasIcons="true"
+android:layout_marginTop="200dp" />
 
 </RelativeLayout>
