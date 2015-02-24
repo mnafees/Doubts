@@ -34,10 +34,12 @@ android {
 
 
 dependencies {
+    compile 'com.nineoldandroids:library:2.4.0'
     compile 'de.hdodenhof:circleimageview:1.2.1'
     compile 'com.getbase:floatingactionbutton:1.8.0'
     compile 'it.neokree:MaterialTabs:0.11'
-    compile "com.github.andkulikov:transitions-everywhere:1.2.2"
+    compile 'com.github.andkulikov:transitions-everywhere:1.2.2'
+    compile 'com.github.ksoichiro:android-observablescrollview:1.5.0'
     compile 'com.squareup.picasso:picasso:2.5.0'
     compile 'com.squareup.retrofit:retrofit:1.9.0'
     compile 'com.squareup.okhttp:okhttp-urlconnection:2.2.0'

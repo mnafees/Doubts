@@ -5,50 +5,34 @@
 
 package solutions.doubts.activities.profile;
 
-import android.content.Context;
 import android.graphics.drawable.Drawable;
-import android.support.v4.view.PagerAdapter;
-import android.view.View;
-import android.view.ViewGroup;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentPagerAdapter;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import solutions.doubts.R;
+public class ProfilePagerAdapter extends FragmentPagerAdapter {
 
-public class ProfilePagerAdapter extends PagerAdapter {
+    private final Map<Integer, Drawable> tabIconMap = new HashMap<>();
+    private List<Fragment> fragments;
 
-    final int totalPages = 3;
-    final Map<Integer, Drawable> tabIconMap = new HashMap<>(getCount());
-    final List<View> views = new ArrayList<>(getCount());
-
-    public ProfilePagerAdapter(Context context) {
-        views.add(View.inflate(context, R.layout.layout_profile_about, null));
-        views.add(View.inflate(context, R.layout.layout_profile_about, null));
-        views.add(View.inflate(context, R.layout.layout_profile_about, null));
+    public ProfilePagerAdapter(final FragmentManager manager,
+                               final List<Fragment> fragments) {
+        super(manager);
+        this.fragments = fragments;
     }
 
     @Override
     public int getCount() {
-        return this.totalPages;
+        return this.fragments.size();
     }
 
     @Override
-    public boolean isViewFromObject(View view, Object object) {
-        return view == object;
-    }
-
-    @Override
-    public Object instantiateItem(ViewGroup container, int position) {
-        container.addView(views.get(position), position);
-        return views.get(position);
-    }
-
-    @Override
-    public void destroyItem(ViewGroup container, int position, Object object) {
-        container.removeViewAt(position);
+    public Fragment getItem(int position) {
+        return this.fragments.get(position);
     }
 
     public void setIconForTab(int index, Drawable icon) {
