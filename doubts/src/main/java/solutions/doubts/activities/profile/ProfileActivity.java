@@ -5,6 +5,7 @@
 
 package solutions.doubts.activities.profile;
 
+import android.annotation.TargetApi;
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.Bitmap;
@@ -16,10 +17,16 @@ import android.support.v4.app.Fragment;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.widget.Toolbar;
+import android.transition.Scene;
+import android.transition.TransitionManager;
+import android.util.Log;
 import android.util.TypedValue;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.View;
+import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
 import android.widget.TextView;
 
@@ -53,12 +60,13 @@ public class ProfileActivity extends ActionBarActivity implements PaletteHelperU
 
     private CircleImageView imageView;
     private CircleImageView smallImageView;
-    private Toolbar topContainer;
+    private Toolbar actionBar;
     private MaterialTabHost tabHost;
     private ViewPager viewPager;
     private TextView name;
     private TextView bio;
     private ColorHolder colorHolder;
+    private View topPanel;
 
     private final PaletteHelperUtil paletteHelperUtil = new PaletteHelperUtil();
 
@@ -71,14 +79,15 @@ public class ProfileActivity extends ActionBarActivity implements PaletteHelperU
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.layout_profile);
+        topPanel = findViewById(R.id.top_panel);
 
         this.paletteHelperUtil.setPaletteHelperUtilListener(this);
 
         this.name = (TextView)findViewById(R.id.name);
         this.bio = (TextView)findViewById(R.id.bio);
 
-        final Toolbar toolbar = (Toolbar) findViewById(R.id.actionBar);
-        setSupportActionBar(toolbar);
+        this.actionBar = (Toolbar) findViewById(R.id.action_bar);
+        setSupportActionBar(this.actionBar);
         getSupportActionBar().setDisplayShowTitleEnabled(false);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
@@ -107,6 +116,9 @@ public class ProfileActivity extends ActionBarActivity implements PaletteHelperU
                 tabHost.setSelectedNavigationItem(position);
             }
         });
+        Log.d(TAG, Integer.toString(topPanel.getMeasuredHeight()));
+        Log.d(TAG, Integer.toString(topPanel.getHeight()));
+        ViewHelper.setTranslationY(this.viewPager, topPanel.getMeasuredHeight());
 
         final ObservableScrollView scrollView = (ObservableScrollView)findViewById(R.id.scrollView);
         scrollView.setScrollViewCallbacks(this);
@@ -135,11 +147,7 @@ public class ProfileActivity extends ActionBarActivity implements PaletteHelperU
         }
 
         this.imageView = (CircleImageView)findViewById(R.id.profileImage);
-        this.smallImageView = (CircleImageView)findViewById(R.id.profileImageSmall);
-        this.smallImageView.setAlpha(0.0f);
         setImage();
-
-        this.topContainer = (Toolbar)findViewById(R.id.topContainer);
 
         if(savedInstanceState != null) {
             this.colorHolder = (ColorHolder) savedInstanceState.getSerializable("colorHolder");
@@ -150,6 +158,13 @@ public class ProfileActivity extends ActionBarActivity implements PaletteHelperU
     @Override
     public void onResume() {
         super.onResume();
+
+        LayoutInflater li = (LayoutInflater) getSystemService(LAYOUT_INFLATER_SERVICE);
+        View v = li.inflate(R.layout.layout_topbar_collapsed, null);
+        v.measure(500, 500);
+        View img = v.findViewById(R.id.profileImage);
+        Log.d(TAG, "X = " + Float.toString(img.getX()) + ", Y = " + Float.toString(img.getY()));
+        Log.d(TAG, "W = " + Float.toString(img.getMeasuredWidth()) + ", Y = " + Float.toString(img.getMeasuredHeight()));
 
         this.initialNameX = (int)this.name.getX();
     }
@@ -177,12 +192,6 @@ public class ProfileActivity extends ActionBarActivity implements PaletteHelperU
                                     }
                                 })
                                 .into(imageView);
-
-                        Picasso.with(context)
-                                .load("https://avatars3.githubusercontent.com/u/1763885?v=3&s=460")
-                                .resize(smallImageView.getWidth(), smallImageView.getHeight())
-                                .centerCrop()
-                                .into(smallImageView);
                     }
                 }
         );
@@ -200,7 +209,6 @@ public class ProfileActivity extends ActionBarActivity implements PaletteHelperU
         switch (item.getItemId()) {
             case R.id.action_edit_profile:
                 // do something here
-
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
@@ -224,7 +232,7 @@ public class ProfileActivity extends ActionBarActivity implements PaletteHelperU
         }
 
         // change the color of the main toolbar
-        this.topContainer.setBackgroundColor(colorHolder.background);
+        this.actionBar.setBackgroundColor(colorHolder.background);
         this.name.setTextColor(colorHolder.bodyText);
         this.bio.setTextColor(colorHolder.titleText);
 
@@ -237,14 +245,19 @@ public class ProfileActivity extends ActionBarActivity implements PaletteHelperU
 
     @Override
     public void onScrollChanged(int scrollY, boolean firstScroll, boolean dragging) {
-        final int minOverlayTransitionY = this.actionBarSize - this.topContainer.getHeight();
-        ViewHelper.setTranslationY(this.tabHost, ScrollUtils.getFloat(-scrollY, minOverlayTransitionY, 0));
-        final float separator = -(float)scrollY/(float)minOverlayTransitionY;
-        ViewHelper.setAlpha(this.smallImageView, separator);
-        float titleToMoveByX = this.initialNameX - this.smallImageView.getX() - this.smallImageView.getWidth() -
-                this.separationNameProfilePic;
-        /** @TODO: fix this */
-        ViewHelper.setTranslationX(this.name, separator*titleToMoveByX);
+//        final int minOverlayTransitionY = this.actionBarSize - this.topContainer.getHeight();
+//        ViewHelper.setTranslationY(this.tabHost, ScrollUtils.getFloat(-scrollY, minOverlayTransitionY, 0));
+//        final float separator = -(float)scrollY/(float)minOverlayTransitionY;
+//        ViewHelper.setAlpha(this.smallImageView, separator);
+//        float titleToMoveByX = this.initialNameX - this.smallImageView.getX() - this.smallImageView.getWidth() -
+//                this.separationNameProfilePic;
+//        /** @TODO: fix this */
+//        ViewHelper.setTranslationX(this.name, separator*titleToMoveByX);
+
+        Log.d(TAG, Integer.toString(topPanel.getMeasuredHeight()));
+        Log.d(TAG, Integer.toString(topPanel.getHeight()));
+        ViewHelper.setTranslationY(this.topPanel, scrollY);
+        ViewHelper.setTranslationY(this.viewPager, topPanel.getMeasuredHeight());
     }
 
     @Override

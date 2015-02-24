@@ -4,5 +4,6 @@
     <dimen name="activity_vertical_margin">16dp</dimen>
 
     <dimen name="profile_action_bar_separation_name_profile">5dp</dimen>
-    <dimen name="profile_top_container_height">202dp</dimen>
+    <dimen name="profile_topbar_expanded_height">250dp</dimen>
+    <dimen name="profile_actionbar_expanded_height">202dp</dimen>
 </resources>
