@@ -5,20 +5,19 @@
 
 package solutions.doubts.activities.profile;
 
-import android.annotation.TargetApi;
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.Bitmap;
 import android.graphics.Color;
+import android.graphics.PorterDuff;
 import android.graphics.drawable.ColorDrawable;
+import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.widget.Toolbar;
-import android.transition.Scene;
-import android.transition.TransitionManager;
 import android.util.Log;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
@@ -26,14 +25,12 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
 import android.widget.TextView;
 
 import com.github.ksoichiro.android.observablescrollview.ObservableScrollView;
 import com.github.ksoichiro.android.observablescrollview.ObservableScrollViewCallbacks;
 import com.github.ksoichiro.android.observablescrollview.ScrollState;
-import com.github.ksoichiro.android.observablescrollview.ScrollUtils;
 import com.nineoldandroids.view.ViewHelper;
 import com.squareup.picasso.Picasso;
 import com.squareup.picasso.Transformation;
@@ -46,13 +43,12 @@ import it.neokree.materialtabs.MaterialTab;
 import it.neokree.materialtabs.MaterialTabHost;
 import it.neokree.materialtabs.MaterialTabListener;
 import solutions.doubts.R;
-import solutions.doubts.core.util.ColorHolder;
 import solutions.doubts.activities.profile.fragments.AboutFragment;
 import solutions.doubts.activities.profile.fragments.AnswersFragment;
 import solutions.doubts.activities.profile.fragments.QuestionsFragment;
+import solutions.doubts.core.util.ColorHolder;
 import solutions.doubts.core.util.PaletteHelperUtil;
 import solutions.doubts.core.util.PaletteHelperUtilListener;
-import solutions.doubts.core.util.ColorHolder;
 
 public class ProfileActivity extends ActionBarActivity implements PaletteHelperUtilListener,
         ObservableScrollViewCallbacks {
@@ -67,6 +63,7 @@ public class ProfileActivity extends ActionBarActivity implements PaletteHelperU
     private TextView bio;
     private ColorHolder colorHolder;
     private View topPanel;
+    private Menu menu;
 
     private final PaletteHelperUtil paletteHelperUtil = new PaletteHelperUtil();
 
@@ -199,8 +196,14 @@ public class ProfileActivity extends ActionBarActivity implements PaletteHelperU
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
+        this.menu = menu;
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.menu_profile_activity, menu);
+        if (this.colorHolder != null) {
+            final Drawable editButton = getResources().getDrawable(R.drawable.ic_mode_edit_white_24dp);
+            editButton.mutate().setColorFilter(this.colorHolder.bodyText, PorterDuff.Mode.SRC_IN);
+            this.menu.findItem(R.id.action_edit_profile).setIcon(editButton);
+        }
         return super.onCreateOptionsMenu(menu);
     }
 
@@ -224,6 +227,14 @@ public class ProfileActivity extends ActionBarActivity implements PaletteHelperU
     private void setThemeColors(ColorHolder colorHolder) {
         // change color of action bar
         getSupportActionBar().setBackgroundDrawable(new ColorDrawable(colorHolder.background));
+        final Drawable backButton = getResources().getDrawable(R.drawable.ic_arrow_back_white_16dp);
+        backButton.mutate().setColorFilter(colorHolder.bodyText, PorterDuff.Mode.SRC_IN);
+        getSupportActionBar().setHomeAsUpIndicator(backButton);
+        if (this.menu != null) {
+            final Drawable editButton = getResources().getDrawable(R.drawable.ic_mode_edit_white_24dp);
+            editButton.mutate().setColorFilter(colorHolder.bodyText, PorterDuff.Mode.SRC_IN);
+            this.menu.findItem(R.id.action_edit_profile).setIcon(editButton);
+        }
 
         // change the color of the status bar
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {

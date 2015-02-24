@@ -21,7 +21,7 @@ public class AnswersFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        final View v = inflater.inflate(R.layout.layout_profile_answers, container, false);
+        final View v = inflater.inflate(R.layout.layout_profile_answers_feed, container, false);
 
         this.listView = (ListView)v.findViewById(R.id.answersListView);
 

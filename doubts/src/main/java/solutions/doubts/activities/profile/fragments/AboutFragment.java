@@ -18,7 +18,7 @@ public class AboutFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.layout_profile_about, container, false);
+        return inflater.inflate(R.layout.layout_profile_about_feed, container, false);
     }
 
 }
