@@ -4,60 +4,56 @@
   ~ Copyright (c) 2015 Mohammed Nafees (original author) <nafees.technocool@gmail.com>.
   -->
 
-<com.github.ksoichiro.android.observablescrollview.ObservableScrollView
+<LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
+    android:layout_height="wrap_content"
     android:background="@android:color/white"
-    android:id="@+id/scrollView">
+    android:padding="10dp">
 
-    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-        android:orientation="vertical" android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:padding="10dp">
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:text="About Mohammed"
+        android:textStyle="bold"
+        android:textColor="@color/grey"
+        android:textAllCaps="true"
+        android:id="@+id/aboutHeader"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginBottom="10dp"
+        android:textSize="14sp" />
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textAppearance="?android:attr/textAppearanceMedium"
-            android:text="About Mohammed"
-            android:textStyle="bold"
-            android:textColor="@color/grey"
-            android:textAllCaps="true"
-            android:id="@+id/textView3"
-            android:layout_gravity="center_horizontal"
-            android:layout_marginBottom="10dp"
-            android:textSize="14sp" />
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:weightSum="3">
 
         <LinearLayout
-            android:orientation="horizontal"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:weightSum="3">
+            android:orientation="vertical"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:layout_weight="1">
 
-            <LinearLayout
-                android:orientation="vertical"
-                android:layout_width="fill_parent"
-                android:layout_height="fill_parent"
-                android:layout_weight="1">
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/imageView3"
+                android:src="@drawable/ic_questions_36dp"
+                android:layout_gravity="center_horizontal" />
 
-                <ImageView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:id="@+id/imageView3"
-                    android:src="@drawable/ic_questions_36dp"
-                    android:layout_gravity="center_horizontal" />
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:textAppearance="?android:attr/textAppearanceMedium"
-                    android:text="235"
-                    android:id="@+id/questionsCount"
-                    android:layout_gravity="center_horizontal"
-                    android:textColor="@color/primary"
-                    android:layout_marginTop="5dp"
-                    android:textSize="20sp" />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:text="235"
+                android:id="@+id/questionsCount"
+                android:layout_gravity="center_horizontal"
+                android:textColor="@color/primary"
+                android:layout_marginTop="5dp"
+                android:textSize="20sp" />
 
                 <TextView
                     android:layout_width="wrap_content"
@@ -207,5 +203,3 @@
             android:textColor="@android:color/black"
             android:textSize="13sp" />
     </LinearLayout>
-
-</com.github.ksoichiro.android.observablescrollview.ObservableScrollView>

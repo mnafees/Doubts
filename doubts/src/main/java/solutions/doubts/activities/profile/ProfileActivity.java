@@ -35,10 +35,14 @@ import java.util.ArrayList;
 import java.util.List;
 
 import de.hdodenhof.circleimageview.CircleImageView;
+import it.neokree.materialtabs.MaterialTab;
 import it.neokree.materialtabs.MaterialTabHost;
+import it.neokree.materialtabs.MaterialTabListener;
 import solutions.doubts.R;
 import solutions.doubts.core.util.ColorHolder;
 import solutions.doubts.activities.profile.fragments.AboutFragment;
+import solutions.doubts.activities.profile.fragments.AnswersFragment;
+import solutions.doubts.activities.profile.fragments.QuestionsFragment;
 import solutions.doubts.core.util.PaletteHelperUtil;
 import solutions.doubts.core.util.PaletteHelperUtilListener;
 import solutions.doubts.core.util.ColorHolder;
@@ -85,13 +89,17 @@ public class ProfileActivity extends ActionBarActivity implements PaletteHelperU
         final List<Fragment> fragments = new ArrayList<>();
         final AboutFragment aboutFragment = new AboutFragment();
         fragments.add(aboutFragment);
+        final QuestionsFragment questionsFragment = new QuestionsFragment();
+        fragments.add(questionsFragment);
+        final AnswersFragment answersFragment = new AnswersFragment();
+        fragments.add(answersFragment);
 
-        final ProfilePagerAdapter adapter = new ProfilePagerAdapter(getSupportFragmentManager(), fragments);
+        final ProfileViewPagerAdapter adapter = new ProfileViewPagerAdapter(getSupportFragmentManager(), fragments);
         adapter.setIconForTab(0, getResources().getDrawable(R.drawable.ic_account_circle_purple_24dp));
         adapter.setIconForTab(1, getResources().getDrawable(R.drawable.ic_live_help_purple_24dp));
         adapter.setIconForTab(2, getResources().getDrawable(R.drawable.ic_spell_check_purple_24dp));
 
-        this.viewPager = (ViewPager) findViewById(R.id.viewPager);
+        this.viewPager = (ProfileViewPager)findViewById(R.id.viewPager);
         this.viewPager.setAdapter(adapter);
         this.viewPager.setOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener() {
             @Override
@@ -109,7 +117,20 @@ public class ProfileActivity extends ActionBarActivity implements PaletteHelperU
         this.tabHost = (MaterialTabHost)findViewById(R.id.materialTabHost);
         for (int i = 0; i < adapter.getCount(); ++i) {
             tabHost.addTab(
-                    tabHost.newTab().setIcon(adapter.getIconForTab(i))
+                    tabHost.newTab()
+                           .setIcon(adapter.getIconForTab(i))
+                           .setTabListener(new MaterialTabListener() {
+                               @Override
+                               public void onTabSelected(MaterialTab materialTab) {
+                                   viewPager.setCurrentItem(materialTab.getPosition());
+                               }
+
+                               @Override
+                               public void onTabReselected(MaterialTab materialTab) {}
+
+                               @Override
+                               public void onTabUnselected(MaterialTab materialTab) {}
+                           })
             );
         }
 
@@ -199,6 +220,7 @@ public class ProfileActivity extends ActionBarActivity implements PaletteHelperU
         // change the color of the status bar
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             getWindow().setStatusBarColor(colorHolder.backgroundSecondary);
+            getWindow().setNavigationBarColor(colorHolder.backgroundSecondary);
         }
 
         // change the color of the main toolbar
@@ -221,6 +243,7 @@ public class ProfileActivity extends ActionBarActivity implements PaletteHelperU
         ViewHelper.setAlpha(this.smallImageView, separator);
         float titleToMoveByX = this.initialNameX - this.smallImageView.getX() - this.smallImageView.getWidth() -
                 this.separationNameProfilePic;
+        /** @TODO: fix this */
         ViewHelper.setTranslationX(this.name, separator*titleToMoveByX);
     }
 

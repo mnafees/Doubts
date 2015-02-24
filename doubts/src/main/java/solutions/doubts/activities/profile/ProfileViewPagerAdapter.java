@@ -14,13 +14,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class ProfilePagerAdapter extends FragmentPagerAdapter {
+public class ProfileViewPagerAdapter extends FragmentPagerAdapter {
 
     private final Map<Integer, Drawable> tabIconMap = new HashMap<>();
     private List<Fragment> fragments;
 
-    public ProfilePagerAdapter(final FragmentManager manager,
-                               final List<Fragment> fragments) {
+    public ProfileViewPagerAdapter(final FragmentManager manager,
+                                   final List<Fragment> fragments) {
         super(manager);
         this.fragments = fragments;
     }
