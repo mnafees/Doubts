@@ -5,7 +5,6 @@
 
 package solutions.doubts.activities.profile;
 
-import android.animation.ValueAnimator;
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.Bitmap;
@@ -15,19 +14,12 @@ import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.ViewPager;
-import android.support.v4.view.ViewPropertyAnimatorCompat;
 import android.support.v7.app.ActionBarActivity;
-import android.support.v7.graphics.Palette;
 import android.support.v7.widget.Toolbar;
-import android.transitions.everywhere.ChangeBounds;
-import android.transitions.everywhere.TransitionValues;
-import android.util.Log;
 import android.util.TypedValue;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
-import android.view.View;
-import android.view.ViewPropertyAnimator;
 import android.view.ViewTreeObserver;
 import android.widget.TextView;
 
@@ -40,7 +32,6 @@ import com.squareup.picasso.Picasso;
 import com.squareup.picasso.Transformation;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
 import de.hdodenhof.circleimageview.CircleImageView;
@@ -49,9 +40,11 @@ import solutions.doubts.R;
 import solutions.doubts.activities.profile.fragments.AboutFragment;
 import solutions.doubts.core.util.PaletteHelperUtil;
 import solutions.doubts.core.util.PaletteHelperUtilListener;
+import solutions.doubts.core.util.ColorHolder;
 
 public class ProfileActivity extends ActionBarActivity implements PaletteHelperUtilListener,
         ObservableScrollViewCallbacks {
+    public static final String TAG = "ProfileActivity";
 
     private CircleImageView imageView;
     private CircleImageView smallImageView;
@@ -60,6 +53,7 @@ public class ProfileActivity extends ActionBarActivity implements PaletteHelperU
     private ViewPager viewPager;
     private TextView name;
     private TextView bio;
+    private ColorHolder colorHolder;
 
     private final PaletteHelperUtil paletteHelperUtil = new PaletteHelperUtil();
 
@@ -124,6 +118,11 @@ public class ProfileActivity extends ActionBarActivity implements PaletteHelperU
         setImage();
 
         this.topContainer = (Toolbar)findViewById(R.id.topContainer);
+
+        if(savedInstanceState != null) {
+            this.colorHolder = (ColorHolder) savedInstanceState.getSerializable("colorHolder");
+            setThemeColors(this.colorHolder);
+        }
     }
 
     @Override
@@ -187,29 +186,30 @@ public class ProfileActivity extends ActionBarActivity implements PaletteHelperU
     }
 
     @Override
-    public void onPaletteGenerated(Palette palette) {
-        if (palette.getLightVibrantSwatch() != null &&
-                palette.getVibrantSwatch() != null &&
-                palette.getDarkVibrantSwatch() != null) {
-            // change the color of the action bar
-            getSupportActionBar().setBackgroundDrawable(new ColorDrawable(palette.getVibrantSwatch().getRgb()));
+    public void onPaletteGenerated(ColorHolder colorHolder) {
+        this.colorHolder = colorHolder;
+        setThemeColors(this.colorHolder);
+    }
 
-            // change the color of the status bar
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                getWindow().setStatusBarColor(palette.getDarkVibrantSwatch().getRgb());
-            }
+    private void setThemeColors(ColorHolder colorHolder) {
+        // change color of action bar
+        getSupportActionBar().setBackgroundDrawable(new ColorDrawable(colorHolder.background));
 
-            // change the color of the main toolbar
-            this.topContainer.setBackgroundColor(palette.getVibrantSwatch().getRgb());
-            this.name.setTextColor(palette.getVibrantSwatch().getBodyTextColor());
-            this.bio.setTextColor(palette.getVibrantSwatch().getTitleTextColor());
-
-            // change the color of the tab host
-            this.tabHost.setPrimaryColor(palette.getLightVibrantSwatch().getRgb());
-            this.tabHost.setIconColor(palette.getLightVibrantSwatch().getBodyTextColor());
-            this.tabHost.setAccentColor(palette.getLightVibrantSwatch().getTitleTextColor());
-            this.tabHost.setSelectedNavigationItem(this.viewPager.getCurrentItem());
+        // change the color of the status bar
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            getWindow().setStatusBarColor(colorHolder.backgroundSecondary);
         }
+
+        // change the color of the main toolbar
+        this.topContainer.setBackgroundColor(colorHolder.background);
+        this.name.setTextColor(colorHolder.bodyText);
+        this.bio.setTextColor(colorHolder.titleText);
+
+        // change the color of the tab host
+        this.tabHost.setPrimaryColor(colorHolder.primary);
+        this.tabHost.setIconColor(colorHolder.icon);
+        this.tabHost.setAccentColor(colorHolder.accent);
+        this.tabHost.setSelectedNavigationItem(this.viewPager.getCurrentItem());
     }
 
     @Override
@@ -239,6 +239,12 @@ public class ProfileActivity extends ActionBarActivity implements PaletteHelperU
         int actionBarSize = a.getDimensionPixelSize(indexOfAttrTextSize, -1);
         a.recycle();
         return actionBarSize;
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        outState.putSerializable("colorHolder", this.colorHolder);
+        super.onSaveInstanceState(outState);
     }
 
 }

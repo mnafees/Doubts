@@ -11,7 +11,7 @@ import android.support.v7.graphics.Palette;
 public class PaletteHelperUtil {
 
     private PaletteHelperUtilListener listener;
-    private Palette lastKnownPalette;
+    private final ColorHolder colorHolder = new ColorHolder();
 
     public void setPaletteHelperUtilListener(final PaletteHelperUtilListener listener) {
         this.listener = listener;
@@ -29,14 +29,22 @@ public class PaletteHelperUtil {
         Palette.generateAsync(bm, new Palette.PaletteAsyncListener() {
             @Override
             public void onGenerated(Palette palette) {
-                lastKnownPalette = palette;
-                listener.onPaletteGenerated(palette);
+                Palette.Swatch vibrant = palette.getVibrantSwatch(),
+                        darkVibrant = palette.getDarkVibrantSwatch(),
+                        lightVibrant = palette.getLightVibrantSwatch();
+
+                if (vibrant != null && darkVibrant != null && lightVibrant != null) {
+
+                    colorHolder.background = vibrant.getRgb();
+                    colorHolder.backgroundSecondary = darkVibrant.getRgb();
+                    colorHolder.bodyText = vibrant.getBodyTextColor();
+                    colorHolder.titleText = vibrant.getTitleTextColor();
+                    colorHolder.primary = lightVibrant.getRgb();
+                    colorHolder.icon = lightVibrant.getBodyTextColor();
+                    colorHolder.accent = lightVibrant.getTitleTextColor();
+                }
+                listener.onPaletteGenerated(colorHolder);
             }
         });
     }
-
-    public Palette lastKnownPalette() {
-        return this.lastKnownPalette;
-    }
-
 }
