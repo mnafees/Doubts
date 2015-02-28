@@ -15,9 +15,11 @@ import android.transitions.everywhere.TransitionValues;
 import android.transitions.everywhere.utils.AnimatorUtils;
 import android.transitions.everywhere.utils.RectEvaluator;
 import android.transitions.everywhere.utils.ViewUtils;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
+import android.view.animation.LinearInterpolator;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -297,17 +299,24 @@ public class ChangeBoundsOnScrollTransition {
                 }
             }
         }
+        for(Animator animator : mAnimatorsList) {
+            // FIXME Why are there null references in the list?
+            if(animator != null) {
+                animator.setInterpolator(new LinearInterpolator());
+            }
+        }
     }
 
     public void setDuration(long duration) {
         this.duration = duration;
     }
 
-    public void animateOnScroll(long scroll) {
+    public boolean animateOnScroll(long scroll) {
         for (int i = 0; i < mAnimatorsList.size(); ++i) {
             if (mAnimatorsList.get(i) != null)
                 mAnimatorsList.get(i).setCurrentPlayTime(scroll);
         }
+        return !mAnimatorsList.isEmpty();
     }
 
     private class ChildViewPreDraw {

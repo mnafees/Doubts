@@ -18,6 +18,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.util.TypedValue;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -71,7 +72,6 @@ public class ProfileActivity extends ActionBarActivity implements PaletteHelperU
     private ChangeBoundsOnScrollTransition topPanelTransition;
     private ColorHolder colorHolder;
     private final PaletteHelperUtil paletteHelperUtil = new PaletteHelperUtil();
-    private int previousScrollY;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -120,6 +120,16 @@ public class ProfileActivity extends ActionBarActivity implements PaletteHelperU
 
         final ObservableScrollView scrollView = (ObservableScrollView)findViewById(R.id.scrollView);
         scrollView.setScrollViewCallbacks(this);
+
+        this.topPanelContainer.getViewTreeObserver().addOnPreDrawListener(new ViewTreeObserver.OnPreDrawListener() {
+            @Override
+            public boolean onPreDraw() {
+                if(ProfileActivity.this.topPanelTransition.animateOnScroll(scrollView.getScrollY())) {
+                    ProfileActivity.this.topPanelContainer.getViewTreeObserver().removeOnPreDrawListener(this);
+                }
+                return false;
+            }
+        });
 
         this.tabHost = (MaterialTabHost)this.expandedTopPanel.findViewById(R.id.materialTabHost);
         for (int i = 0; i < adapter.getCount(); ++i) {
@@ -252,7 +262,6 @@ public class ProfileActivity extends ActionBarActivity implements PaletteHelperU
     @Override
     public void onScrollChanged(int scrollY, boolean firstScroll, boolean dragging) {
         this.topPanelTransition.animateOnScroll(scrollY);
-        this.previousScrollY = scrollY;
     }
 
     @Override
@@ -277,17 +286,12 @@ public class ProfileActivity extends ActionBarActivity implements PaletteHelperU
     protected void onRestoreInstanceState(Bundle savedInstanceState) {
         this.colorHolder = (ColorHolder) savedInstanceState.getSerializable("colorHolder");
         setThemeColors(this.colorHolder);
-        this.previousScrollY = savedInstanceState.getInt("scrollY");
-
         super.onRestoreInstanceState(savedInstanceState);
     }
 
     @Override
     protected void onSaveInstanceState(Bundle outState) {
         outState.putSerializable("colorHolder", this.colorHolder);
-        if (this.previousScrollY > 0) {
-            outState.putInt("scrollY", this.previousScrollY);
-        }
 
         super.onSaveInstanceState(outState);
     }
