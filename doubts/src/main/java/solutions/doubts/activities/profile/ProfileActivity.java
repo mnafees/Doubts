@@ -18,20 +18,18 @@ import android.support.v4.app.Fragment;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.util.TypedValue;
-import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
 import android.widget.TextView;
 
 import com.github.ksoichiro.android.observablescrollview.ObservableScrollView;
 import com.github.ksoichiro.android.observablescrollview.ObservableScrollViewCallbacks;
 import com.github.ksoichiro.android.observablescrollview.ScrollState;
-import com.nineoldandroids.view.ViewHelper;
 import com.squareup.picasso.Picasso;
 import com.squareup.picasso.Transformation;
 
@@ -49,48 +47,54 @@ import solutions.doubts.activities.profile.fragments.QuestionsFragment;
 import solutions.doubts.core.util.ColorHolder;
 import solutions.doubts.core.util.PaletteHelperUtil;
 import solutions.doubts.core.util.PaletteHelperUtilListener;
+import solutions.doubts.transitions.ChangeBoundsOnScrollTransition;
 
 public class ProfileActivity extends ActionBarActivity implements PaletteHelperUtilListener,
         ObservableScrollViewCallbacks {
-    public static final String TAG = "ProfileActivity";
+    public static final String TAG = ProfileActivity.class.getName();
 
-    private CircleImageView imageView;
-    private CircleImageView smallImageView;
-    private Toolbar actionBar;
+    private View topPanelContainer;
+
+    // expanded top panel view
+    private View expandedTopPanel;
+    private CircleImageView profileImageView;
     private MaterialTabHost tabHost;
-    private ViewPager viewPager;
     private TextView name;
     private TextView bio;
-    private ColorHolder colorHolder;
-    private View topPanel;
+
+    // collapsed top panel view
+    private View collapsedTopPanel;
+
     private Menu menu;
+    private ViewPager viewPager;
 
+    private ChangeBoundsOnScrollTransition topPanelTransition;
+    private ColorHolder colorHolder;
     private final PaletteHelperUtil paletteHelperUtil = new PaletteHelperUtil();
-
-    private int actionBarSize;
-    private int separationNameProfilePic;
-    private int initialNameX;
+    private int previousScrollY;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.layout_profile);
-        topPanel = findViewById(R.id.top_panel);
+
+        this.topPanelContainer = findViewById(R.id.topPanelContainer);
+        this.expandedTopPanel = getLayoutInflater().inflate(R.layout.layout_topbar_expanded, (ViewGroup)this.topPanelContainer, false);
+        this.collapsedTopPanel = getLayoutInflater().inflate(R.layout.layout_topbar_collapsed, (ViewGroup)this.topPanelContainer, false);
+
+        this.topPanelTransition = new ChangeBoundsOnScrollTransition((ViewGroup)this.topPanelContainer,
+                (ViewGroup)this.expandedTopPanel, (ViewGroup)this.collapsedTopPanel);
+        this.topPanelTransition.setDuration(getResources()
+                .getDimensionPixelSize(R.dimen.profile_actionbar_expanded_height) - getActionBarSize());
 
         this.paletteHelperUtil.setPaletteHelperUtilListener(this);
 
-        this.name = (TextView)findViewById(R.id.name);
-        this.bio = (TextView)findViewById(R.id.bio);
+        this.name = (TextView)this.expandedTopPanel.findViewById(R.id.name);
+        this.bio = (TextView)this.expandedTopPanel.findViewById(R.id.bio);
 
-        this.actionBar = (Toolbar) findViewById(R.id.action_bar);
-        setSupportActionBar(this.actionBar);
-        getSupportActionBar().setDisplayShowTitleEnabled(false);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
-            getSupportActionBar().setBackgroundDrawable(new ColorDrawable(Color.parseColor("#000000ff")));
-            getSupportActionBar().setStackedBackgroundDrawable(new ColorDrawable(Color.parseColor("#000000ff")));
-        }
+        setSupportActionBar((Toolbar)this.expandedTopPanel.findViewById(R.id.action_bar));
+        setupActionBar();
 
         final List<Fragment> fragments = new ArrayList<>();
         final AboutFragment aboutFragment = new AboutFragment();
@@ -113,68 +117,55 @@ public class ProfileActivity extends ActionBarActivity implements PaletteHelperU
                 tabHost.setSelectedNavigationItem(position);
             }
         });
-        Log.d(TAG, Integer.toString(topPanel.getMeasuredHeight()));
-        Log.d(TAG, Integer.toString(topPanel.getHeight()));
-        ViewHelper.setTranslationY(this.viewPager, topPanel.getMeasuredHeight());
 
         final ObservableScrollView scrollView = (ObservableScrollView)findViewById(R.id.scrollView);
         scrollView.setScrollViewCallbacks(this);
 
-        this.actionBarSize = getActionBarSize();
-        this.separationNameProfilePic = getResources().getDimensionPixelSize(R.dimen.profile_action_bar_separation_name_profile);
-
-        this.tabHost = (MaterialTabHost)findViewById(R.id.materialTabHost);
+        this.tabHost = (MaterialTabHost)this.expandedTopPanel.findViewById(R.id.materialTabHost);
         for (int i = 0; i < adapter.getCount(); ++i) {
-            tabHost.addTab(
-                    tabHost.newTab()
-                           .setIcon(adapter.getIconForTab(i))
-                           .setTabListener(new MaterialTabListener() {
-                               @Override
-                               public void onTabSelected(MaterialTab materialTab) {
-                                   viewPager.setCurrentItem(materialTab.getPosition());
-                               }
+            this.tabHost.addTab(
+                    this.tabHost.newTab()
+                                .setIcon(adapter.getIconForTab(i))
+                                .setTabListener(new MaterialTabListener() {
+                                @Override
+                                public void onTabSelected(MaterialTab materialTab) {
+                                    viewPager.setCurrentItem(materialTab.getPosition());
+                                }
 
-                               @Override
-                               public void onTabReselected(MaterialTab materialTab) {}
+                                @Override
+                                public void onTabReselected(MaterialTab materialTab) {
+                                }
 
-                               @Override
-                               public void onTabUnselected(MaterialTab materialTab) {}
-                           })
+                                @Override
+                                public void onTabUnselected(MaterialTab materialTab) {
+                                }
+                            })
             );
         }
 
-        this.imageView = (CircleImageView)findViewById(R.id.profileImage);
+        this.profileImageView = (CircleImageView)this.expandedTopPanel.findViewById(R.id.profileImage);
         setImage();
-
-        if(savedInstanceState != null) {
-            this.colorHolder = (ColorHolder) savedInstanceState.getSerializable("colorHolder");
-            setThemeColors(this.colorHolder);
-        }
     }
 
-    @Override
-    public void onResume() {
-        super.onResume();
-
-        LayoutInflater li = (LayoutInflater) getSystemService(LAYOUT_INFLATER_SERVICE);
-        View v = li.inflate(R.layout.layout_topbar_collapsed, null);
-        v.measure(500, 500);
-        View img = v.findViewById(R.id.profileImage);
-        Log.d(TAG, "X = " + Float.toString(img.getX()) + ", Y = " + Float.toString(img.getY()));
-        Log.d(TAG, "W = " + Float.toString(img.getMeasuredWidth()) + ", Y = " + Float.toString(img.getMeasuredHeight()));
-
-        this.initialNameX = (int)this.name.getX();
+    private void setupActionBar() {
+        getSupportActionBar().setDisplayShowTitleEnabled(false);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setHomeAsUpIndicator(getResources().getDrawable(R.drawable.ic_arrow_back_white_16dp));
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
+            getSupportActionBar().setBackgroundDrawable(new ColorDrawable(Color.parseColor("#000000ff")));
+            getSupportActionBar().setStackedBackgroundDrawable(new ColorDrawable(Color.parseColor("#000000ff")));
+        }
     }
 
     public void setImage(/* final String url */) {
         final Context context = this;
-        this.imageView.getViewTreeObserver().addOnGlobalLayoutListener(
+        this.profileImageView.getViewTreeObserver().addOnGlobalLayoutListener(
                 new ViewTreeObserver.OnGlobalLayoutListener() {
                     @Override
                     public void onGlobalLayout() {
                         Picasso.with(context)
                                 .load("https://avatars3.githubusercontent.com/u/1763885?v=3&s=460")
-                                .resize(imageView.getWidth(), imageView.getHeight())
+                                .resize(profileImageView.getWidth(), profileImageView.getHeight())
                                 .centerCrop()
                                 .transform(new Transformation() {
                                     @Override
@@ -188,7 +179,7 @@ public class ProfileActivity extends ActionBarActivity implements PaletteHelperU
                                         return "DBTS";
                                     }
                                 })
-                                .into(imageView);
+                                .into(profileImageView);
                     }
                 }
         );
@@ -220,6 +211,11 @@ public class ProfileActivity extends ActionBarActivity implements PaletteHelperU
 
     @Override
     public void onPaletteGenerated(ColorHolder colorHolder) {
+        if (this.colorHolder != null) {
+            // prevent change of color holder values once already set
+            return;
+        }
+
         this.colorHolder = colorHolder;
         setThemeColors(this.colorHolder);
     }
@@ -243,7 +239,6 @@ public class ProfileActivity extends ActionBarActivity implements PaletteHelperU
         }
 
         // change the color of the main toolbar
-        this.actionBar.setBackgroundColor(colorHolder.background);
         this.name.setTextColor(colorHolder.bodyText);
         this.bio.setTextColor(colorHolder.titleText);
 
@@ -256,19 +251,8 @@ public class ProfileActivity extends ActionBarActivity implements PaletteHelperU
 
     @Override
     public void onScrollChanged(int scrollY, boolean firstScroll, boolean dragging) {
-//        final int minOverlayTransitionY = this.actionBarSize - this.topContainer.getHeight();
-//        ViewHelper.setTranslationY(this.tabHost, ScrollUtils.getFloat(-scrollY, minOverlayTransitionY, 0));
-//        final float separator = -(float)scrollY/(float)minOverlayTransitionY;
-//        ViewHelper.setAlpha(this.smallImageView, separator);
-//        float titleToMoveByX = this.initialNameX - this.smallImageView.getX() - this.smallImageView.getWidth() -
-//                this.separationNameProfilePic;
-//        /** @TODO: fix this */
-//        ViewHelper.setTranslationX(this.name, separator*titleToMoveByX);
-
-        Log.d(TAG, Integer.toString(topPanel.getMeasuredHeight()));
-        Log.d(TAG, Integer.toString(topPanel.getHeight()));
-        ViewHelper.setTranslationY(this.topPanel, scrollY);
-        ViewHelper.setTranslationY(this.viewPager, topPanel.getMeasuredHeight());
+        this.topPanelTransition.animateOnScroll(scrollY);
+        this.previousScrollY = scrollY;
     }
 
     @Override
@@ -290,8 +274,21 @@ public class ProfileActivity extends ActionBarActivity implements PaletteHelperU
     }
 
     @Override
+    protected void onRestoreInstanceState(Bundle savedInstanceState) {
+        this.colorHolder = (ColorHolder) savedInstanceState.getSerializable("colorHolder");
+        setThemeColors(this.colorHolder);
+        this.previousScrollY = savedInstanceState.getInt("scrollY");
+
+        super.onRestoreInstanceState(savedInstanceState);
+    }
+
+    @Override
     protected void onSaveInstanceState(Bundle outState) {
         outState.putSerializable("colorHolder", this.colorHolder);
+        if (this.previousScrollY > 0) {
+            outState.putInt("scrollY", this.previousScrollY);
+        }
+
         super.onSaveInstanceState(outState);
     }
 }
