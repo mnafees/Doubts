@@ -10,6 +10,7 @@
     <color name="pink_pressed">#F48FB1</color>
     <color name="grey">#757575</color>
     <color name="lightGrey">#BDBDBD</color>
+    <color name="dividerColor">#ebebeb</color>
 
     <!-- Base application theme. -->
     <style name="AppTheme" parent="@style/Theme.AppCompat.NoActionBar">
@@ -33,6 +34,11 @@
 
     <style name="AppTheme.ProfileTheme.ActionBar">
         <item name="android:background">@android:color/transparent</item>
+    </style>
+
+    <style name="AppTheme.Question" parent="AppTheme">
+        <item name="android:background">@android:color/white</item>
+        <item name="android:textColor">@android:color/black</item>
     </style>
 
     <style name="AppTheme.PicturePreview" parent="AppTheme">

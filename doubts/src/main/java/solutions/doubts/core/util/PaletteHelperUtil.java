@@ -41,8 +41,8 @@ public class PaletteHelperUtil {
                     colorHolder.primary = lightVibrant.getRgb();
                     colorHolder.icon = lightVibrant.getBodyTextColor();
                     colorHolder.accent = lightVibrant.getTitleTextColor();
+                    listener.onPaletteGenerated(colorHolder);
                 }
-                listener.onPaletteGenerated(colorHolder);
             }
         });
     }

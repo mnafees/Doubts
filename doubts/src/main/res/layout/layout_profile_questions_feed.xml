@@ -25,9 +25,10 @@
         android:layout_marginBottom="10dp"
         android:textSize="14sp" />
 
-    <ListView
+    <!--<android.support.v7.widget.RecyclerView
+        android:id="@+id/questionsRecyclerView"
+        android:scrollbars="vertical"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:id="@+id/questionsListView"
-        android:smoothScrollbar="true" />
+        android:layout_height="match_parent"
+        android:background="@android:color/transparent"/>-->
 </LinearLayout>

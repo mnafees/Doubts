@@ -32,6 +32,19 @@ public class MainActivity extends ActionBarActivity {
         loginButton.startAnimation(popOut);*/
         Intent intent = new Intent(this, ProfileActivity.class);
         startActivity(intent);
+        /*setContentView(R.layout.layout_card);
+        RelativeTimeTextView timeTextView = (RelativeTimeTextView)findViewById(R.id.timestamp);
+        timeTextView.setReferenceTime(new Date().getTime());
+        HListView tagList = (HListView)findViewById(R.id.tagList);
+        List<String> tags = new ArrayList<>();
+        tags.add("#programming");
+        tags.add("#java");
+        tags.add("#android");
+        tags.add("#nullpointerexception");
+        ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(this, R.layout.layout_single_tag,
+                R.id.tag, tags);
+        tagList.setAdapter(arrayAdapter);*/
+        //setContentView(R.layout.layout_question);
     }
 
 }
