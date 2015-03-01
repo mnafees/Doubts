@@ -5,7 +5,7 @@
 
 buildscript {
     dependencies {
-        classpath 'com.android.tools.build:gradle:1.0.0'
+        classpath 'com.android.tools.build:gradle:1.1.0'
     }
 }
 
@@ -20,7 +20,7 @@ apply plugin: 'com.android.application'
 
 android {
     compileSdkVersion 21
-    buildToolsVersion "21.1.0"
+    buildToolsVersion "21.1.2"
 
     defaultConfig {
         applicationId "solutions.doubts"

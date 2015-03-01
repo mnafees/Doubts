@@ -5,9 +5,12 @@
 
 package solutions.doubts;
 
+import android.app.Notification;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.support.v4.app.NotificationCompat;
+import android.support.v4.app.NotificationManagerCompat;
 import android.support.v7.app.ActionBarActivity;
 
 import solutions.doubts.activities.profile.ProfileActivity;
@@ -22,6 +25,15 @@ public class MainActivity extends ActionBarActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        Notification n = new NotificationCompat.Builder(this)
+                .setSmallIcon(R.drawable.ic_stat_doubts)
+                .setColor(getResources().getColor(R.color.primary))
+                .setContentTitle("Doubts").build();
+        NotificationManagerCompat nm = NotificationManagerCompat.from(this);
+        nm.notify(0, n);
+
+
         /*setContentView(R.layout.layout_login);
         final ImageView logoView = (ImageView)findViewById(R.id.logoView);
         final Animation popOut = AnimationUtils.loadAnimation(this, R.anim.login_pop_out);
