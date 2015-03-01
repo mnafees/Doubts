@@ -6,16 +6,11 @@
 package solutions.doubts.transitions;
 
 import android.animation.Animator;
-import android.animation.AnimatorListenerAdapter;
 import android.animation.ObjectAnimator;
 import android.graphics.Rect;
 import android.transitions.everywhere.ChangeBounds;
-import android.transitions.everywhere.TransitionUtils;
 import android.transitions.everywhere.TransitionValues;
 import android.transitions.everywhere.utils.AnimatorUtils;
-import android.transitions.everywhere.utils.RectEvaluator;
-import android.transitions.everywhere.utils.ViewUtils;
-import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
@@ -27,17 +22,15 @@ import java.util.Map;
 
 public class ChangeBoundsOnScrollTransition {
 
-    private static final String TAG = "ChangeBoundsOnScroll";
+    private static final String TAG = "ChangeBoundsOnScrollTransition";
 
     private static final String PROPNAME_BOUNDS = "android:changeBounds:bounds";
 
-    private boolean mReparent = false;
-    private final List<ObjectAnimator> mAnimatorsList = new ArrayList<>();
-    private static RectEvaluator sRectEvaluator;
+    private final List<ObjectAnimator> animatorList = new ArrayList<>();
 
-    private boolean mInitialised;
-    private boolean mInitialViewPreDraw;
-    private boolean mFinalViewPreDraw;
+    private boolean initialised;
+    private boolean initialViewPreDraw;
+    private boolean finalViewPreDraw;
     private long duration = -1;
 
     public ChangeBoundsOnScrollTransition(final ViewGroup parentContainer,
@@ -57,7 +50,7 @@ public class ChangeBoundsOnScrollTransition {
                 new ViewTreeObserver.OnPreDrawListener() {
                     @Override
                     public boolean onPreDraw() {
-                        if (!mInitialised) {
+                        if (!initialised) {
                             parentContainer.removeAllViews();
 
                             parentContainer.addView(finalView);
@@ -66,9 +59,9 @@ public class ChangeBoundsOnScrollTransition {
                             initialView.getViewTreeObserver().addOnPreDrawListener(new ViewTreeObserver.OnPreDrawListener() {
                                 @Override
                                 public boolean onPreDraw() {
-                                    if (!mInitialViewPreDraw) {
+                                    if (!initialViewPreDraw) {
                                         childViewPreDraw.increment();
-                                        mInitialViewPreDraw = true;
+                                        initialViewPreDraw = true;
                                     }
                                     return true;
                                 }
@@ -76,9 +69,9 @@ public class ChangeBoundsOnScrollTransition {
                             finalView.getViewTreeObserver().addOnPreDrawListener(new ViewTreeObserver.OnPreDrawListener() {
                                 @Override
                                 public boolean onPreDraw() {
-                                    if (!mFinalViewPreDraw) {
+                                    if (!finalViewPreDraw) {
                                         childViewPreDraw.increment();
-                                        mFinalViewPreDraw = true;
+                                        finalViewPreDraw = true;
                                     }
                                     return true;
                                 }
@@ -165,7 +158,7 @@ public class ChangeBoundsOnScrollTransition {
                 }
             }
         }
-        mInitialised = true;
+        this.initialised = true;
         setAnimatorsDuration();
     }
 
@@ -173,10 +166,8 @@ public class ChangeBoundsOnScrollTransition {
         if (this.duration == -1) {
             throw new IllegalStateException("Transition duration not set.");
         }
-        for (int i = 0; i < mAnimatorsList.size(); ++i) {
-            if (mAnimatorsList.get(i) != null) {
-                mAnimatorsList.get(i).setDuration(this.duration);
-            }
+        for (Animator animator : this.animatorList) {
+            animator.setDuration(this.duration);
         }
     }
 
@@ -210,100 +201,59 @@ public class ChangeBoundsOnScrollTransition {
         if (startValues == null || endValues == null) {
             return;
         }
-        if (sRectEvaluator == null) {
-            sRectEvaluator = new RectEvaluator();
-        }
 
         Map<String, Object> startParentVals = startValues.values;
         Map<String, Object> endParentVals = endValues.values;
         final View view = startValues.view;
-        if (true) {
-            Rect startBounds = (Rect) startParentVals.get(PROPNAME_BOUNDS);
-            Rect endBounds = (Rect) endParentVals.get(PROPNAME_BOUNDS);
-            if (startBounds == null || endBounds == null) {
-                return;
-            }
-            int startLeft = startBounds.left;
-            int endLeft = endBounds.left;
-            int startTop = startBounds.top;
-            int endTop = endBounds.top;
-            int startRight = startBounds.right;
-            int endRight = endBounds.right;
-            int startBottom = startBounds.bottom;
-            int endBottom = endBounds.bottom;
-            int startWidth = startRight - startLeft;
-            int startHeight = startBottom - startTop;
-            int endWidth = endRight - endLeft;
-            int endHeight = endBottom - endTop;
-            int numChanges = 0;
-            if ((startWidth != 0 && startHeight != 0) || (endWidth != 0 && endHeight != 0)) {
-                if (startLeft != endLeft || startTop != endTop) ++numChanges;
-                if (startRight != endRight || startBottom != endBottom) ++numChanges;
-            }
-            if (numChanges > 0) {
-                if (true) {
-                    if (startWidth == endWidth && startHeight == endHeight && !startBounds.equals(endBounds)) {
-                        // the dimensions don't change but the bounds do change
-                        ObjectAnimator x = ObjectAnimator.ofFloat(view, "x", startLeft, endLeft);
-                        ObjectAnimator y = ObjectAnimator.ofFloat(view, "y", startTop, endTop);
-                        mAnimatorsList.add(x);
-                        mAnimatorsList.add(y);
-                    } else {
-                        if (startLeft != endLeft) view.setLeft(startLeft);
-                        if (startTop != endTop) view.setTop(startTop);
-                        if (startRight != endRight) view.setRight(startRight);
-                        if (startBottom != endBottom) view.setBottom(startBottom);
-                        ObjectAnimator topLeftAnimator = AnimatorUtils.ofInt(new ChangeBounds(), view, "left", "top",
-                                startLeft, startTop, endLeft, endTop);
-                        ObjectAnimator bottomRightAnimator = AnimatorUtils.ofInt(new ChangeBounds(), view, "right", "bottom",
-                                startRight, startBottom, endRight, endBottom);
-                        mAnimatorsList.add(topLeftAnimator);
-                        mAnimatorsList.add(bottomRightAnimator);
-                    }
-                } else {
-                    if (startWidth != endWidth) view.setRight(endLeft +
-                            Math.max(startWidth, endWidth));
-                    if (startHeight != endHeight) view.setBottom(endTop +
-                            Math.max(startHeight, endHeight));
-                    // TODO: don't clobber TX/TY
-                    if (startLeft != endLeft) view.setTranslationX(startLeft - endLeft);
-                    if (startTop != endTop) view.setTranslationY(startTop - endTop);
-                    // Animate location with translationX/Y and size with clip bounds
-                    float transXDelta = endLeft - startLeft;
-                    float transYDelta = endTop - startTop;
-                    int widthDelta = endWidth - startWidth;
-                    int heightDelta = endHeight - startHeight;
-                    numChanges = 0;
-                    if (transXDelta != 0) numChanges++;
-                    if (transYDelta != 0) numChanges++;
-                    if (widthDelta != 0 || heightDelta != 0) numChanges++;
-                    ObjectAnimator translationAnimator = AnimatorUtils.ofFloat(null, view,
-                            "translationX", "translationY", 0, 0, transXDelta, transYDelta);
-                    ObjectAnimator clipAnimator = null;
-                    if (widthDelta != 0 || heightDelta != 0) {
-                        Rect tempStartBounds = new Rect(0, 0, startWidth, startHeight);
-                        Rect tempEndBounds = new Rect(0, 0, endWidth, endHeight);
-                        clipAnimator = ObjectAnimator.ofObject(view, "clipBounds", sRectEvaluator,
-                                tempStartBounds, tempEndBounds);
-                        mAnimatorsList.add(clipAnimator);
-                    }
-                    mAnimatorsList.add(translationAnimator);
-                    Animator anim = TransitionUtils.mergeAnimators(translationAnimator,
-                            clipAnimator);
-                    anim.addListener(new AnimatorListenerAdapter() {
-                        @Override
-                        public void onAnimationEnd(Animator animation) {
-                            ViewUtils.setClipBounds(view, null);
-                        }
-                    });
+        Rect startBounds = (Rect) startParentVals.get(PROPNAME_BOUNDS);
+        Rect endBounds = (Rect) endParentVals.get(PROPNAME_BOUNDS);
+        if (startBounds == null || endBounds == null) {
+            return;
+        }
+        int startLeft = startBounds.left;
+        int endLeft = endBounds.left;
+        int startTop = startBounds.top;
+        int endTop = endBounds.top;
+        int startRight = startBounds.right;
+        int endRight = endBounds.right;
+        int startBottom = startBounds.bottom;
+        int endBottom = endBounds.bottom;
+        int startWidth = startRight - startLeft;
+        int startHeight = startBottom - startTop;
+        int endWidth = endRight - endLeft;
+        int endHeight = endBottom - endTop;
+        int numChanges = 0;
+        if ((startWidth != 0 && startHeight != 0) || (endWidth != 0 && endHeight != 0)) {
+            if (startLeft != endLeft || startTop != endTop) ++numChanges;
+            if (startRight != endRight || startBottom != endBottom) ++numChanges;
+        }
+        if (numChanges > 0) {
+            if (startWidth == endWidth && startHeight == endHeight && !startBounds.equals(endBounds)) {
+                // the dimensions don't change but the bounds do change
+                ObjectAnimator x = ObjectAnimator.ofFloat(view, "x", startLeft, endLeft);
+                ObjectAnimator y = ObjectAnimator.ofFloat(view, "y", startTop, endTop);
+                this.animatorList.add(x);
+                this.animatorList.add(y);
+            } else {
+                if (startLeft != endLeft) view.setLeft(startLeft);
+                if (startTop != endTop) view.setTop(startTop);
+                if (startRight != endRight) view.setRight(startRight);
+                if (startBottom != endBottom) view.setBottom(startBottom);
+
+                if (startLeft != endLeft || startTop != endTop) {
+                    ObjectAnimator topLeftAnimator = AnimatorUtils.ofInt(new ChangeBounds(), view, "left", "top",
+                            startLeft, startTop, endLeft, endTop);
+                    this.animatorList.add(topLeftAnimator);
+                }
+                if (startRight != endRight || startBottom != endBottom) {
+                    ObjectAnimator bottomRightAnimator = AnimatorUtils.ofInt(new ChangeBounds(), view, "right", "bottom",
+                            startRight, startBottom, endRight, endBottom);
+                    this.animatorList.add(bottomRightAnimator);
                 }
             }
         }
-        for(Animator animator : mAnimatorsList) {
-            // FIXME Why are there null references in the list?
-            if(animator != null) {
-                animator.setInterpolator(new LinearInterpolator());
-            }
+        for(Animator animator : this.animatorList) {
+            animator.setInterpolator(new LinearInterpolator());
         }
     }
 
@@ -311,12 +261,19 @@ public class ChangeBoundsOnScrollTransition {
         this.duration = duration;
     }
 
-    public boolean animateOnScroll(long scroll) {
-        for (int i = 0; i < mAnimatorsList.size(); ++i) {
-            if (mAnimatorsList.get(i) != null)
-                mAnimatorsList.get(i).setCurrentPlayTime(scroll);
+    public long getDuration() {
+        if (this.duration == -1) {
+            throw new IllegalStateException("Transition duration not set.");
         }
-        return !mAnimatorsList.isEmpty();
+
+        return this.duration;
+    }
+
+    public boolean animateOnScroll(long scroll) {
+        for (ObjectAnimator animator : this.animatorList) {
+            animator.setCurrentPlayTime(scroll);
+        }
+        return !this.animatorList.isEmpty();
     }
 
     private class ChildViewPreDraw {

@@ -18,7 +18,6 @@ import android.support.v4.app.Fragment;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.util.TypedValue;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -68,6 +67,7 @@ public class ProfileActivity extends ActionBarActivity implements PaletteHelperU
 
     private Menu menu;
     private ViewPager viewPager;
+    private ObservableScrollView scrollView;
 
     private ChangeBoundsOnScrollTransition topPanelTransition;
     private ColorHolder colorHolder;
@@ -84,9 +84,9 @@ public class ProfileActivity extends ActionBarActivity implements PaletteHelperU
         this.collapsedTopPanel = getLayoutInflater().inflate(R.layout.layout_topbar_collapsed, (ViewGroup)this.topPanelContainer, false);
 
         this.topPanelTransition = new ChangeBoundsOnScrollTransition((ViewGroup)this.topPanelContainer,
-                (ViewGroup)this.expandedTopPanel, (ViewGroup)this.collapsedTopPanel);
+            (ViewGroup)this.expandedTopPanel, (ViewGroup)this.collapsedTopPanel);
         this.topPanelTransition.setDuration(getResources()
-                .getDimensionPixelSize(R.dimen.profile_actionbar_expanded_height) - getActionBarSize());
+                    .getDimensionPixelSize(R.dimen.profile_actionbar_expanded_height) - getActionBarSize());
 
         this.paletteHelperUtil.setPaletteHelperUtilListener(this);
 
@@ -118,13 +118,16 @@ public class ProfileActivity extends ActionBarActivity implements PaletteHelperU
             }
         });
 
-        final ObservableScrollView scrollView = (ObservableScrollView)findViewById(R.id.scrollView);
-        scrollView.setScrollViewCallbacks(this);
+        this.scrollView = (ObservableScrollView)findViewById(R.id.scrollView);
+        this.scrollView.setScrollViewCallbacks(this);
+        if (savedInstanceState != null) {
+            this.scrollView.setScrollY(savedInstanceState.getInt("scrollY"));
+        }
 
         this.topPanelContainer.getViewTreeObserver().addOnPreDrawListener(new ViewTreeObserver.OnPreDrawListener() {
             @Override
             public boolean onPreDraw() {
-                if(ProfileActivity.this.topPanelTransition.animateOnScroll(scrollView.getScrollY())) {
+                if (ProfileActivity.this.topPanelTransition.animateOnScroll(scrollView.getScrollY())) {
                     ProfileActivity.this.topPanelContainer.getViewTreeObserver().removeOnPreDrawListener(this);
                 }
                 return false;
@@ -248,6 +251,9 @@ public class ProfileActivity extends ActionBarActivity implements PaletteHelperU
             getWindow().setNavigationBarColor(colorHolder.backgroundSecondary);
         }
 
+        // change color of image view border
+        this.profileImageView.setBorderColor(colorHolder.bodyText);
+
         // change the color of the main toolbar
         this.name.setTextColor(colorHolder.bodyText);
         this.bio.setTextColor(colorHolder.titleText);
@@ -286,12 +292,14 @@ public class ProfileActivity extends ActionBarActivity implements PaletteHelperU
     protected void onRestoreInstanceState(Bundle savedInstanceState) {
         this.colorHolder = (ColorHolder) savedInstanceState.getSerializable("colorHolder");
         setThemeColors(this.colorHolder);
+
         super.onRestoreInstanceState(savedInstanceState);
     }
 
     @Override
     protected void onSaveInstanceState(Bundle outState) {
         outState.putSerializable("colorHolder", this.colorHolder);
+        outState.putInt("scrollY", this.scrollView.getScrollY());
 
         super.onSaveInstanceState(outState);
     }
