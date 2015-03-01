@@ -13,7 +13,7 @@ import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.NotificationManagerCompat;
 import android.support.v7.app.ActionBarActivity;
 
-import solutions.doubts.activities.profile.ProfileActivity;
+import solutions.doubts.activities.login.LoginActivity;
 
 /**
  * The base activity of the app.
@@ -33,16 +33,7 @@ public class MainActivity extends ActionBarActivity {
         NotificationManagerCompat nm = NotificationManagerCompat.from(this);
         nm.notify(0, n);
 
-
-        /*setContentView(R.layout.layout_login);
-        final ImageView logoView = (ImageView)findViewById(R.id.logoView);
-        final Animation popOut = AnimationUtils.loadAnimation(this, R.anim.login_pop_out);
-        logoView.startAnimation(popOut);
-        final EditText emailUsername = (EditText)findViewById(R.id.emailUsername);
-        emailUsername.startAnimation(popOut);
-        final Button loginButton = (Button)findViewById(R.id.loginButton);
-        loginButton.startAnimation(popOut);*/
-        Intent intent = new Intent(this, ProfileActivity.class);
+        Intent intent = new Intent(this, LoginActivity.class);
         startActivity(intent);
         /*setContentView(R.layout.layout_card);
         RelativeTimeTextView timeTextView = (RelativeTimeTextView)findViewById(R.id.timestamp);

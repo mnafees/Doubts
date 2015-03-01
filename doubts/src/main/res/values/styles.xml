@@ -23,8 +23,9 @@
         <item name="colorControlHighlight">@color/textEditBottom</item>
     </style>
 
-    <style name="AppTheme.LoginTheme" parent="AppTheme">
-        <item name="android:background">@color/primary</item>
+    <style name="AppTheme.LoginTheme">
+        <item name="android:windowBackground">@color/pink</item>
+        <item name="colorPrimaryDark">#D81B60</item>
         <item name="android:buttonStyle">@style/AppTheme.LoginButton</item>
         <item name="android:windowActionBar">false</item>
     </style>
@@ -48,7 +49,7 @@
     <!-- Login button -->
     <style name="AppTheme.LoginButton">
         <item name="android:gravity">center_vertical|center_horizontal</item>
-        <item name="android:textColor">#ffffff</item>
+        <item name="android:textColor">@android:color/white</item>
         <item name="android:paddingBottom">10dp</item>
         <item name="android:paddingTop">10dp</item>
         <item name="android:paddingLeft">25dp</item>

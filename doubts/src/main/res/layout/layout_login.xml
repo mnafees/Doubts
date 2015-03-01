@@ -15,27 +15,29 @@
 
         <ImageView
             android:layout_width="250dp"
-            android:layout_height="250dp"
+            android:layout_height="wrap_content"
             android:id="@+id/logoView"
             android:background="@drawable/login_banner"
-            android:layout_gravity="center_horizontal" />
+            android:layout_gravity="center_horizontal"
+            android:layout_marginBottom="50dp" />
 
         <EditText
-            android:layout_width="match_parent"
+            android:layout_width="250dp"
             android:layout_height="wrap_content"
             android:inputType="textEmailAddress"
             android:ems="10"
-            android:id="@+id/emailUsername"
+            android:id="@+id/email"
             android:layout_gravity="center"
-            android:hint="Email or username" />
+            android:hint="Email" />
 
         <Button
-            android:layout_width="match_parent"
+            android:layout_width="250dp"
             android:layout_height="wrap_content"
             android:text="Login"
             android:id="@+id/loginButton"
             android:layout_gravity="center_horizontal"
-            android:layout_marginTop="10dp" />
+            android:layout_marginTop="10dp"
+            android:visibility="invisible" />
 
     </LinearLayout>
 </FrameLayout>

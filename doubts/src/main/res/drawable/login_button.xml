@@ -12,6 +12,6 @@
         android:drawable="@drawable/login_button_pressed" />
     <item
         android:state_enabled="true"
-        android:drawable="@drawable/login_button_normal" />
+        android:drawable="@drawable/login_button_enabled" />
 
 </selector>
