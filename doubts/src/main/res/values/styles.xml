@@ -8,6 +8,7 @@
     <color name="textEditBottom">#ffffff</color>
     <color name="pink">#EC407A</color>
     <color name="pink_pressed">#F48FB1</color>
+    <color name="purple_very_light">#F3E5F5</color>
     <color name="grey">#757575</color>
     <color name="lightGrey">#BDBDBD</color>
     <color name="dividerColor">#ebebeb</color>
@@ -24,10 +25,17 @@
     </style>
 
     <style name="AppTheme.LoginTheme">
-        <item name="android:windowBackground">@color/pink</item>
-        <item name="colorPrimaryDark">#D81B60</item>
+        <item name="android:windowBackground">@color/purple_very_light</item>
+        <item name="colorControlNormal">@color/pink</item>
         <item name="android:buttonStyle">@style/AppTheme.LoginButton</item>
         <item name="android:windowActionBar">false</item>
+        <item name="android:textColor">#892ca0</item>
+        <item name="android:editTextStyle">@style/AppTheme.LoginTheme.EditText</item>
+    </style>
+
+    <style name="AppTheme.LoginTheme.EditText" parent="Widget.AppCompat.EditText">
+        <item name="android:textColor">#892ca0</item>
+        <item name="android:textColorHint">#892ca0</item>
     </style>
 
     <style name="AppTheme.ProfileTheme" parent="AppTheme">
