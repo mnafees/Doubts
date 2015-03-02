@@ -8,13 +8,13 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/container"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
+    android:layout_height="470dp"
     android:theme="@style/AppTheme.LoginTheme">
 
     <RelativeLayout
         android:id="@+id/innerContainer"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_height="340dp"
         android:layout_gravity="center"
         android:layout_centerInParent="true">
 
@@ -29,7 +29,7 @@
             android:textColorHint="#892ca0"
             android:textColor="#892ca0"
             android:layout_below="@+id/logoView"
-            android:layout_marginTop="-90dp" />
+            android:layout_marginTop="-100dp" />
 
         <Button
             android:layout_width="250dp"
@@ -45,7 +45,8 @@
             android:layout_height="wrap_content"
             android:id="@+id/logoView"
             android:background="@drawable/login_banner"
-            android:layout_gravity="center_horizontal" />
+            android:layout_gravity="center_horizontal"
+            android:layout_centerInParent="true" />
 
         <ProgressBar
             style="?android:attr/progressBarStyleLarge"
