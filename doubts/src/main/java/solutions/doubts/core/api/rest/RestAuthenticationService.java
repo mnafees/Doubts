@@ -13,7 +13,6 @@ import retrofit.RestAdapter;
 import retrofit.RetrofitError;
 
 import solutions.doubts.core.api.retrofit.RetrofitAuthenticationService;
-import solutions.doubts.core.events.AuthenticatedEvent;
 
 public class RestAuthenticationService {
 

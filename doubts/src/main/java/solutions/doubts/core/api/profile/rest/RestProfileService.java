@@ -11,7 +11,6 @@ import retrofit.RetrofitError;
 
 import solutions.doubts.core.api.profile.domain.Profile;
 import solutions.doubts.core.api.profile.retrofit.RetrofitProfileService;
-import solutions.doubts.core.exceptions.LoginException;
 
 public class RestProfileService {
 
@@ -30,7 +29,6 @@ public class RestProfileService {
         } catch (RetrofitError error) {
             if (error.getResponse().getStatus() == 404) {
                 // user does not exists
-                throw new LoginException(LoginException.Type.USER_DOES_NOT_EXIST);
             }
         }
         return response;
@@ -43,7 +41,6 @@ public class RestProfileService {
         } catch (RetrofitError error) {
             if (error.getResponse().getStatus() == 404) {
                 // user does not exist
-                throw new LoginException(LoginException.Type.USER_DOES_NOT_EXIST);
             }
         }
     }
@@ -55,7 +52,6 @@ public class RestProfileService {
         } catch (RetrofitError error) {
             if (error.getResponse().getStatus() == 404) {
                 // user does not exist
-                throw new LoginException(LoginException.Type.USER_DOES_NOT_EXIST);
             }
         }
     }
