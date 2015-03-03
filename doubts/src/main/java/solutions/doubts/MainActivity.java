@@ -12,13 +12,20 @@ import android.os.Bundle;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.NotificationManagerCompat;
 import android.support.v7.app.ActionBarActivity;
+import android.util.Log;
 
+
+import retrofit.RestAdapter;
+import rx.Observable;
+import rx.Observer;
 import solutions.doubts.activities.login.LoginActivity;
+import solutions.doubts.api.models.Question;
 
 /**
  * The base activity of the app.
  */
 public class MainActivity extends ActionBarActivity {
+    String TAG = "MainActivity";
 
     SharedPreferences sharedPreferences;
 

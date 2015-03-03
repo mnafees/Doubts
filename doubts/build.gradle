@@ -41,6 +41,9 @@ android {
 
 
 dependencies {
+    compile 'io.reactivex:rxjava:1.0.0'
+    compile 'com.j256.ormlite:ormlite-core:4.23'
+    compile 'com.j256.ormlite:ormlite-android:4.48'
     compile 'com.github.curioustechizen.android-ago:library:1.2.0'
     compile 'it.sephiroth.android.library.horizontallistview:hlistview:1.2.2'
     compile 'de.hdodenhof:circleimageview:1.2.1'

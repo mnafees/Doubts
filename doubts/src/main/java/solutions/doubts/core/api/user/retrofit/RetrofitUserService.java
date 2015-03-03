@@ -11,7 +11,7 @@ import retrofit.http.Path;
 import solutions.doubts.core.api.user.domain.User;
 
 /**
- * Retrofit interface to fetch the profile information of the user.
+ * Retrofit backend to fetch the profile information of the user.
  */
 public interface RetrofitUserService {
 
