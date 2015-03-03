@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ This file is part of Doubts.
+  ~ Copyright (c) 2015 Mohammed Nafees (original author) <nafees.technocool@gmail.com>.
+  -->
+
+<shape
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:shape="rectangle">
+
+    <solid android:color="@color/grey"/>
+
+</shape>

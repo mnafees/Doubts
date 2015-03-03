@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ This file is part of Doubts.
+  ~ Copyright (c) 2015 Mohammed Nafees (original author) <nafees.technocool@gmail.com>.
+  -->
+
+<android.support.v4.widget.DrawerLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/drawer_layout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fitsSystemWindows="true">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <android.support.v7.widget.Toolbar
+            android:id="@+id/toolbar"
+            android:layout_height="wrap_content"
+            android:layout_width="match_parent"
+            android:minHeight="?attr/actionBarSize"
+            android:background="?attr/colorPrimary" />
+
+        <android.support.v4.widget.SwipeRefreshLayout
+            android:id="@+id/swipe_refresh_layout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <ScrollView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <android.support.v7.widget.RecyclerView
+                    android:id="@+id/content"
+                    android:scrollbars="vertical"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:background="@android:color/transparent"/>
+
+            </ScrollView>
+
+        </android.support.v4.widget.SwipeRefreshLayout>
+
+    </LinearLayout>
+
+    <RelativeLayout
+        android:id="@+id/drawer"
+        android:layout_width="304dp"
+        android:layout_height="match_parent"
+        android:layout_gravity="left|start"
+        android:fitsSystemWindows="true"
+        android:clipToPadding="false">
+
+        <include
+            android:id="@+id/top_profile_view"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            layout="@layout/layout_feed_drawer_profile_top"
+            android:layout_gravity="center_horizontal" />
+
+        <ListView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_below="@+id/top_profile_view"
+            android:background="@android:color/white"
+            android:listSelector="@drawable/drawer_listitem_selector"
+            android:id="@+id/drawerListView"
+            android:drawSelectorOnTop="true"/>
+
+    </RelativeLayout>
+
+</android.support.v4.widget.DrawerLayout>

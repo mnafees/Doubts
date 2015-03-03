@@ -31,7 +31,7 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:id="@+id/imageView"
-            android:src="@drawable/bg_test"
+            android:src="@mipmap/bg_test"
             android:scaleType="centerCrop" />
 
     </android.support.v7.widget.Toolbar>

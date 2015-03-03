@@ -13,4 +13,6 @@ public class User {
 
     @DatabaseField
     private String name;
+
+    private S3Image image;
 }

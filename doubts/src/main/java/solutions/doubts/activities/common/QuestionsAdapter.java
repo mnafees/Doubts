@@ -3,10 +3,11 @@
  * Copyright (c) 2015 Mohammed Nafees (original author) <nafees.technocool@gmail.com>.
  */
 
-package solutions.doubts.activities.profile.fragments;
+package solutions.doubts.activities.common;
 
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,10 +17,17 @@ import android.widget.TextView;
 
 import com.github.curioustechizen.ago.RelativeTimeTextView;
 
+import java.util.LinkedList;
+import java.util.List;
+
+import rx.Observable;
 import solutions.doubts.R;
+import solutions.doubts.api.models.Question;
+import solutions.doubts.core.util.RestAdapterUtil;
 
 public class QuestionsAdapter extends RecyclerView.Adapter<QuestionsAdapter.ViewHolder> {
-    //private Questions dataset;
+    private static final String TAG = "QuestionsAdapter";
+    private List<Question> dataset;
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
 
@@ -33,21 +41,23 @@ public class QuestionsAdapter extends RecyclerView.Adapter<QuestionsAdapter.View
             super(view);
             this.context = view.getContext();
             this.question = (TextView)view.findViewById(R.id.title);
-            this.imageView = (ImageView)view.findViewById(R.id.imageView);
+            this.imageView = (ImageView)view.findViewById(R.id.image);
             this.imageView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     /** @TODO: implement this */
                 }
             });
-            this.tagList = (ListView)view.findViewById(R.id.tagList);
+            this.tagList = null;//(ListView)view.findViewById(R.id.tagList);
             this.timeTextView = (RelativeTimeTextView)view.findViewById(R.id.timestamp);
         }
 
     }
 
-    public QuestionsAdapter(String[] myDataset) {
-        //this.dataset = myDataset;
+    public QuestionsAdapter(final ViewGroup parent) {
+        this.dataset = new LinkedList<Question>();
+        ViewHolder viewHolder = onCreateViewHolder(parent, 0);
+        //onBindViewHolder(viewHolder, 0);
     }
 
     @Override
@@ -59,12 +69,23 @@ public class QuestionsAdapter extends RecyclerView.Adapter<QuestionsAdapter.View
     }
 
     @Override
-    public void onBindViewHolder(ViewHolder holder, int position) {
-        //final
+    public void onBindViewHolder(final ViewHolder holder, final int position) {
+        Log.d(TAG, Integer.toString(position));
+        Question.setRestAdapter(RestAdapterUtil.getRestAdapter());
+        final Observable<Question> oq = Question.getRemote()
+                .get(1, "question0");
+//        oq.subscribe(new Action1<Question>() {
+//            @Override
+//            public void call(Question question) {
+//                QuestionsAdapter.this.dataset.add(question);
+//                notifyItemInserted(0);
+//                holder.question.setText(QuestionsAdapter.this.dataset.get(position).getTitle());
+//            }
+//        });
     }
 
     @Override
     public int getItemCount() {
-        return 0;
+        return 1;
     }
 }

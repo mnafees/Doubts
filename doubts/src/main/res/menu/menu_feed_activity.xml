@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ This file is part of Doubts.
+  ~ Copyright (c) 2015 Mohammed Nafees (original author) <nafees.technocool@gmail.com>.
+  -->
+
+<menu
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:doubts="http://schemas.android.com/apk/res-auto">
+
+    <item android:id="@+id/action_search"
+        android:icon="@drawable/ic_search_white_24dp"
+        android:title="Search"
+        doubts:showAsAction="always"  />
+
+</menu>

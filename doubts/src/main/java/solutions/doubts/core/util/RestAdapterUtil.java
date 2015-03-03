@@ -18,7 +18,7 @@ public class RestAdapterUtil {
         synchronized (RestAdapter.class) {
             if (restAdapter == null) {
                 restAdapter = new RestAdapter.Builder()
-                        .setEndpoint("http://192.168.1.2:8080")
+                        .setEndpoint("http://192.168.1.2:8080/api/v1")
                         .setClient(new OkClient(new OkHttpClient()))
                         .setLogLevel(RestAdapter.LogLevel.FULL)
                         .build();
