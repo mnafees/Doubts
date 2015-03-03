@@ -3,9 +3,11 @@
  * Copyright (c) 2015 Mohammed Nafees (original author) <nafees.technocool@gmail.com>.
  */
 
-package solutions.doubts.core.api.profile.domain;
+package solutions.doubts.core.api.user.domain;
 
-public class Profile {
+import java.util.List;
+
+public class User {
 
     public static class Builder {
 
@@ -55,24 +57,22 @@ public class Profile {
     private String email;
     private String name;
     private String username;
-    private String uri;
+    private int question_count;
+    private List<Follow> followers;
+    private List<Follow> following;
 
-    private Profile(final String bio,
-                    final String created,
-                    final String updated,
-                    final String email,
-                    final String name,
-                    final String username) {
+    private User(final String bio,
+                 final String created,
+                 final String updated,
+                 final String email,
+                 final String name,
+                 final String username) {
         this.bio = bio;
         this.created = created;
         this.updated = updated;
         this.email = email;
         this.name = name;
         this.username = username;
-    }
-
-    public String getUri() {
-        return this.uri;
     }
 
     public int getId() {
@@ -101,6 +101,37 @@ public class Profile {
 
     public String getUsername() {
         return this.username;
+    }
+
+    public int getQuestionCount() {
+        return this.question_count;
+    }
+
+    public List<Follow> getFollowers() {
+        return this.followers;
+    }
+
+    public List<Follow> getFollowing() {
+        return this.following;
+    }
+
+    public class Follow {
+
+        private int id;
+        private String username;
+        private String name;
+
+        public int getId() {
+            return this.id;
+        }
+
+        public String getUsername() {
+            return this.username;
+        }
+
+        public String getName() {
+            return this.name;
+        }
     }
 
 }

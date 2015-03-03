@@ -9,6 +9,7 @@ import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
 import android.transitions.everywhere.ChangeBounds;
 import android.transitions.everywhere.Scene;
+import android.transitions.everywhere.Transition;
 import android.transitions.everywhere.TransitionManager;
 import android.view.View;
 import android.view.ViewGroup;
@@ -20,6 +21,8 @@ import android.widget.ImageView;
 import android.widget.Toast;
 
 import solutions.doubts.R;
+import solutions.doubts.core.api.authentication.rest.RestAuthenticationService;
+import solutions.doubts.core.util.RestAdapterUtil;
 
 public class LoginActivity extends ActionBarActivity {
 
@@ -31,8 +34,11 @@ public class LoginActivity extends ActionBarActivity {
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.layout_login);
-        final ImageView logoView = (ImageView)findViewById(R.id.logoView);
+
         final Animation popOut = AnimationUtils.loadAnimation(this, R.anim.login_pop_out);
+        final Animation popIn = AnimationUtils.loadAnimation(this, R.anim.login_pop_in);
+
+        final ImageView logoView = (ImageView)findViewById(R.id.logoView);
         logoView.startAnimation(popOut);
         this.email = (EditText)findViewById(R.id.email);
         this.email.startAnimation(popOut);
@@ -48,6 +54,27 @@ public class LoginActivity extends ActionBarActivity {
                 if (LoginActivity.this.email.getText().length() > 0) {
                     final ChangeBounds transition = new ChangeBounds();
                     transition.setDuration(500);
+                    transition.addListener(new Transition.TransitionListener() {
+                        @Override
+                        public void onTransitionStart(Transition transition) {}
+
+                        @Override
+                        public void onTransitionEnd(Transition transition) {
+                            final RestAuthenticationService authenticationService = new RestAuthenticationService(RestAdapterUtil.getRestAdapter());
+                            final String message = authenticationService.authenticate(LoginActivity.this.email.getText().toString());
+                            Toast.makeText(LoginActivity.this, message, Toast.LENGTH_SHORT).show();
+                        }
+
+                        @Override
+                        public void onTransitionCancel(Transition transition) {}
+
+                        @Override
+                        public void onTransitionPause(Transition transition) {}
+
+                        @Override
+                        public void onTransitionResume(Transition transition) {}
+
+                    });
                     final Scene scene = new Scene(sceneRoot, sceneView);
                     scene.setEnterAction(new Runnable() {
                         @Override
