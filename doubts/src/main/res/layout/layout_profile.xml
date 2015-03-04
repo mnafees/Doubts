@@ -15,7 +15,8 @@
         android:layout_height="match_parent"
         android:background="@android:color/white"
         android:overScrollMode="never"
-        android:scrollbars="none">
+        android:scrollbars="none"
+        android:layout_below="@+id/topPanelContainer">
 
             <solutions.doubts.activities.profile.ProfileViewPager
                 android:id="@+id/viewPager"
