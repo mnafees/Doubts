@@ -19,15 +19,15 @@
             android:id="@+id/swipe_refresh_layout"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_below="@+id/toolbar">
+            android:layout_below="@+id/toolbar"
+            android:background="#F3E5F5">
 
             <android.support.v7.widget.RecyclerView
                 android:id="@+id/content"
                 android:scrollbars="vertical"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:background="@android:color/transparent"
-                android:padding="10dp" />
+                android:background="#F3E5F5" />
 
         </android.support.v4.widget.SwipeRefreshLayout>
 
