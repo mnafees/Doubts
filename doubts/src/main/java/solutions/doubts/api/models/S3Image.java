@@ -5,7 +5,9 @@
 
 package solutions.doubts.api.models;
 
-public class S3Image {
+import java.io.Serializable;
+
+public class S3Image implements Serializable {
     int id;
     String url;
 }

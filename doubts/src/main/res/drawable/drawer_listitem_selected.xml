@@ -8,6 +8,6 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:shape="rectangle">
 
-    <solid android:color="@color/grey"/>
+    <solid android:color="@color/lightGrey"/>
 
 </shape>

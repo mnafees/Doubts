@@ -43,6 +43,8 @@
             android:name=".activities.feed.FeedActivity"
             android:theme="@style/AppTheme.FeedTheme">
         </activity>
+        <activity android:name=".activities.common.QuestionViewActivity">
+        </activity>
         <activity
             android:name=".activities.profile.ProfileActivity"
             android:theme="@style/AppTheme.ProfileTheme">

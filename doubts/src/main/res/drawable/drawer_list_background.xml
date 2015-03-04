@@ -5,6 +5,10 @@
   -->
 
 <selector xmlns:android="http://schemas.android.com/apk/res/android">
-    <item android:state_selected="true"
-        android:drawable="@color/android:transparent" />
+    <item
+        android:state_pressed="false"
+        android:drawable="@android:color/white" />
+    <item
+        android:state_pressed="true"
+        android:drawable="@drawable/drawer_listitem_selected"/>
 </selector>

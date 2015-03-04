@@ -9,7 +9,8 @@
     android:layout_width="match_parent"
     android:layout_height="48dp"
     android:gravity="center_vertical"
-    android:longClickable="false">
+    android:clickable="true"
+    android:background="@drawable/drawer_list_background">
 
 
     <ImageView

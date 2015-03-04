@@ -27,18 +27,17 @@ import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.getbase.floatingactionbutton.AddFloatingActionButton;
 import com.squareup.picasso.Picasso;
 import com.squareup.picasso.Transformation;
 
 import java.util.ArrayList;
-import java.util.LinkedList;
 import java.util.List;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 import solutions.doubts.R;
 import solutions.doubts.activities.common.QuestionsAdapter;
 import solutions.doubts.activities.profile.ProfileActivity;
-import solutions.doubts.api.models.Question;
 import solutions.doubts.core.util.ColorHolder;
 import solutions.doubts.core.util.PaletteHelperUtil;
 import solutions.doubts.core.util.PaletteHelperUtilListener;
@@ -59,7 +58,7 @@ public class FeedActivity extends ActionBarActivity implements PaletteHelperUtil
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        setContentView(R.layout.layout_feed_parent_drawer);
+        setContentView(R.layout.layout_feed);
         setSupportActionBar((Toolbar)findViewById(R.id.toolbar));
 
         this.paletteHelperUtil.setPaletteHelperUtilListener(this);
@@ -72,7 +71,7 @@ public class FeedActivity extends ActionBarActivity implements PaletteHelperUtil
         LinearLayoutManager manager = new LinearLayoutManager(this);
         //manager.setOrientation(LinearLayoutManager.VERTICAL);
         this.content.setLayoutManager(manager);
-        QuestionsAdapter questionsAdapter = new QuestionsAdapter();
+        QuestionsAdapter questionsAdapter = new QuestionsAdapter(this);
         this.content.setAdapter(questionsAdapter);
 
         final SwipeRefreshLayout swipeRefreshLayout = (SwipeRefreshLayout)findViewById(R.id.swipe_refresh_layout);
@@ -80,6 +79,14 @@ public class FeedActivity extends ActionBarActivity implements PaletteHelperUtil
         swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
+
+            }
+        });
+
+        final AddFloatingActionButton addQuestionButton = (AddFloatingActionButton)findViewById(R.id.add_question_button);
+        addQuestionButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
 
             }
         });

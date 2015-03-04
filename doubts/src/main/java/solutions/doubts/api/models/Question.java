@@ -3,13 +3,15 @@ package solutions.doubts.api.models;
 import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.table.DatabaseTable;
 
+import java.io.Serializable;
+
 import retrofit.RestAdapter;
 import rx.Observable;
 import solutions.doubts.api.Query;
 import solutions.doubts.api.backend.QuestionApi;
 
 @DatabaseTable(tableName = "questions")
-public class Question {
+public class Question implements Serializable {
     @DatabaseField(id = true)
     private int id;
 

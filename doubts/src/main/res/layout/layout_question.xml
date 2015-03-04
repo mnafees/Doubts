@@ -21,7 +21,7 @@
     <android.support.v7.widget.Toolbar
         app:contentInsetStart="0dp"
         app:contentInsetLeft="0dp"
-        android:id="@+id/actionBar"
+        android:id="@+id/toolbar"
         android:layout_height="220dp"
         android:layout_width="match_parent"
         android:minHeight="?attr/actionBarSize"
@@ -41,14 +41,30 @@
         android:layout_height="wrap_content"
         android:text="Why does this code always throw a NullPointerException?"
         android:id="@+id/questionTitle"
-        android:padding="10dp"
-        android:textSize="18sp" />
+        android:textSize="18sp"
+        android:paddingLeft="16dp"
+        android:paddingTop="10dp"
+        android:paddingRight="16dp"
+        android:paddingBottom="10dp"
+        android:background="@drawable/border_bottom"
+        android:layout_marginBottom="10dp" />
 
-    <include
+    <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        layout="@layout/layout_card"
-        android:layout_gravity="center_horizontal" />
+        android:text="Posted by"
+        android:id="@+id/textView3"
+        android:layout_marginLeft="16dp"
+        android:textSize="14sp" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Mohammed Nafees"
+        android:id="@+id/user"
+        android:layout_marginLeft="16dp"
+        android:layout_marginBottom="10dp"
+        android:textSize="14sp" />
 
 </LinearLayout>
 

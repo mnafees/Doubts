@@ -3,8 +3,10 @@ package solutions.doubts.api.models;
 import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.table.DatabaseTable;
 
+import java.io.Serializable;
+
 @DatabaseTable(tableName = "users")
-public class User {
+public class User implements Serializable {
     @DatabaseField(id = true)
     private int id;
 
