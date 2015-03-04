@@ -31,12 +31,14 @@ import com.squareup.picasso.Picasso;
 import com.squareup.picasso.Transformation;
 
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 import solutions.doubts.R;
 import solutions.doubts.activities.common.QuestionsAdapter;
 import solutions.doubts.activities.profile.ProfileActivity;
+import solutions.doubts.api.models.Question;
 import solutions.doubts.core.util.ColorHolder;
 import solutions.doubts.core.util.PaletteHelperUtil;
 import solutions.doubts.core.util.PaletteHelperUtilListener;
@@ -68,9 +70,9 @@ public class FeedActivity extends ActionBarActivity implements PaletteHelperUtil
         this.drawer = (RelativeLayout)findViewById(R.id.drawer);
         this.content = (RecyclerView)findViewById(R.id.content);
         LinearLayoutManager manager = new LinearLayoutManager(this);
-        manager.setOrientation(LinearLayoutManager.VERTICAL);
+        //manager.setOrientation(LinearLayoutManager.VERTICAL);
         this.content.setLayoutManager(manager);
-        final QuestionsAdapter questionsAdapter = new QuestionsAdapter(this.content);
+        QuestionsAdapter questionsAdapter = new QuestionsAdapter();
         this.content.setAdapter(questionsAdapter);
 
         final SwipeRefreshLayout swipeRefreshLayout = (SwipeRefreshLayout)findViewById(R.id.swipe_refresh_layout);
