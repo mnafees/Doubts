@@ -62,6 +62,8 @@ public class ChangeBoundsOnScrollTransition {
                                     if (!initialViewPreDraw) {
                                         childViewPreDraw.increment();
                                         initialViewPreDraw = true;
+                                    } else {
+                                        initialView.getViewTreeObserver().removeOnPreDrawListener(this);
                                     }
                                     return true;
                                 }
@@ -72,6 +74,8 @@ public class ChangeBoundsOnScrollTransition {
                                     if (!finalViewPreDraw) {
                                         childViewPreDraw.increment();
                                         finalViewPreDraw = true;
+                                    } else {
+                                        finalView.getViewTreeObserver().removeOnPreDrawListener(this);
                                     }
                                     return true;
                                 }

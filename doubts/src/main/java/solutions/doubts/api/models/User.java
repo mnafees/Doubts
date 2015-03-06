@@ -57,4 +57,6 @@ public class User implements Serializable {
     public void setImage(S3Image image) {
         this.image = image;
     }
+
+
 }

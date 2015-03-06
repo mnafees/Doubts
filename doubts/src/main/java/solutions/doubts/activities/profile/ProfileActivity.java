@@ -18,6 +18,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.util.TypedValue;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -25,6 +26,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
+import android.widget.EditText;
 import android.widget.TextView;
 
 import com.github.ksoichiro.android.observablescrollview.ObservableScrollView;
@@ -65,6 +67,9 @@ public class ProfileActivity extends ActionBarActivity implements PaletteHelperU
     // collapsed top panel view
     private View collapsedTopPanel;
 
+    // editables
+    private EditText nameEditable;
+
     private Menu menu;
     private ViewPager viewPager;
     private ObservableScrollView scrollView;
@@ -91,6 +96,7 @@ public class ProfileActivity extends ActionBarActivity implements PaletteHelperU
         this.paletteHelperUtil.setPaletteHelperUtilListener(this);
 
         this.name = (TextView)this.expandedTopPanel.findViewById(R.id.name);
+        //this.nameEditable = (EditText)this.expandedTopPanel.findViewById(R.id.editText);
         this.bio = (TextView)this.expandedTopPanel.findViewById(R.id.bio);
 
         setSupportActionBar((Toolbar)this.expandedTopPanel.findViewById(R.id.action_bar));
@@ -177,7 +183,7 @@ public class ProfileActivity extends ActionBarActivity implements PaletteHelperU
                     @Override
                     public void onGlobalLayout() {
                         Picasso.with(context)
-                                .load("https://avatars3.githubusercontent.com/u/1763885?v=3&s=460")
+                                .load("https://fbcdn-sphotos-h-a.akamaihd.net/hphotos-ak-xap1/v/t1.0-9/10888920_10204764009974199_7024438969916164500_n.jpg?oh=6943916b9bb2cfd8d3cf79f115696a9f&oe=557BCE32&__gda__=1434962535_a9a811b424b34dbfa950c2ce9de84e78")
                                 .resize(profileImageView.getWidth(), profileImageView.getHeight())
                                 .centerCrop()
                                 .transform(new Transformation() {
@@ -215,7 +221,9 @@ public class ProfileActivity extends ActionBarActivity implements PaletteHelperU
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.action_edit_profile:
-                // do something here
+                this.nameEditable.setText(this.name.getText());
+                this.name.setVisibility(View.INVISIBLE);
+                this.nameEditable.setVisibility(View.VISIBLE);
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
@@ -224,11 +232,13 @@ public class ProfileActivity extends ActionBarActivity implements PaletteHelperU
 
     @Override
     public void onPaletteGenerated(ColorHolder colorHolder) {
-        if (this.colorHolder != null) {
+        Log.d(TAG, "here");
+        /*if (this.colorHolder != null) {
             // prevent change of color holder values once already set
             return;
-        }
+        }*/
 
+        //this.profileImageView.setEditingMode(true);
         this.colorHolder = colorHolder;
         setThemeColors(this.colorHolder);
     }
@@ -256,6 +266,7 @@ public class ProfileActivity extends ActionBarActivity implements PaletteHelperU
 
         // change the color of the main toolbar
         this.name.setTextColor(colorHolder.bodyText);
+        this.nameEditable.setTextColor(colorHolder.bodyText);
         this.bio.setTextColor(colorHolder.titleText);
 
         // change the color of the tab host

@@ -4,17 +4,20 @@
  */
 package solutions.doubts.core.api.authentication.rest;
 
-import android.util.Log;
+import android.accounts.NetworkErrorException;
 
-import com.google.gson.JsonObject;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 
-import retrofit.Callback;
 import retrofit.RestAdapter;
 import retrofit.RetrofitError;
 import retrofit.client.Response;
+import rx.Observable;
 import solutions.doubts.core.api.authentication.retrofit.RetrofitAuthenticationService;
 
 public class RestAuthenticationService {
+
+    final static String TAG = "RestAuthenticationServ";
 
     private RestAdapter restAdapter;
 
@@ -22,23 +25,39 @@ public class RestAuthenticationService {
         this.restAdapter = restAdapter;
     }
 
-    public String authenticate(final String email) {
+    public Observable<Response> login(final String email) throws NetworkErrorException {
         final RetrofitAuthenticationService retrofitAuthenticationService = this.restAdapter.create(
                 RetrofitAuthenticationService.class);
-        //try {
-            retrofitAuthenticationService.authenticate(email, new Callback<JsonObject>() {
-                @Override
-                public void success(JsonObject jsonObject, Response response) {
-                    Log.d("", jsonObject.toString());
-                }
+        try {
+            return retrofitAuthenticationService.login(email);
+        } catch (RetrofitError error) {
+            if (error.getKind() == RetrofitError.Kind.NETWORK) {
+                throw new NetworkErrorException("Not connected to the internet.");
+            }
+        }
+        return null; // should not happen
+    }
 
-                @Override
-                public void failure(RetrofitError error) {
-
-                }
-            });
-        ///}
-        return null;
+    public Observable<Response> register(final String email, final String username,
+                                         final String name)
+            throws NetworkErrorException{
+        final RetrofitAuthenticationService retrofitAuthenticationService = this.restAdapter
+                .create(RetrofitAuthenticationService.class);
+        try {
+            String encodedEmail = null;
+            try {
+                encodedEmail = URLEncoder.encode("email", "UTF-8");
+            } catch (UnsupportedEncodingException e) {
+                throw new IllegalStateException("Could not encode email " + email);
+            }
+           return retrofitAuthenticationService.register(encodedEmail,
+                    email, username, name);
+        } catch (RetrofitError error) {
+            if (error.getKind() == RetrofitError.Kind.NETWORK) {
+                throw new NetworkErrorException("Not connected to the internet.");
+            }
+        }
+        return null; // should not happen
     }
 
 }

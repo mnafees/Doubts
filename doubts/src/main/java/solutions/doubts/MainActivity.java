@@ -7,13 +7,14 @@ package solutions.doubts;
 
 import android.app.Notification;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.NotificationManagerCompat;
 import android.support.v7.app.ActionBarActivity;
+import android.util.Log;
 
 import solutions.doubts.activities.feed.FeedActivity;
+import solutions.doubts.activities.login.LoginActivity;
 
 import static android.support.v4.app.NotificationManagerCompat.*;
 
@@ -23,34 +24,32 @@ import static android.support.v4.app.NotificationManagerCompat.*;
 public class MainActivity extends ActionBarActivity {
     String TAG = "MainActivity";
 
-    SharedPreferences sharedPreferences;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        Notification n = new NotificationCompat.Builder(this)
-                .setSmallIcon(R.drawable.ic_stat_doubts)
-                .setColor(getResources().getColor(R.color.primary))
-                .setContentTitle("Doubts").build();
-        NotificationManagerCompat nm = from(this);
-        nm.notify(0, n);
+        if (getIntent().getData() != null) {
+            if (getIntent().getData().getScheme().equals("doubts") &&
+                getIntent().getData().getPath().contains("/auth/token/")) {
+                getSharedPreferences("solutions.doubts.internal_data", 0).edit()
+                        .putString("auth_token", getIntent().getData().getLastPathSegment())
+                        .commit();
 
-        Intent intent = new Intent(this, FeedActivity.class);
-        startActivity(intent);
-        /*setContentView(R.layout.layout_card);
-        RelativeTimeTextView timeTextView = (RelativeTimeTextView)findViewById(R.id.timestamp);
-        timeTextView.setReferenceTime(new Date().getTime());
-        HListView tagList = (HListView)findViewById(R.id.tagList);
-        List<String> tags = new ArrayList<>();
-        tags.add("#programming");
-        tags.add("#java");
-        tags.add("#android");
-        tags.add("#nullpointerexception");
-        ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(this, R.layout.layout_single_tag,
-                R.id.tag, tags);
-        tagList.setAdapter(arrayAdapter);*/
-        //setContentView(R.layout.layout_question);
+                final Intent intent = new Intent(this, FeedActivity.class);
+                startActivity(intent);
+            }
+        } else {
+            if (getSharedPreferences("solutions.doubts.internal_data", 0).contains("auth_token")) {
+                Log.d(TAG, getSharedPreferences("solutions.doubts.internal_data", 0).getString("auth_token", ""));
+                final Intent intent = new Intent(this, FeedActivity.class);
+                startActivity(intent);
+            } else {
+                final Intent intent = new Intent(this, LoginActivity.class);
+                startActivity(intent);
+            }
+        }
+
+        finish();
     }
 
 }
