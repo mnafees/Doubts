@@ -5,12 +5,17 @@
 
 package solutions.doubts;
 
+import android.app.Notification;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.support.v4.app.NotificationCompat;
+import android.support.v4.app.NotificationManagerCompat;
 import android.support.v7.app.ActionBarActivity;
 
 import solutions.doubts.activities.feed.FeedActivity;
+
+import static android.support.v4.app.NotificationManagerCompat.*;
 
 /**
  * The base activity of the app.
@@ -24,12 +29,12 @@ public class MainActivity extends ActionBarActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        /*Notification n = new NotificationCompat.Builder(this)
+        Notification n = new NotificationCompat.Builder(this)
                 .setSmallIcon(R.drawable.ic_stat_doubts)
                 .setColor(getResources().getColor(R.color.primary))
                 .setContentTitle("Doubts").build();
-        NotificationManagerCompat nm = NotificationManagerCompat.from(this);
-        nm.notify(0, n);*/
+        NotificationManagerCompat nm = from(this);
+        nm.notify(0, n);
 
         Intent intent = new Intent(this, FeedActivity.class);
         startActivity(intent);
