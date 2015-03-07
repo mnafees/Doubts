@@ -42,7 +42,7 @@ android {
 
 dependencies {
     compile 'io.reactivex:rxandroid:0.24.0'
-    compile 'io.reactivex:rxjava:1.0.4'
+    compile 'io.reactivex:rxjava:1.0.8'
     compile 'com.j256.ormlite:ormlite-core:4.23'
     compile 'com.j256.ormlite:ormlite-android:4.48'
     compile 'com.github.curioustechizen.android-ago:library:1.2.0'

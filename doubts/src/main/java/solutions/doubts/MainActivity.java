@@ -5,18 +5,13 @@
 
 package solutions.doubts;
 
-import android.app.Notification;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.v4.app.NotificationCompat;
-import android.support.v4.app.NotificationManagerCompat;
 import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
 
 import solutions.doubts.activities.feed.FeedActivity;
 import solutions.doubts.activities.login.LoginActivity;
-
-import static android.support.v4.app.NotificationManagerCompat.*;
 
 /**
  * The base activity of the app.
