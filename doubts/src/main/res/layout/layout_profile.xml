@@ -4,32 +4,37 @@
 ~ Copyright (c) 2015 Mohammed Nafees (original author) <nafees.technocool@gmail.com>.
 -->
 
-<RelativeLayout
+<LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_height="match_parent"
-    android:layout_width="match_parent">
+    android:layout_width="match_parent"
+    android:orientation="vertical">
 
-    <com.github.ksoichiro.android.observablescrollview.ObservableScrollView
+    <solutions.doubts.thirdparty.ObservableVerticalScrollView
         android:id="@+id/scrollView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@android:color/white"
-        android:overScrollMode="never"
-        android:scrollbars="none"
-        android:layout_below="@+id/topPanelContainer">
+        android:scrollbars="none">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
 
             <solutions.doubts.activities.profile.ProfileViewPager
                 android:id="@+id/viewPager"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:background="@android:color/white"
                 android:layout_below="@+id/topPanelContainer" />
 
-    </com.github.ksoichiro.android.observablescrollview.ObservableScrollView>
+            <RelativeLayout
+                android:id="@+id/topPanelContainer"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@android:color/transparent"
+                android:tag="sticky"/>
 
-    <RelativeLayout
-        android:id="@+id/topPanelContainer"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"/>
+        </RelativeLayout>
 
-</RelativeLayout>
+    </solutions.doubts.thirdparty.ObservableVerticalScrollView>
+
+</LinearLayout>

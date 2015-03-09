@@ -18,7 +18,10 @@ public class AboutFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.layout_profile_about_feed, container, false);
+        final View v = inflater.inflate(R.layout.layout_profile_about_feed, container, false);
+        //final ObservableScrollView scrollView = (ObservableScrollView)v.findViewById(R.id.scrollView);
+        //scrollView.setScrollViewCallbacks((ProfileActivity)getActivity());
+        return v;
     }
 
 }

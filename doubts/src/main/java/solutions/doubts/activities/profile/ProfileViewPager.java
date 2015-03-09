@@ -12,6 +12,8 @@ import android.view.View;
 
 public class ProfileViewPager extends ViewPager {
 
+    private static final String TAG = "ProfileViewPager";
+
     public ProfileViewPager(Context context) {
         super(context);
     }
@@ -25,6 +27,7 @@ public class ProfileViewPager extends ViewPager {
      */
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
+        super.onMeasure(widthMeasureSpec, heightMeasureSpec);
 
         int height = 0;
         for(int i = 0; i < getChildCount(); i++) {
@@ -35,7 +38,6 @@ public class ProfileViewPager extends ViewPager {
         }
 
         heightMeasureSpec = MeasureSpec.makeMeasureSpec(height, MeasureSpec.EXACTLY);
-
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
     }
 

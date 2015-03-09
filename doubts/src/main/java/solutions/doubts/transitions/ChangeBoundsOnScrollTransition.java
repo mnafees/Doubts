@@ -80,6 +80,8 @@ public class ChangeBoundsOnScrollTransition {
                                     return true;
                                 }
                             });
+                        } else {
+                            parentContainer.getViewTreeObserver().removeOnPreDrawListener(this);
                         }
 
                         return true;

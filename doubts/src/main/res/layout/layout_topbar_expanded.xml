@@ -4,7 +4,7 @@
   ~ Copyright (c) 2015 Mohammed Nafees (original author) <nafees.technocool@gmail.com>.
   -->
 
-<LinearLayout
+<RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/top_panel"
@@ -55,15 +55,16 @@
                 android:background="@android:color/transparent"
                 android:text="Eat. Sleep. Code."
                 android:textAppearance="?android:attr/textAppearanceMedium" />
+
         </RelativeLayout>
     </android.support.v7.widget.Toolbar>
 
-    <it.neokree.materialtabs.MaterialTabHost
-        android:id="@+id/materialTabHost"
+    <solutions.doubts.thirdparty.SlidingTabLayout
+        android:id="@+id/sliding_tab_layout"
         android:layout_width="match_parent"
         android:layout_height="48dp"
-        app:accentColor="#D1C4E9"
-        app:hasIcons="true"
-        app:iconColor="@android:color/white"
-        app:primaryColor="@color/primaryLight" />
-</LinearLayout>
+        android:overScrollMode="never"
+        android:scrollbars="none"
+        android:layout_below="@+id/action_bar" />
+
+</RelativeLayout>
