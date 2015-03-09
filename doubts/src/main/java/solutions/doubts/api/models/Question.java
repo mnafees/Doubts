@@ -1,3 +1,8 @@
+/*
+ * This file is part of Doubts.
+ * Copyright (c) 2015 Aviral Dasgupta (original author) <aviraldg@gmail.com>.
+ */
+
 package solutions.doubts.api.models;
 
 import com.j256.ormlite.field.DatabaseField;
@@ -12,6 +17,7 @@ import solutions.doubts.api.backend.QuestionApi;
 
 @DatabaseTable(tableName = "questions")
 public class Question implements Serializable {
+
     @DatabaseField(id = true)
     private int id;
 
@@ -136,4 +142,5 @@ public class Question implements Serializable {
         else
             return sRemoteQuery = new RemoteQuery();
     }
+
 }

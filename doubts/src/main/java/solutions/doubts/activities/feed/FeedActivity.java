@@ -7,12 +7,13 @@ package solutions.doubts.activities.feed;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.Configuration;
 import android.content.res.TypedArray;
-import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.ActionBarActivity;
+import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
@@ -23,13 +24,13 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
+import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.getbase.floatingactionbutton.AddFloatingActionButton;
 import com.squareup.picasso.Picasso;
-import com.squareup.picasso.Transformation;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -37,22 +38,17 @@ import java.util.List;
 import de.hdodenhof.circleimageview.CircleImageView;
 import solutions.doubts.R;
 import solutions.doubts.activities.common.QuestionsAdapter;
+import solutions.doubts.activities.createdoubt.CreateDoubtActivity;
 import solutions.doubts.activities.profile.ProfileActivity;
-import solutions.doubts.core.util.ColorHolder;
-import solutions.doubts.core.util.PaletteHelperUtil;
-import solutions.doubts.core.util.PaletteHelperUtilListener;
+import solutions.doubts.activities.settings.SettingsActivity;
 
-public class FeedActivity extends ActionBarActivity implements PaletteHelperUtilListener {
+public class FeedActivity extends ActionBarActivity {
 
-    private RelativeLayout drawer;
     private RecyclerView content;
     private CircleImageView profileImageView;
     private TextView name;
-    private TextView bio;
     private ViewGroup topProfileContainer;
-
-    private ColorHolder colorHolder;
-    private final PaletteHelperUtil paletteHelperUtil = new PaletteHelperUtil();
+    private ActionBarDrawerToggle mDrawerToggle;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -61,12 +57,11 @@ public class FeedActivity extends ActionBarActivity implements PaletteHelperUtil
         setContentView(R.layout.layout_feed);
         setSupportActionBar((Toolbar)findViewById(R.id.toolbar));
 
-        this.paletteHelperUtil.setPaletteHelperUtilListener(this);
-
         final DrawerLayout drawerLayout = (DrawerLayout)findViewById(R.id.drawer_layout);
         drawerLayout.setStatusBarBackgroundColor(getResources().getColor(R.color.primaryDark));
+        mDrawerToggle = new ActionBarDrawerToggle(this, drawerLayout, 0, 0);
 
-        this.drawer = (RelativeLayout)findViewById(R.id.drawer);
+        final RelativeLayout drawer = (RelativeLayout) findViewById(R.id.drawer);
         this.content = (RecyclerView)findViewById(R.id.content);
         LinearLayoutManager manager = new LinearLayoutManager(this);
         //manager.setOrientation(LinearLayoutManager.VERTICAL);
@@ -87,7 +82,8 @@ public class FeedActivity extends ActionBarActivity implements PaletteHelperUtil
         addQuestionButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
+                final Intent intent = new Intent(FeedActivity.this, CreateDoubtActivity.class);
+                startActivity(intent);
             }
         });
 
@@ -96,13 +92,19 @@ public class FeedActivity extends ActionBarActivity implements PaletteHelperUtil
         list.add(item);
         final DrawerListViewArrayAdapter adapter = new DrawerListViewArrayAdapter(this, list);
         final ListView listView = (ListView)findViewById(R.id.drawerListView);
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                final Intent intent = new Intent(FeedActivity.this, SettingsActivity.class);
+                startActivity(intent);
+            }
+        });
         listView.setAdapter(adapter);
 
         final Intent intent = new Intent(this, ProfileActivity.class);
         this.topProfileContainer = (ViewGroup)findViewById(R.id.top_profile_view);
         this.profileImageView = (CircleImageView)this.topProfileContainer.findViewById(R.id.profileImage);
         this.name = (TextView)this.topProfileContainer.findViewById(R.id.name);
-        this.bio = (TextView)this.topProfileContainer.findViewById(R.id.bio);
         setImage();
         this.topProfileContainer.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -114,6 +116,18 @@ public class FeedActivity extends ActionBarActivity implements PaletteHelperUtil
     }
 
     @Override
+    protected void onPostCreate(Bundle savedInstanceState) {
+        super.onPostCreate(savedInstanceState);
+        mDrawerToggle.syncState();
+    }
+
+    @Override
+    public void onConfigurationChanged(Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
+        mDrawerToggle.onConfigurationChanged(newConfig);
+    }
+
+    @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         final MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.menu_feed_activity, menu);
@@ -122,6 +136,10 @@ public class FeedActivity extends ActionBarActivity implements PaletteHelperUtil
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
+        if (mDrawerToggle.onOptionsItemSelected(item)) {
+            return true;
+        }
+
         switch (item.getItemId()) {
             case R.id.action_search:
                 // do something here
@@ -151,44 +169,10 @@ public class FeedActivity extends ActionBarActivity implements PaletteHelperUtil
                                 .load("https://avatars3.githubusercontent.com/u/1763885?v=3&s=460")
                                 .resize(profileImageView.getWidth(), profileImageView.getHeight())
                                 .centerCrop()
-                                .transform(new Transformation() {
-                                    @Override
-                                    public Bitmap transform(Bitmap source) {
-                                        paletteHelperUtil.generatePalette(source);
-                                        return source;
-                                    }
-
-                                    @Override
-                                    public String key() {
-                                        return "DBTS";
-                                    }
-                                })
                                 .into(profileImageView);
                     }
                 }
         );
-    }
-
-    @Override
-    public void onPaletteGenerated(ColorHolder colorHolder) {
-        if (this.colorHolder != null) {
-            // prevent change of color holder values once already set
-            return;
-        }
-
-        this.colorHolder = colorHolder;
-        setThemeColors(this.colorHolder);
-    }
-
-    private void setThemeColors(ColorHolder colorHolder) {
-        // change color of image view border
-        this.profileImageView.setBorderColor(colorHolder.bodyText);
-
-        // change the color of the main toolbar
-        this.name.setTextColor(colorHolder.bodyText);
-        this.bio.setTextColor(colorHolder.titleText);
-
-        this.topProfileContainer.setBackgroundColor(colorHolder.background);
     }
 
 }

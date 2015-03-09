@@ -84,7 +84,7 @@ public class ProfileActivity extends ActionBarActivity implements PaletteHelperU
         //this.nameEditable = (EditText)this.expandedTopPanel.findViewById(R.id.editText);
         mBio = (TextView) expandedTopPanel.findViewById(R.id.bio);
 
-        setSupportActionBar((Toolbar) expandedTopPanel.findViewById(R.id.action_bar));
+        setSupportActionBar((Toolbar)expandedTopPanel.findViewById(R.id.action_bar));
         setupActionBar();
 
         mScrollView = (ObservableVerticalScrollView)findViewById(R.id.scrollView);

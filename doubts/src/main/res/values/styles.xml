@@ -46,6 +46,10 @@
         <item name="android:background">@android:color/transparent</item>
     </style>
 
+    <style name="AppTheme.CreateNewDoubt">
+        <item name="android:windowBackground">@android:color/white</item>
+    </style>
+
     <style name="AppTheme.Question" parent="AppTheme">
         <item name="android:background">@android:color/white</item>
         <item name="android:textColor">@android:color/black</item>

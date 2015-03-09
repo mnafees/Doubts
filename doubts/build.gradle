@@ -40,6 +40,7 @@ android {
 }
 
 
+
 dependencies {
     compile 'io.reactivex:rxandroid:0.24.0'
     compile 'io.reactivex:rxjava:1.0.8'
@@ -50,6 +51,7 @@ dependencies {
     compile 'de.hdodenhof:circleimageview:1.2.1'
     compile 'se.emilsjolander:StickyScrollViewItems:1.1.0'
     compile 'com.getbase:floatingactionbutton:1.8.0'
+    compile 'com.rengwuxian.materialedittext:library:1.8.3'
     compile 'com.github.andkulikov:transitions-everywhere:1.2.2'
     compile 'com.squareup.picasso:picasso:2.5.0'
     compile 'com.squareup.retrofit:retrofit:1.9.0'

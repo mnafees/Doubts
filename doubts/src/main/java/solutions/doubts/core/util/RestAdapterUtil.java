@@ -13,6 +13,7 @@ import retrofit.ErrorHandler;
 import retrofit.RestAdapter;
 import retrofit.RetrofitError;
 import retrofit.client.OkClient;
+import solutions.doubts.internal.RestConstants;
 
 public class RestAdapterUtil {
 
@@ -22,7 +23,7 @@ public class RestAdapterUtil {
         synchronized (RestAdapter.class) {
             if (restAdapter == null) {
                 restAdapter = new RestAdapter.Builder()
-                        .setEndpoint("http://192.168.1.9:8080/api/v1")
+                        .setEndpoint(RestConstants.API_ENDPOINT + "/api/v1")
                         .setClient(new OkClient(new OkHttpClient()))
                         .setLogLevel(RestAdapter.LogLevel.FULL)
                         .setErrorHandler(new ErrorHandler() {
