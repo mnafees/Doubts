@@ -16,6 +16,8 @@ import android.support.v7.app.ActionBarActivity;
 import android.support.v7.widget.Toolbar;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
+import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -25,14 +27,23 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import solutions.doubts.R;
 
 public class CreateDoubtActivity extends ActionBarActivity {
 
+    private static final String TAG = "CreateDoubtActivity";
     private static final int REQUEST_IMAGE_CAPTURE = 1;
+
     private LinearLayout mTagsContainer;
     private EditText mTagsEditText;
     private ImageView mImageView;
+
+    private final List<String> mTags = new ArrayList<>();
+    private String mLastEnteredTag;
+    private int mTagIndex = 1;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -58,19 +69,46 @@ public class CreateDoubtActivity extends ActionBarActivity {
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
                 final String tag = s.toString();
-                if (tag.endsWith(",")) {
+                if (tag.endsWith(",") && tag.length() > 1) {
                     // new tag added
                     final View v = View.inflate(CreateDoubtActivity.this,
                             R.layout.layout_single_tag, null);
                     final TextView tagView = (TextView)v.findViewById(R.id.tag);
-                    tagView.setText(mTagsEditText.getText().toString().replace(",", ""));
-                    mTagsContainer.addView(v, 1);
-                    mTagsEditText.setText("");
+                    final String newTag = mTagsEditText.getText().toString()
+                            .replace(",", "").replace("#", "");
+                    if (mTags.contains(newTag)) {
+                        // return if tag is already added
+                        return;
+                    } else {
+                        // add new tag
+                        mTags.add(newTag);
+                    }
+                    mLastEnteredTag = newTag;
+                    tagView.setText("#" + newTag);
+                    mTagsContainer.addView(v, mTagIndex);
+                    mTagIndex++;
+                    mTagsEditText.getText().clear();
                 }
             }
 
             @Override
             public void afterTextChanged(Editable s) {}
+        });
+        mTagsEditText.setOnKeyListener(new View.OnKeyListener() {
+            @Override
+            public boolean onKey(View v, int keyCode, KeyEvent event) {
+                if (keyCode == KeyEvent.KEYCODE_DEL) {
+                    if (mTagsEditText.getText().length() == 0 &&
+                            !mTags.isEmpty()) {
+                        Log.d(TAG, "here");
+                        --mTagIndex;
+                        mTagsContainer.removeViewAt(mTagIndex);
+                        mTagsEditText.setText("#" + mLastEnteredTag);
+                        mTags.remove(mLastEnteredTag);
+                    }
+                }
+                return false;
+            }
         });
 
         mImageView = (ImageView)findViewById(R.id.imageView);

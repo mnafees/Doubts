@@ -58,5 +58,4 @@ public class User implements Serializable {
         this.image = image;
     }
 
-
 }

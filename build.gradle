@@ -19,5 +19,8 @@ task wrapper(type: Wrapper) {
 allprojects {
     repositories {
         jcenter()
+        maven {
+            url "https://oss.sonatype.org/content/repositories/snapshots"
+        }
     }
 }

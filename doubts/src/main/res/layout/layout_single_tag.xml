@@ -23,5 +23,6 @@
         android:textColor="#757575"
         android:textSize="14sp"
         android:textAlignment="center"
-        android:text="#tag" />
+        android:text="#tag"
+        android:layout_marginRight="5dp" />
 </LinearLayout>

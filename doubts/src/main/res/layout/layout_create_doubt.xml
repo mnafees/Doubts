@@ -58,18 +58,18 @@
                 android:layout_alignParentLeft="true"
                 android:layout_alignParentStart="true"
                 android:src="@drawable/ic_tag_24dp"
-                android:layout_gravity="center_vertical" />
+                android:layout_gravity="center_vertical"
+                android:layout_marginRight="10dp" />
 
             <EditText
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:id="@+id/tags_edit_text"
                 android:layout_weight="1"
-                android:hint="Tags"
+                android:hint="Tags separated by comma"
                 android:textSize="14sp"
                 android:textColor="#757575"
                 android:textColorHint="@color/lightGrey"
-                android:layout_marginLeft="10dp"
                 android:layout_gravity="center_vertical"
                 android:textCursorDrawable="@null"
                 android:background="@android:color/transparent"/>

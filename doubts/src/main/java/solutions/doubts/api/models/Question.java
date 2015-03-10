@@ -101,7 +101,7 @@ public class Question implements Serializable {
         }
 
         @Override
-        public void save(Question question) {
+        public void save(String authHeader, Question question) {
         }
     }
 
@@ -118,8 +118,8 @@ public class Question implements Serializable {
         }
 
         @Override
-        public void save(Question question) {
-            mQuestionApiImpl.save(question, question.id, question.slug);
+        public void save(String authHeader, Question question) {
+            mQuestionApiImpl.save(authHeader, question);
         }
 
     }

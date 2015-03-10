@@ -7,6 +7,6 @@ package solutions.doubts.internal;
 
 public class StringConstants {
 
-    public static final String PREFERENCES_NAME = "solutions.doubts.preferences.internal";
+    public static final String PREFERENCES_NAME = "solutions.doubts.internal_data";
 
 }

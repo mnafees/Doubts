@@ -7,10 +7,12 @@ package solutions.doubts.api.backend;
 
 import retrofit.http.Body;
 import retrofit.http.GET;
+import retrofit.http.Header;
 import retrofit.http.POST;
 import retrofit.http.Path;
 import rx.Observable;
 import solutions.doubts.api.models.Question;
+import solutions.doubts.internal.RestConstants;
 
 public interface QuestionApi {
 
@@ -18,7 +20,8 @@ public interface QuestionApi {
     Observable<Question> get(@Path("id") int id,
                              @Path("slug") String slug);
 
-    // FIXME: pass the @Path variables?
     @POST("/questions")
-    void save(@Body Question question, @Path("id") int id, @Path("slug") String slug);
+    void save(@Header(RestConstants.HEADER_AUTHORIZATION) String authHeader,
+              @Body Question question);
+
 }
