@@ -10,6 +10,7 @@ import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
+import android.widget.Toast;
 
 import solutions.doubts.activities.feed.FeedActivity;
 import solutions.doubts.activities.login.LoginActivity;
@@ -32,35 +33,52 @@ public class MainActivity extends ActionBarActivity {
         if (getIntent().getData() != null) {
             final Uri data = getIntent().getData();
             if (data.getScheme().equals("doubts") &&
-                data.getPath().startsWith("doubts.solutions/auth/token/")) {
-                final String authSignature = data.toString().replace("doubts://doubts.solutions/auth/token/", "");
-                final String[] authParams = authSignature.split("/");
+                    data.getPath().contains("/auth/token/")) {
+                final int length = data.getPathSegments().size();
+                if (length != 5) {
+                    // mischief alert!
+                    Toast.makeText(this, "Invalid authentication URL", Toast.LENGTH_LONG).show();
+                    startLoginActivity();
+                } else {
+                    try {
+                        final int id = Integer.valueOf(data.getPathSegments().get(length - 3));
+                        final String username = data.getPathSegments().get(length - 2);
+                        final String authToken = data.getPathSegments().get(length - 1);
 
-                final int id = Integer.valueOf(authParams[0]);
-                final String username = authParams[1];
-                final String authToken = authParams[2];
+                        preferencesEditor.putInt("user_id", id)
+                                .putString("username", username)
+                                .putString("auth_token", authToken)
+                                .apply();
 
-                preferencesEditor.putInt("user_id", id)
-                        .putString("username", username)
-                        .putString("auth_token", authToken)
-                        .apply();
-
-                final Intent intent = new Intent(this, FeedActivity.class);
-                startActivity(intent);
+                        startFeedActivity();
+                    } catch (NumberFormatException e) {
+                        // mischief alert!
+                        Toast.makeText(this, "Invalid authentication URL", Toast.LENGTH_LONG).show();
+                        startLoginActivity();
+                    }
+                }
             }
         } else {
-            if (/*preferences.contains("user_id") &&
-                    preferences.contains("username") &&*/
+            if (preferences.contains("user_id") &&
+                    preferences.contains("username") &&
                     preferences.contains("auth_token")) {
-                final Intent intent = new Intent(this, FeedActivity.class);
-                startActivity(intent);
+                startFeedActivity();
             } else {
-                final Intent intent = new Intent(this, LoginActivity.class);
-                startActivity(intent);
+                startLoginActivity();
             }
         }
 
         finish();
+    }
+
+    private void startLoginActivity() {
+        final Intent intent = new Intent(this, LoginActivity.class);
+        startActivity(intent);
+    }
+
+    private void startFeedActivity() {
+        final Intent intent = new Intent(this, FeedActivity.class);
+        startActivity(intent);
     }
 
 }
