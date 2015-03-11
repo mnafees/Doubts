@@ -64,7 +64,7 @@ public class FeedActivity extends ActionBarActivity {
         final RelativeLayout drawer = (RelativeLayout) findViewById(R.id.drawer);
         this.content = (RecyclerView)findViewById(R.id.content);
         LinearLayoutManager manager = new LinearLayoutManager(this);
-        //manager.setOrientation(LinearLayoutManager.VERTICAL);
+        manager.setOrientation(LinearLayoutManager.VERTICAL);
         this.content.setLayoutManager(manager);
         QuestionsAdapter questionsAdapter = new QuestionsAdapter(this);
         this.content.setAdapter(questionsAdapter);
@@ -88,8 +88,9 @@ public class FeedActivity extends ActionBarActivity {
         });
 
         final List<DrawerListViewItem> list = new ArrayList<>();
-        final DrawerListViewItem item = new DrawerListViewItem(R.drawable.ic_settings_24dp, "Settings");
-        list.add(item);
+
+        /* BETA - Add Settings option */
+
         final DrawerListViewArrayAdapter adapter = new DrawerListViewArrayAdapter(this, list);
         final ListView listView = (ListView)findViewById(R.id.drawerListView);
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -110,7 +111,6 @@ public class FeedActivity extends ActionBarActivity {
             @Override
             public void onClick(View v) {
                 startActivity(intent);
-                //overridePendingTransition(R.anim.change_bounds, R.anim.change_bounds);
             }
         });
     }

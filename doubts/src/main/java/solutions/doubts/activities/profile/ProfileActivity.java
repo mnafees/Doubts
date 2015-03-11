@@ -24,7 +24,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
 import android.widget.EditText;
-import android.widget.TextView;
 
 import com.squareup.picasso.Picasso;
 import com.squareup.picasso.Transformation;
@@ -48,11 +47,8 @@ public class ProfileActivity extends ActionBarActivity implements PaletteHelperU
     private View mTopPanelContainer;
 
     private CircleImageView mProfileImage;
-    private TextView mName;
-    private TextView mBio;
-
-    // editables
-    private EditText nameEditable;
+    private EditText mName;
+    private EditText mBio;
 
     private Menu mMenu;
     private ObservableVerticalScrollView mScrollView;
@@ -62,6 +58,8 @@ public class ProfileActivity extends ActionBarActivity implements PaletteHelperU
     private final PaletteHelperUtil mPaletteHelperUtil = new PaletteHelperUtil();
     private SlidingTabLayout mTabsLayout;
     private TabsAdapter mTabsAdapter;
+
+    private boolean mEditingMode;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -80,11 +78,16 @@ public class ProfileActivity extends ActionBarActivity implements PaletteHelperU
 
         mPaletteHelperUtil.setPaletteHelperUtilListener(this);
 
-        mName = (TextView) expandedTopPanel.findViewById(R.id.name);
-        //this.nameEditable = (EditText)this.expandedTopPanel.findViewById(R.id.editText);
-        mBio = (TextView) expandedTopPanel.findViewById(R.id.bio);
+        mName = (EditText) expandedTopPanel.findViewById(R.id.name);
+        mName.setFocusable(false);
+        mName.setFocusableInTouchMode(false);
+        mName.setClickable(false);
+        mBio = (EditText) expandedTopPanel.findViewById(R.id.bio);
+        mBio.setFocusable(false);
+        mBio.setFocusableInTouchMode(false);
+        mBio.setClickable(false);
 
-        setSupportActionBar((Toolbar)expandedTopPanel.findViewById(R.id.action_bar));
+        setSupportActionBar((Toolbar) expandedTopPanel.findViewById(R.id.action_bar));
         setupActionBar();
 
         mScrollView = (ObservableVerticalScrollView)findViewById(R.id.scrollView);
@@ -162,9 +165,7 @@ public class ProfileActivity extends ActionBarActivity implements PaletteHelperU
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.menu_profile_activity, menu);
         if (mColorHolder != null) {
-            final Drawable editButton = getResources().getDrawable(R.drawable.ic_mode_edit_white_24dp);
-            editButton.mutate().setColorFilter(mColorHolder.bodyText, PorterDuff.Mode.SRC_IN);
-            mMenu.findItem(R.id.action_edit_profile).setIcon(editButton);
+            setInEditingMode(mEditingMode);
         }
         return super.onCreateOptionsMenu(menu);
     }
@@ -173,9 +174,8 @@ public class ProfileActivity extends ActionBarActivity implements PaletteHelperU
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.action_edit_profile:
-                this.nameEditable.setText(this.mName.getText());
-                mName.setVisibility(View.INVISIBLE);
-                this.nameEditable.setVisibility(View.VISIBLE);
+                setInEditingMode(!mEditingMode);
+                mEditingMode = !mEditingMode;
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
@@ -184,7 +184,6 @@ public class ProfileActivity extends ActionBarActivity implements PaletteHelperU
 
     @Override
     public void onPaletteGenerated(ColorHolder colorHolder) {
-        //this.profileImageView.setEditingMode(true);
         mColorHolder = colorHolder;
         setThemeColors(mColorHolder);
     }
@@ -212,7 +211,6 @@ public class ProfileActivity extends ActionBarActivity implements PaletteHelperU
 
         // change the color of the main toolbar
         mName.setTextColor(colorHolder.bodyText);
-        //this.nameEditable.setTextColor(colorHolder.bodyText);
         mBio.setTextColor(colorHolder.titleText);
 
         // change color of the tab layout
@@ -238,6 +236,8 @@ public class ProfileActivity extends ActionBarActivity implements PaletteHelperU
     @Override
     protected void onRestoreInstanceState(Bundle savedInstanceState) {
         mColorHolder = (ColorHolder) savedInstanceState.getSerializable("colorHolder");
+        mEditingMode = savedInstanceState.getBoolean("editingMode");
+
         setThemeColors(mColorHolder);
 
         super.onRestoreInstanceState(savedInstanceState);
@@ -246,9 +246,40 @@ public class ProfileActivity extends ActionBarActivity implements PaletteHelperU
     @Override
     protected void onSaveInstanceState(Bundle outState) {
         outState.putSerializable("colorHolder", mColorHolder);
-        //outState.putInt("scrollY", this.scrollView.getScrollY());
+        outState.putBoolean("editingMode", mEditingMode);
 
         super.onSaveInstanceState(outState);
+    }
+
+    private void setInEditingMode(final boolean editingMode) {
+        if (editingMode) {
+            final Drawable icon = getResources().getDrawable(R.drawable.ic_done_white_24dp);
+            icon.mutate().setColorFilter(mColorHolder.bodyText, PorterDuff.Mode.SRC_IN);
+            mMenu.findItem(R.id.action_edit_profile).setIcon(icon);
+            mName.setBackgroundColor(mColorHolder.backgroundSecondary);
+            mName.setFocusable(true);
+            mName.setFocusableInTouchMode(true);
+            mName.setClickable(true);
+            mName.requestFocus();
+            mBio.setBackgroundColor(mColorHolder.backgroundSecondary);
+            mBio.setFocusable(true);
+            mBio.setFocusableInTouchMode(true);
+            mBio.setClickable(true);
+            mEditingMode = true;
+        } else {
+            final Drawable icon = getResources().getDrawable(R.drawable.ic_mode_edit_white_24dp);
+            icon.mutate().setColorFilter(mColorHolder.bodyText, PorterDuff.Mode.SRC_IN);
+            mMenu.findItem(R.id.action_edit_profile).setIcon(icon);
+            mName.setBackgroundColor(getResources().getColor(android.R.color.transparent));
+            mName.setFocusable(false);
+            mName.setFocusableInTouchMode(false);
+            mName.setClickable(false);
+            mBio.setBackgroundColor(getResources().getColor(android.R.color.transparent));
+            mBio.setFocusable(false);
+            mBio.setFocusableInTouchMode(false);
+            mBio.setClickable(false);
+            mEditingMode = false;
+        }
     }
 
 }

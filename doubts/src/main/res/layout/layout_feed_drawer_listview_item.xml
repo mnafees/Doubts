@@ -27,7 +27,7 @@
         android:layout_height="wrap_content"
         android:id="@+id/title"
         android:layout_marginLeft="72dp"
-        android:textColor="#000000"
+        android:textColor="#757575"
         android:textSize="14sp"
         android:gravity="center_vertical"
         android:layout_centerVertical="true" />

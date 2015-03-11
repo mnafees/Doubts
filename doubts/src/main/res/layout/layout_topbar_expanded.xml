@@ -25,7 +25,7 @@
             android:layout_height="match_parent"
             android:orientation="vertical">
 
-            <TextView
+            <EditText
                 android:id="@+id/name"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -45,7 +45,7 @@
                 app:border_color="@android:color/white"
                 app:border_width="2dp" />
 
-            <TextView
+            <EditText
                 android:id="@+id/bio"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"

@@ -146,7 +146,7 @@ public class CreateDoubtActivity extends ActionBarActivity {
         if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == RESULT_OK) {
             final Bundle extras = data.getExtras();
             final Bitmap imageBitmap = (Bitmap)extras.get("data");
-            mImageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
+            mImageView.setScaleType(ImageView.ScaleType.FIT_CENTER);
             mImageView.setImageBitmap(imageBitmap);
         }
     }
