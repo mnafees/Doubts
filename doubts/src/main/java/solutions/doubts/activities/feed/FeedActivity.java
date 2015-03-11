@@ -36,11 +36,14 @@ import java.util.ArrayList;
 import java.util.List;
 
 import de.hdodenhof.circleimageview.CircleImageView;
+import solutions.doubts.DoubtsApplication;
 import solutions.doubts.R;
+import solutions.doubts.activities.common.FeedAdapter;
 import solutions.doubts.activities.common.QuestionsAdapter;
 import solutions.doubts.activities.createdoubt.CreateDoubtActivity;
 import solutions.doubts.activities.profile.ProfileActivity;
 import solutions.doubts.activities.settings.SettingsActivity;
+import solutions.doubts.api.models.AuthToken;
 
 public class FeedActivity extends ActionBarActivity {
 
@@ -66,8 +69,9 @@ public class FeedActivity extends ActionBarActivity {
         LinearLayoutManager manager = new LinearLayoutManager(this);
         manager.setOrientation(LinearLayoutManager.VERTICAL);
         this.content.setLayoutManager(manager);
-        QuestionsAdapter questionsAdapter = new QuestionsAdapter(this);
-        this.content.setAdapter(questionsAdapter);
+        final AuthToken at = ((DoubtsApplication)getApplication()).getAuthToken();
+        FeedAdapter feedAdapter = new FeedAdapter(this, at);
+        this.content.setAdapter(feedAdapter);
 
         final SwipeRefreshLayout swipeRefreshLayout = (SwipeRefreshLayout)findViewById(R.id.swipe_refresh_layout);
         swipeRefreshLayout.setColorSchemeColors(getResources().getColor(R.color.primary));

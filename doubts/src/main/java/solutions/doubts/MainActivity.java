@@ -14,6 +14,7 @@ import android.widget.Toast;
 
 import solutions.doubts.activities.feed.FeedActivity;
 import solutions.doubts.activities.login.LoginActivity;
+import solutions.doubts.api.models.AuthToken;
 import solutions.doubts.internal.StringConstants;
 
 /**
@@ -28,7 +29,6 @@ public class MainActivity extends ActionBarActivity {
         super.onCreate(savedInstanceState);
 
         final SharedPreferences preferences = getSharedPreferences(StringConstants.PREFERENCES_NAME, 0);
-        final SharedPreferences.Editor preferencesEditor = preferences.edit();
 
         if (getIntent().getData() != null) {
             final Uri data = getIntent().getData();
@@ -47,10 +47,9 @@ public class MainActivity extends ActionBarActivity {
                         final String username = data.getPathSegments().get(length - 2);
                         final String authToken = data.getPathSegments().get(length - 1);
 
-                        preferencesEditor.putInt("user_id", id)
-                                .putString("username", username)
-                                .putString("auth_token", authToken)
-                                .apply();
+                        ((DoubtsApplication) getApplication()).setAuthToken(
+                                new AuthToken(id, username, authToken)
+                        );
 
                         startFeedActivity();
                     } catch (NumberFormatException e) {

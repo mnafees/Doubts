@@ -17,6 +17,7 @@
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
+        android:name=".DoubtsApplication"
         tools:replace="android:icon" >
         <activity
             android:name=".MainActivity"
