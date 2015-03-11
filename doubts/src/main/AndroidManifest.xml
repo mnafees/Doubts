@@ -33,7 +33,12 @@
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
 
-                <data android:scheme="doubts" />
+                <data
+                    android:scheme="http"
+                    android:mimeType="application/doubts.solutions" />
+                <data
+                    android:scheme="https"
+                    android:mimeType="application/doubts.solutions" />
             </intent-filter>
         </activity>
         <activity
@@ -53,12 +58,15 @@
         </activity>
         <activity
             android:name=".activities.createdoubt.CreateDoubtActivity"
+            android:screenOrientation="portrait"
             android:theme="@style/AppTheme.CreateNewDoubt" >
         </activity>
+        <!-- BETA
         <activity
             android:name=".activities.settings.SettingsActivity"
             android:label="@string/title_activity_settings" >
         </activity>
+        -->
     </application>
 
 </manifest>
