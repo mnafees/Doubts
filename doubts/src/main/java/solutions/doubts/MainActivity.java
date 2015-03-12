@@ -6,7 +6,6 @@
 package solutions.doubts;
 
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
@@ -15,7 +14,6 @@ import android.widget.Toast;
 import solutions.doubts.activities.feed.FeedActivity;
 import solutions.doubts.activities.login.LoginActivity;
 import solutions.doubts.api.models.AuthToken;
-import solutions.doubts.internal.StringConstants;
 
 /**
  * The base activity of the app.
@@ -27,8 +25,6 @@ public class MainActivity extends ActionBarActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        final SharedPreferences preferences = getSharedPreferences(StringConstants.PREFERENCES_NAME, 0);
 
         if (getIntent().getData() != null) {
             final Uri data = getIntent().getData();
@@ -47,7 +43,7 @@ public class MainActivity extends ActionBarActivity {
                         final String username = data.getPathSegments().get(length - 2);
                         final String authToken = data.getPathSegments().get(length - 1);
 
-                        ((DoubtsApplication) getApplication()).setAuthToken(
+                        DoubtsApplication.getInstance().setAuthToken(
                                 new AuthToken(id, username, authToken)
                         );
 
@@ -60,9 +56,7 @@ public class MainActivity extends ActionBarActivity {
                 }
             }
         } else {
-            if (preferences.contains("user_id") &&
-                    preferences.contains("username") &&
-                    preferences.contains("auth_token")) {
+            if (DoubtsApplication.getInstance().getAuthToken() != null) {
                 startFeedActivity();
             } else {
                 startLoginActivity();

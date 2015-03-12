@@ -8,13 +8,13 @@ package solutions.doubts.activities.common;
 import android.content.Context;
 import android.content.Intent;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.github.curioustechizen.ago.RelativeTimeTextView;
 
@@ -28,12 +28,14 @@ import solutions.doubts.R;
 import solutions.doubts.api.models.AuthToken;
 import solutions.doubts.api.models.Feed;
 import solutions.doubts.api.models.Question;
+import solutions.doubts.core.util.DateTimeUtil;
 import solutions.doubts.core.util.RestAdapterUtil;
 
 public class FeedAdapter extends RecyclerView.Adapter<FeedAdapter.ViewHolder> {
+
     private static final String TAG = "FeedAdapter";
-    private List<Question> dataset;
-    private Context context;
+    private List<Question> mDataset;
+    private Context mContext;
     private AuthToken mAuthToken;
     private Feed mFeed;
 
@@ -44,7 +46,7 @@ public class FeedAdapter extends RecyclerView.Adapter<FeedAdapter.ViewHolder> {
         public final TextView question, username;
         public final ImageView imageView;
         public final ListView tagList;
-        public final RelativeTimeTextView timeTextView;
+        public final RelativeTimeTextView time;
 
         public ViewHolder(final View view) {
             super(view);
@@ -60,14 +62,14 @@ public class FeedAdapter extends RecyclerView.Adapter<FeedAdapter.ViewHolder> {
                 }
             });
             this.tagList = null;//(ListView)view.findViewById(R.id.tagList);
-            this.timeTextView = (RelativeTimeTextView)view.findViewById(R.id.timestamp);
+            this.time = (RelativeTimeTextView)view.findViewById(R.id.timestamp);
         }
 
     }
 
     public FeedAdapter(final Context context, AuthToken authToken) {
-        this.context = context;
-        this.dataset = new LinkedList<Question>();
+        mContext = context;
+        mDataset = new LinkedList<Question>();
         mAuthToken = authToken;
         Feed.setRestAdapter(RestAdapterUtil.getRestAdapter());
         mFeed = new Feed(mAuthToken);
@@ -82,10 +84,10 @@ public class FeedAdapter extends RecyclerView.Adapter<FeedAdapter.ViewHolder> {
         view.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                final Intent intent = new Intent(FeedAdapter.this.context,
+                final Intent intent = new Intent(FeedAdapter.this.mContext,
                         QuestionViewActivity.class);
                 intent.putExtra("question", (Question)view.getTag());
-                FeedAdapter.this.context.startActivity(intent);
+                FeedAdapter.this.mContext.startActivity(intent);
             }
         });
         return new ViewHolder(view);
@@ -99,15 +101,21 @@ public class FeedAdapter extends RecyclerView.Adapter<FeedAdapter.ViewHolder> {
                     public void call(Feed feed) {
                         notifyDataSetChanged();
                     }
+                }, new Action1<Throwable>() {
+                    @Override
+                    public void call(Throwable throwable) {
+                        Toast.makeText(mContext, throwable.getMessage(), Toast.LENGTH_SHORT).show();
+                    }
                 });
     }
 
     @Override
     public void onBindViewHolder(final ViewHolder holder, final int position) {
-        Question q = mFeed.getItem(position);
+        final Question q = mFeed.getItem(position);
         holder.view.setTag(q);
         holder.question.setText(q.getTitle());
         holder.username.setText(q.getAuthor().getUsername());
+        holder.time.setReferenceTime(DateTimeUtil.getMillis(q.getCreated()));
     }
 
     @Override

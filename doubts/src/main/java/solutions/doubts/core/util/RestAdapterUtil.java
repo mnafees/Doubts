@@ -5,14 +5,14 @@
 
 package solutions.doubts.core.util;
 
-import android.util.Log;
-
 import com.squareup.okhttp.OkHttpClient;
 
 import retrofit.ErrorHandler;
+import retrofit.RequestInterceptor;
 import retrofit.RestAdapter;
 import retrofit.RetrofitError;
 import retrofit.client.OkClient;
+import solutions.doubts.DoubtsApplication;
 import solutions.doubts.internal.RestConstants;
 
 public class RestAdapterUtil {
@@ -25,11 +25,20 @@ public class RestAdapterUtil {
                 restAdapter = new RestAdapter.Builder()
                         .setEndpoint(RestConstants.API_ENDPOINT + "/api/v1")
                         .setClient(new OkClient(new OkHttpClient()))
+                        .setRequestInterceptor(new RequestInterceptor() {
+                            @Override
+                             public void intercept(RequestFacade request) {
+                                request.addHeader(RestConstants.HEADER_AUTHORIZATION,
+                                        DoubtsApplication.getInstance().getAuthToken().toString());
+                            }
+                        })
                         .setLogLevel(RestAdapter.LogLevel.FULL)
                         .setErrorHandler(new ErrorHandler() {
                             @Override
                             public Throwable handleError(RetrofitError cause) {
-                                Log.d("RestAdapterUtil", cause.getMessage());
+                                if (cause.getResponse().getStatus() == 401) {
+                                    // @TODO: how to deal with this?
+                                }
                                 return cause;
                             }
                         })

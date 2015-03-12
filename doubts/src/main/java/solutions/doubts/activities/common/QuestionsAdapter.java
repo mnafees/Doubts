@@ -26,7 +26,6 @@ import rx.android.schedulers.AndroidSchedulers;
 import rx.functions.Action1;
 import solutions.doubts.R;
 import solutions.doubts.api.models.Question;
-import solutions.doubts.core.util.RestAdapterUtil;
 
 public class QuestionsAdapter extends RecyclerView.Adapter<QuestionsAdapter.ViewHolder> {
     private static final String TAG = "QuestionsAdapter";
@@ -86,7 +85,6 @@ public class QuestionsAdapter extends RecyclerView.Adapter<QuestionsAdapter.View
     }
 
     public void update() {
-        Question.setRestAdapter(RestAdapterUtil.getRestAdapter());
         final Observable<Question> oq = Question.getRemote()
                 .get(1, "question0");
         oq.observeOn(AndroidSchedulers.mainThread())

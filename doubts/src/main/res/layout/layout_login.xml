@@ -26,7 +26,8 @@
             android:id="@+id/email"
             android:layout_gravity="center"
             android:hint="Email"
-            android:layout_below="@+id/logoView" />
+            android:layout_below="@+id/logoView"
+            android:imeOptions="actionDone"/>
 
         <Button
             android:layout_width="250dp"

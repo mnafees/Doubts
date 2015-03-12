@@ -58,6 +58,7 @@ public class ProfileActivity extends ActionBarActivity implements PaletteHelperU
     private final PaletteHelperUtil mPaletteHelperUtil = new PaletteHelperUtil();
     private SlidingTabLayout mTabsLayout;
     private TabsAdapter mTabsAdapter;
+    private View mTopPanel;
 
     private boolean mEditingMode;
 
@@ -70,6 +71,7 @@ public class ProfileActivity extends ActionBarActivity implements PaletteHelperU
         mTopPanelContainer = findViewById(R.id.topPanelContainer);
         final View expandedTopPanel = getLayoutInflater().inflate(R.layout.layout_topbar_expanded, (ViewGroup) this.mTopPanelContainer, false);
         final View collapsedTopPanel = getLayoutInflater().inflate(R.layout.layout_topbar_collapsed, (ViewGroup) this.mTopPanelContainer, false);
+        mTopPanel = expandedTopPanel.findViewById(R.id.top_panel);
 
         mTopPanelTransition = new ChangeBoundsOnScrollTransition((ViewGroup)this.mTopPanelContainer,
                 (ViewGroup) expandedTopPanel, (ViewGroup) collapsedTopPanel);
@@ -97,11 +99,11 @@ public class ProfileActivity extends ActionBarActivity implements PaletteHelperU
         viewPager.setOffscreenPageLimit(3);
         mTabsAdapter = new TabsAdapter(getSupportFragmentManager());
         viewPager.setAdapter(mTabsAdapter);
-        viewPager.setOnPageChangeListener(mTabsAdapter);
 
         mTabsAdapter.addTab("About ", new AboutFragment(), 0);
         mTabsAdapter.addTab("Questions", new QuestionsFragment(), 1);
         mTabsAdapter.addTab("Answers", new AnswersFragment(), 2);
+        mTabsAdapter.addTab("Followers", new AnswersFragment(), 3);
 
         mTabsLayout = (SlidingTabLayout)expandedTopPanel.findViewById(R.id.sliding_tab_layout);
         mTabsLayout.setCustomTabView(R.layout.layout_tab_strip, android.R.id.text1);
@@ -175,7 +177,6 @@ public class ProfileActivity extends ActionBarActivity implements PaletteHelperU
         switch (item.getItemId()) {
             case R.id.action_edit_profile:
                 setInEditingMode(!mEditingMode);
-                mEditingMode = !mEditingMode;
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
@@ -188,9 +189,9 @@ public class ProfileActivity extends ActionBarActivity implements PaletteHelperU
         setThemeColors(mColorHolder);
     }
 
-    private void setThemeColors(ColorHolder colorHolder) {
-        // change color of action bar
-        getSupportActionBar().setBackgroundDrawable(new ColorDrawable(colorHolder.background));
+    private void setThemeColors(final ColorHolder colorHolder) {
+        // change color of the top panel and the icons
+        mTopPanel.setBackgroundColor(colorHolder.background);
         final Drawable backButton = getResources().getDrawable(R.drawable.ic_arrow_back_white_16dp);
         backButton.mutate().setColorFilter(colorHolder.bodyText, PorterDuff.Mode.SRC_IN);
         getSupportActionBar().setHomeAsUpIndicator(backButton);
@@ -215,7 +216,7 @@ public class ProfileActivity extends ActionBarActivity implements PaletteHelperU
 
         // change color of the tab layout
         mTabsLayout.setTextColor(colorHolder.bodyText);
-        mTabsLayout.setBackgroundColor(colorHolder.background);
+        mTabsLayout.setSelectedIndicatorColors(colorHolder.backgroundSecondary);
     }
 
     @Override

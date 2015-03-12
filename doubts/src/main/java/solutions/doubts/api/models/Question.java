@@ -10,10 +10,10 @@ import com.j256.ormlite.table.DatabaseTable;
 
 import java.io.Serializable;
 
-import retrofit.RestAdapter;
 import rx.Observable;
 import solutions.doubts.api.Query;
 import solutions.doubts.api.backend.QuestionApi;
+import solutions.doubts.core.util.RestAdapterUtil;
 
 @DatabaseTable(tableName = "questions")
 public class Question implements Serializable {
@@ -25,50 +25,46 @@ public class Question implements Serializable {
     private String slug;
 
     @DatabaseField
+    private String created;
+
+    @DatabaseField
+    private String updated;
+
+    @DatabaseField
     private String title;
 
     @DatabaseField(canBeNull = false, foreign = true)
     private User author;
 
-    private static RestAdapter mRestAdapter;
-
     public int getId() {
-        return id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
+        return this.id;
     }
 
     public String getSlug() {
-        return slug;
+        return this.slug;
     }
 
-    public void setSlug(String slug) {
-        this.slug = slug;
+    public String getCreated() {
+        return this.created;
+    }
+
+    public String getUpdated() {
+        return this.updated;
     }
 
     public String getTitle() {
-        return title;
-    }
-
-    public void setTitle(String title) {
-        this.title = title;
+        return this.title;
     }
 
     public User getAuthor() {
-        return author;
+        return this.author;
     }
 
-    public void setAuthor(User author) {
-        this.author = author;
+    public static Builder newBuilder() {
+        return new Builder();
     }
 
-    public static void setRestAdapter(RestAdapter restAdapter) {
-        mRestAdapter = restAdapter;
-    }
-
-    public class Builder {
+    private static class Builder {
         Question mQuestion;
 
         public Builder() {
@@ -80,8 +76,23 @@ public class Question implements Serializable {
             return this;
         }
 
+        public Builder created(String created) {
+            mQuestion.created = created;
+            return this;
+        }
+
+        public Builder updated(String updated) {
+            mQuestion.updated = updated;
+            return this;
+        }
+
         public Builder title(String title) {
             mQuestion.title = title;
+            return this;
+        }
+
+        public Builder author(User author) {
+            mQuestion.author = author;
             return this;
         }
 
@@ -101,7 +112,7 @@ public class Question implements Serializable {
         }
 
         @Override
-        public void save(String authHeader, Question question) {
+        public void save(Question question) {
         }
     }
 
@@ -109,7 +120,7 @@ public class Question implements Serializable {
         QuestionApi mQuestionApiImpl;
 
         public RemoteQuery() {
-            mQuestionApiImpl = mRestAdapter.create(QuestionApi.class);
+            mQuestionApiImpl = RestAdapterUtil.getRestAdapter().create(QuestionApi.class);
         }
 
         @Override
@@ -118,8 +129,8 @@ public class Question implements Serializable {
         }
 
         @Override
-        public void save(String authHeader, Question question) {
-            mQuestionApiImpl.save(authHeader, question);
+        public void save(Question question) {
+            mQuestionApiImpl.save(question);
         }
 
     }

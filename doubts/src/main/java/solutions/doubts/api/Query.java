@@ -11,6 +11,6 @@ public interface Query<T> {
 
     Observable<T> get(int id, String slug);
 
-    void save(String authHeader, T instance);
+    void save(T instance);
 
 }

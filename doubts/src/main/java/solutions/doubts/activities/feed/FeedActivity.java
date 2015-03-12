@@ -39,13 +39,13 @@ import de.hdodenhof.circleimageview.CircleImageView;
 import solutions.doubts.DoubtsApplication;
 import solutions.doubts.R;
 import solutions.doubts.activities.common.FeedAdapter;
-import solutions.doubts.activities.common.QuestionsAdapter;
 import solutions.doubts.activities.createdoubt.CreateDoubtActivity;
 import solutions.doubts.activities.profile.ProfileActivity;
-import solutions.doubts.activities.settings.SettingsActivity;
 import solutions.doubts.api.models.AuthToken;
 
 public class FeedActivity extends ActionBarActivity {
+
+    private static final String TAG = "FeedActivity";
 
     private RecyclerView content;
     private CircleImageView profileImageView;
@@ -70,7 +70,7 @@ public class FeedActivity extends ActionBarActivity {
         manager.setOrientation(LinearLayoutManager.VERTICAL);
         this.content.setLayoutManager(manager);
         final AuthToken at = ((DoubtsApplication)getApplication()).getAuthToken();
-        FeedAdapter feedAdapter = new FeedAdapter(this, at);
+        final FeedAdapter feedAdapter = new FeedAdapter(this, at);
         this.content.setAdapter(feedAdapter);
 
         final SwipeRefreshLayout swipeRefreshLayout = (SwipeRefreshLayout)findViewById(R.id.swipe_refresh_layout);
@@ -78,7 +78,14 @@ public class FeedActivity extends ActionBarActivity {
         swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-
+                feedAdapter.update();
+            }
+        });
+        feedAdapter.registerAdapterDataObserver(new RecyclerView.AdapterDataObserver() {
+            @Override
+            public void onChanged() {
+                swipeRefreshLayout.setRefreshing(false);
+                super.onChanged();
             }
         });
 
@@ -92,6 +99,8 @@ public class FeedActivity extends ActionBarActivity {
         });
 
         final List<DrawerListViewItem> list = new ArrayList<>();
+        final DrawerListViewItem logOutItem = new DrawerListViewItem(-1, "Log Out");
+        list.add(logOutItem);
 
         /* BETA - Add Settings option */
 
@@ -100,8 +109,10 @@ public class FeedActivity extends ActionBarActivity {
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                final Intent intent = new Intent(FeedActivity.this, SettingsActivity.class);
-                startActivity(intent);
+                if (position == list.size() - 1) {
+                    // Log Out
+                    ((DoubtsApplication)getApplication()).logOut();
+                }
             }
         });
         listView.setAdapter(adapter);

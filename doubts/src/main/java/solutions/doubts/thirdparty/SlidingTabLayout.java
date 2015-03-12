@@ -27,8 +27,8 @@ import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.HorizontalScrollView;
 import android.widget.LinearLayout;
-import android.widget.ScrollView;
 import android.widget.TextView;
 
 import java.util.ArrayList;
@@ -50,7 +50,7 @@ import java.util.List;
  * The views used as tabs can be customized by calling {@link #setCustomTabView(int, int)},
  * providing the layout ID of your custom layout.
  */
-public class SlidingTabLayout extends ScrollView {
+public class SlidingTabLayout extends HorizontalScrollView {
     /**
      * Allows complete control over the colors drawn in the tab layout. Set with
      * {@link #setCustomTabColorizer(SlidingTabLayout.TabColorizer)}.
@@ -73,7 +73,6 @@ public class SlidingTabLayout extends ScrollView {
     private int mTabViewLayoutId;
     private int mTabViewTextViewId;
     private boolean mDistributeEvenly;
-    private List<View> mTabViews = new ArrayList<>();
     private List<TextView> mTabTitleViews = new ArrayList<>();
 
     private ViewPager mViewPager;
@@ -107,12 +106,6 @@ public class SlidingTabLayout extends ScrollView {
     public void setTextColor(int color) {
         for (TextView tv : mTabTitleViews) {
             tv.setTextColor(color);
-        }
-    }
-
-    public void setBackgroundColor(int color) {
-        for (View tv : mTabViews) {
-            tv.setBackgroundColor(color);
         }
     }
 
@@ -240,7 +233,6 @@ public class SlidingTabLayout extends ScrollView {
                 tabView.setSelected(true);
             }
 
-            mTabViews.add(tabView);
             mTabTitleViews.add(tabTitleView);
         }
     }
