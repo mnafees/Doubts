@@ -9,7 +9,9 @@ import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.table.DatabaseTable;
 
 import java.io.Serializable;
+import java.util.List;
 
+import retrofit.client.Response;
 import rx.Observable;
 import solutions.doubts.api.Query;
 import solutions.doubts.api.backend.QuestionApi;
@@ -36,6 +38,9 @@ public class Question implements Serializable {
     @DatabaseField(canBeNull = false, foreign = true)
     private User author;
 
+    @DatabaseField(canBeNull = false, foreign = true)
+    private List<Entity> tags;
+
     public int getId() {
         return this.id;
     }
@@ -60,39 +65,25 @@ public class Question implements Serializable {
         return this.author;
     }
 
+    public List<Entity> getTags() {
+        return this.tags;
+    }
+
     public static Builder newBuilder() {
         return new Builder();
     }
 
-    private static class Builder {
-        Question mQuestion;
+    public static class Builder {
 
-        public Builder() {
-            mQuestion = new Question();
-        }
-
-        public Builder slug(String slug) {
-            mQuestion.slug = slug;
-            return this;
-        }
-
-        public Builder created(String created) {
-            mQuestion.created = created;
-            return this;
-        }
-
-        public Builder updated(String updated) {
-            mQuestion.updated = updated;
-            return this;
-        }
+        private Question mQuestion;
 
         public Builder title(String title) {
             mQuestion.title = title;
             return this;
         }
 
-        public Builder author(User author) {
-            mQuestion.author = author;
+        public Builder tags(List<Entity> tags) {
+            mQuestion.tags = tags;
             return this;
         }
 
@@ -112,7 +103,8 @@ public class Question implements Serializable {
         }
 
         @Override
-        public void save(Question question) {
+        public Observable<Response> save(Question question) {
+            return null;
         }
     }
 
@@ -129,8 +121,8 @@ public class Question implements Serializable {
         }
 
         @Override
-        public void save(Question question) {
-            mQuestionApiImpl.save(question);
+        public Observable<Response> save(Question question) {
+            return mQuestionApiImpl.save(question);
         }
 
     }

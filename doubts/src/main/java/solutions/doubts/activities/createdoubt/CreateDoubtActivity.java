@@ -27,10 +27,18 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.getbase.floatingactionbutton.FloatingActionButton;
+import com.rengwuxian.materialedittext.MaterialEditText;
+
 import java.util.ArrayList;
 import java.util.List;
 
+import retrofit.client.Response;
+import rx.Observable;
+import rx.android.schedulers.AndroidSchedulers;
+import rx.functions.Action1;
 import solutions.doubts.R;
+import solutions.doubts.api.models.Question;
 
 public class CreateDoubtActivity extends ActionBarActivity {
 
@@ -38,10 +46,12 @@ public class CreateDoubtActivity extends ActionBarActivity {
     private static final int REQUEST_IMAGE_CAPTURE = 1;
 
     private LinearLayout mTagsContainer;
-    private EditText mTagsEditText;
+    private EditText mTitle;
+    private EditText mTags;
     private ImageView mImageView;
+    private FloatingActionButton mCreateDoubtButton;
 
-    private final List<String> mTags = new ArrayList<>();
+    private final List<String> mTagsList = new ArrayList<>();
     private String mLastEnteredTag;
     private int mTagIndex = 1;
 
@@ -61,10 +71,13 @@ public class CreateDoubtActivity extends ActionBarActivity {
 
         mTagsContainer = (LinearLayout)findViewById(R.id.tags_container);
 
-        mTagsEditText = (EditText)findViewById(R.id.tags_edit_text);
-        mTagsEditText.addTextChangedListener(new TextWatcher() {
+        mTitle = (MaterialEditText)findViewById(R.id.title);
+
+        mTags = (EditText)findViewById(R.id.tags_edit_text);
+        mTags.addTextChangedListener(new TextWatcher() {
             @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+            }
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
@@ -73,38 +86,39 @@ public class CreateDoubtActivity extends ActionBarActivity {
                     // new tag added
                     final View v = View.inflate(CreateDoubtActivity.this,
                             R.layout.layout_single_tag, null);
-                    final TextView tagView = (TextView)v.findViewById(R.id.tag);
-                    final String newTag = mTagsEditText.getText().toString()
+                    final TextView tagView = (TextView) v.findViewById(R.id.tag);
+                    final String newTag = mTags.getText().toString()
                             .replace(",", "").replace("#", "");
-                    if (mTags.contains(newTag)) {
+                    if (mTagsList.contains(newTag)) {
                         // return if tag is already added
                         return;
                     } else {
                         // add new tag
-                        mTags.add(newTag);
+                        mTagsList.add(newTag);
                     }
                     mLastEnteredTag = newTag;
                     tagView.setText("#" + newTag);
                     mTagsContainer.addView(v, mTagIndex);
                     mTagIndex++;
-                    mTagsEditText.getText().clear();
+                    mTags.getText().clear();
                 }
             }
 
             @Override
-            public void afterTextChanged(Editable s) {}
+            public void afterTextChanged(Editable s) {
+            }
         });
-        mTagsEditText.setOnKeyListener(new View.OnKeyListener() {
+        mTags.setOnKeyListener(new View.OnKeyListener() {
             @Override
             public boolean onKey(View v, int keyCode, KeyEvent event) {
                 if (keyCode == KeyEvent.KEYCODE_DEL) {
-                    if (mTagsEditText.getText().length() == 0 &&
-                            !mTags.isEmpty()) {
+                    if (mTags.getText().length() == 0 &&
+                            !mTagsList.isEmpty()) {
                         Log.d(TAG, "here");
                         --mTagIndex;
                         mTagsContainer.removeViewAt(mTagIndex);
-                        mTagsEditText.setText("#" + mLastEnteredTag);
-                        mTags.remove(mLastEnteredTag);
+                        mTags.setText("#" + mLastEnteredTag);
+                        mTagsList.remove(mLastEnteredTag);
                     }
                 }
                 return false;
@@ -119,6 +133,30 @@ public class CreateDoubtActivity extends ActionBarActivity {
                 if (takePictureIntent.resolveActivity(getPackageManager()) != null) {
                     startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE);
                 }
+            }
+        });
+
+        mCreateDoubtButton = (FloatingActionButton)findViewById(R.id.create_doubt_button);
+        mCreateDoubtButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Log.d(TAG, "here");
+                final Question q = Question.newBuilder()
+                        .title(mTitle.getText().toString())
+                        .build();
+                Observable<Response> response = Question.getRemote().save(q);
+                response.observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(new Action1<Response>() {
+                            @Override
+                            public void call(Response response) {
+                                Log.d(TAG, response.toString());
+                            }
+                        }, new Action1<Throwable>() {
+                            @Override
+                            public void call(Throwable throwable) {
+                                Log.d(TAG, throwable.getMessage());
+                            }
+                        });
             }
         });
     }

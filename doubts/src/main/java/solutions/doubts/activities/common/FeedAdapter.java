@@ -12,11 +12,12 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
-import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.github.curioustechizen.ago.RelativeTimeTextView;
+
+import org.apmem.tools.layouts.FlowLayout;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -26,6 +27,7 @@ import rx.android.schedulers.AndroidSchedulers;
 import rx.functions.Action1;
 import solutions.doubts.R;
 import solutions.doubts.api.models.AuthToken;
+import solutions.doubts.api.models.Entity;
 import solutions.doubts.api.models.Feed;
 import solutions.doubts.api.models.Question;
 import solutions.doubts.core.util.DateTimeUtil;
@@ -45,7 +47,7 @@ public class FeedAdapter extends RecyclerView.Adapter<FeedAdapter.ViewHolder> {
         public final View view;
         public final TextView question, username;
         public final ImageView imageView;
-        public final ListView tagList;
+        public final FlowLayout tagList;
         public final RelativeTimeTextView time;
 
         public ViewHolder(final View view) {
@@ -61,7 +63,7 @@ public class FeedAdapter extends RecyclerView.Adapter<FeedAdapter.ViewHolder> {
                     /** @TODO: implement this */
                 }
             });
-            this.tagList = null;//(ListView)view.findViewById(R.id.tagList);
+            this.tagList = (FlowLayout)view.findViewById(R.id.tagList);
             this.time = (RelativeTimeTextView)view.findViewById(R.id.timestamp);
         }
 
@@ -116,6 +118,14 @@ public class FeedAdapter extends RecyclerView.Adapter<FeedAdapter.ViewHolder> {
         holder.question.setText(q.getTitle());
         holder.username.setText(q.getAuthor().getUsername());
         holder.time.setReferenceTime(DateTimeUtil.getMillis(q.getCreated()));
+        // FIXME: later tags will be limited to at most 5
+        holder.tagList.removeAllViews();
+        for (Entity tag : q.getTags()) {
+            final View v = View.inflate(mContext, R.layout.layout_single_tag, null);
+            final TextView textView = (TextView)v.findViewById(R.id.tag);
+            textView.setText("#" + tag.getName());
+            holder.tagList.addView(v);
+        }
     }
 
     @Override

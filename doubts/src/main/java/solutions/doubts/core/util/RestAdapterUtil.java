@@ -27,7 +27,7 @@ public class RestAdapterUtil {
                         .setClient(new OkClient(new OkHttpClient()))
                         .setRequestInterceptor(new RequestInterceptor() {
                             @Override
-                             public void intercept(RequestFacade request) {
+                            public void intercept(RequestFacade request) {
                                 request.addHeader(RestConstants.HEADER_AUTHORIZATION,
                                         DoubtsApplication.getInstance().getAuthToken().toString());
                             }

@@ -8,6 +8,8 @@ package solutions.doubts.api.models;
 import java.io.Serializable;
 
 public class S3Image implements Serializable {
+
     int id;
     String url;
+
 }

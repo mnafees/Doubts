@@ -51,17 +51,16 @@
                 android:textColor="@android:color/black"
                 android:background="@drawable/border_bottom" />
 
-            <it.sephiroth.android.library.widget.HListView
-            android:id="@+id/tagList"
-            android:orientation="horizontal"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:padding="10dp"
-            android:layout_below="@+id/title"
-            android:background="@drawable/border_bottom"
-            app:hlv_dividerWidth="3dp"
-            app:hlv_measureWithChild="0"
-                />
+            <org.apmem.tools.layouts.FlowLayout
+                android:id="@+id/tagList"
+                android:orientation="horizontal"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/title"
+                android:background="@drawable/border_bottom"
+                android:layout_marginTop="10dp"
+                android:layout_marginLeft="10dp"
+            />
 
             <com.github.curioustechizen.ago.RelativeTimeTextView
                 android:id="@+id/timestamp"

@@ -5,6 +5,7 @@
 
 package solutions.doubts.api.backend;
 
+import retrofit.client.Response;
 import retrofit.http.Body;
 import retrofit.http.GET;
 import retrofit.http.POST;
@@ -19,6 +20,6 @@ public interface QuestionApi {
                              @Path("slug") String slug);
 
     @POST("/questions")
-    void save(@Body Question question);
+    Observable<Response> save(@Body Question question);
 
 }
