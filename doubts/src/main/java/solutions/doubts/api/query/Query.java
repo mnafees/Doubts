@@ -28,13 +28,13 @@ import io.realm.RealmObject;
 import solutions.doubts.DoubtsApplication;
 import solutions.doubts.core.events.NetworkEvent;
 import solutions.doubts.core.events.PageableDataEvent;
+import solutions.doubts.core.events.ResourceEvent;
 import solutions.doubts.internal.RestConstants;
 
 public class Query {
 
     private static final String TAG = "Query";
     private static final MediaType MEDIA_TYPE_JSON = MediaType.parse("application/json");
-    private static final String URL = RestConstants.API_ENDPOINT + "/api/v1/questions";
 
     private boolean mInitialised;
     private OkHttpClient mOkHttpClient;
@@ -99,6 +99,10 @@ public class Query {
 
     @Subscribe
     public void onNetworkEvent(final NetworkEvent networkEvent) {
+        if (!mInitialised) {
+            throw new IllegalStateException("Did you forget to call init()?");
+        }
+
         switch (networkEvent.getOperation()) {
             case CREATE:
                 create(networkEvent);
@@ -120,10 +124,11 @@ public class Query {
 
     private void create(final NetworkEvent networkEvent) {
         final Request req = new Request.Builder()
-                .url(URL)
+                .url(networkEvent.getUrl())
                 .addHeader(RestConstants.HEADER_AUTHORIZATION, DoubtsApplication
                         .getInstance().getAuthToken().toString())
-                .post(RequestBody.create(MEDIA_TYPE_JSON, mGson.toJson(networkEvent.getObject(),
+                .post(RequestBody.create(MEDIA_TYPE_JSON, mGson.toJson(
+                        networkEvent.getObject(),
                         networkEvent.getClazz())))
                 .build();
         mOkHttpClient.newCall(req).enqueue(new Callback() {
@@ -135,21 +140,64 @@ public class Query {
             @Override
             public void onResponse(Response response) throws IOException {
                 if (response.code() == 200) {
-                    //DoubtsApplication.getInstance().getBus().post(new CreateDoubtEvent(CreateDoubtEvent.Type.SUCCESSFUL));
+                    DoubtsApplication.getInstance().getBus().post(
+                            ResourceEvent.newBuilder()
+                                    .id(networkEvent.getId())
+                                    .type(ResourceEvent.Type.SUCCESS)
+                                    .build()
+                    );
                 } else {
-                    //DoubtsApplication.getInstance().getBus().post(new CreateDoubtEvent(CreateDoubtEvent.Type.UNSUCCESSFUL));
+                    DoubtsApplication.getInstance().getBus().post(
+                            ResourceEvent.newBuilder()
+                                    .id(networkEvent.getId())
+                                    .type(ResourceEvent.Type.FAILURE)
+                                    .build()
+                    );
                 }
             }
         });
     }
 
     private void get(final NetworkEvent networkEvent) {
+        final Request req = new Request.Builder()
+                .url(networkEvent.getUrl())
+                .addHeader(RestConstants.HEADER_AUTHORIZATION, DoubtsApplication
+                        .getInstance().getAuthToken().toString())
+                .get()
+                .build();
+        mOkHttpClient.newCall(req).enqueue(new Callback() {
+            @Override
+            public void onFailure(Request request, IOException e) {
+                e.printStackTrace();
+            }
 
+            @Override
+            public void onResponse(Response response) throws IOException {
+                if (response.code() == 200) {
+                    DoubtsApplication.getInstance().getBus().post(
+                            ResourceEvent.newBuilder()
+                                    .id(networkEvent.getId())
+                                    .type(ResourceEvent.Type.SUCCESS)
+                                    .jsonObject(mGson.fromJson(
+                                            response.body().string(), JsonObject.class
+                                    ))
+                                    .build()
+                    );
+                } else {
+                    DoubtsApplication.getInstance().getBus().post(
+                            ResourceEvent.newBuilder()
+                                    .id(networkEvent.getId())
+                                    .type(ResourceEvent.Type.FAILURE)
+                                    .build()
+                    );
+                }
+            }
+        });
     }
 
     private void getAll(final NetworkEvent networkEvent) {
         final Request req = new Request.Builder()
-                .url(URL)
+                .url(networkEvent.getUrl())
                 .addHeader(RestConstants.HEADER_AUTHORIZATION, DoubtsApplication
                         .getInstance().getAuthToken().toString())
                 .get()
@@ -187,11 +235,73 @@ public class Query {
     }
 
     private void update(final NetworkEvent networkEvent) {
+        final Request req = new Request.Builder()
+                .url(networkEvent.getUrl())
+                .addHeader(RestConstants.HEADER_AUTHORIZATION, DoubtsApplication
+                        .getInstance().getAuthToken().toString())
+                .put(RequestBody.create(MEDIA_TYPE_JSON, mGson.toJson(
+                        networkEvent.getObject(),
+                        networkEvent.getClazz())))
+                .build();
+        mOkHttpClient.newCall(req).enqueue(new Callback() {
+            @Override
+            public void onFailure(Request request, IOException e) {
+                e.printStackTrace();
+            }
 
+            @Override
+            public void onResponse(Response response) throws IOException {
+                if (response.code() == 200) {
+                    DoubtsApplication.getInstance().getBus().post(
+                            ResourceEvent.newBuilder()
+                                    .id(networkEvent.getId())
+                                    .type(ResourceEvent.Type.SUCCESS)
+                                    .build()
+                    );
+                } else {
+                    DoubtsApplication.getInstance().getBus().post(
+                            ResourceEvent.newBuilder()
+                                    .id(networkEvent.getId())
+                                    .type(ResourceEvent.Type.FAILURE)
+                                    .build()
+                    );
+                }
+            }
+        });
     }
 
     private void delete(final NetworkEvent networkEvent) {
+        final Request req = new Request.Builder()
+                .url(networkEvent.getUrl())
+                .addHeader(RestConstants.HEADER_AUTHORIZATION, DoubtsApplication
+                        .getInstance().getAuthToken().toString())
+                .delete()
+                .build();
+        mOkHttpClient.newCall(req).enqueue(new Callback() {
+            @Override
+            public void onFailure(Request request, IOException e) {
+                e.printStackTrace();
+            }
 
+            @Override
+            public void onResponse(Response response) throws IOException {
+                if (response.code() == 200) {
+                    DoubtsApplication.getInstance().getBus().post(
+                            ResourceEvent.newBuilder()
+                                    .id(networkEvent.getId())
+                                    .type(ResourceEvent.Type.SUCCESS)
+                                    .build()
+                    );
+                } else {
+                    DoubtsApplication.getInstance().getBus().post(
+                            ResourceEvent.newBuilder()
+                                    .id(networkEvent.getId())
+                                    .type(ResourceEvent.Type.FAILURE)
+                                    .build()
+                    );
+                }
+            }
+        });
     }
 
 }
