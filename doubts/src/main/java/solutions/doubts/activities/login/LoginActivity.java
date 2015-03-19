@@ -9,6 +9,7 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.v7.app.ActionBarActivity;
 import android.transitions.everywhere.AutoTransition;
 import android.transitions.everywhere.ChangeBounds;
@@ -23,7 +24,12 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Toast;
 
+import com.squareup.okhttp.Callback;
+import com.squareup.okhttp.FormEncodingBuilder;
 import com.squareup.okhttp.OkHttpClient;
+import com.squareup.okhttp.Request;
+import com.squareup.okhttp.RequestBody;
+import com.squareup.okhttp.Response;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -32,22 +38,16 @@ import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 
 import de.hdodenhof.circleimageview.CircleImageView;
-import retrofit.RestAdapter;
-import retrofit.client.OkClient;
-import retrofit.client.Response;
-import rx.Observable;
-import rx.android.schedulers.AndroidSchedulers;
-import rx.functions.Action1;
 import solutions.doubts.R;
-import solutions.doubts.api.backend.AuthApi;
 import solutions.doubts.internal.RestConstants;
 
 public class LoginActivity extends ActionBarActivity {
 
-    private AuthApi mApi;
     private EditText mEmail;
     private ViewGroup mSceneRoot;
     private CircleImageView mProfileImage;
+
+    private OkHttpClient mOkHttpClient;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -55,21 +55,7 @@ public class LoginActivity extends ActionBarActivity {
 
         setContentView(R.layout.layout_login);
 
-        final RestAdapter restAdapter = new RestAdapter.Builder()
-                .setEndpoint(RestConstants.API_ENDPOINT)
-                .setClient(new OkClient(new OkHttpClient()))
-                .setLogLevel(RestAdapter.LogLevel.FULL)
-                .build();
-        mApi = restAdapter.create(AuthApi.class);
-
-        /*final IntentFilter filter = new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION);
-        ContentObservable.fromBroadcast(this, filter)
-                .subscribe(new Action1<Intent>() {
-                    @Override
-                    public void call(Intent intent) {
-
-                    }
-                });*/
+        mOkHttpClient = new OkHttpClient();
 
         final Animation popOut = AnimationUtils.loadAnimation(this, R.anim.login_pop_out);
 
@@ -96,27 +82,49 @@ public class LoginActivity extends ActionBarActivity {
                         @Override
                         public void run() {
                             sceneEmail.setText(LoginActivity.this.mEmail.getText());
-                            final Observable<Response> response = LoginActivity.this.mApi
-                                    .login(LoginActivity.this.mEmail.getText().toString())
-                                    .cache();
-                            response.observeOn(AndroidSchedulers.mainThread())
-                                    .subscribe(new Action1<Response>() {
+                            final String email = LoginActivity.this.mEmail.getText().toString();
+                            final RequestBody requestBody = new FormEncodingBuilder()
+                                    .add("email", email)
+                                    .build();
+                            final Request req = new Request.Builder()
+                                    .url(RestConstants.API_ENDPOINT + "/auth/login")
+                                    .post(requestBody)
+                                    .build();
+
+                            mOkHttpClient.newCall(req).enqueue(new Callback() {
+                                // obtain the main looper since we need to make changes to the UI
+                                final Handler mainHandler = new Handler(LoginActivity.this.getMainLooper());
+
+                                @Override
+                                public void onFailure(Request request, final IOException e) {
+                                    mainHandler.post(new Runnable() {
                                         @Override
-                                        public void call(Response response) {
-                                            if (response.getUrl().contains("/auth/register")) {
-                                                proceedWithRegistration(LoginActivity.this.mEmail.getText().toString());
-                                            } else {
-                                                // TODO: refine
-                                                showEmailSentMessage();
-                                            }
-                                        }
-                                    }, new Action1<Throwable>() {
-                                        @Override
-                                        public void call(Throwable throwable) {
-                                            Toast.makeText(LoginActivity.this, throwable.getMessage(),
-                                                    Toast.LENGTH_SHORT).show();
+                                        public void run() {
+                                            Toast.makeText(LoginActivity.this, e.getMessage(), Toast.LENGTH_SHORT).show();
                                         }
                                     });
+                                }
+
+                                @Override
+                                public void onResponse(Response response) throws IOException {
+                                    if (response.isRedirect()) {
+                                        // user needs to register
+                                        mainHandler.post(new Runnable() {
+                                            @Override
+                                            public void run() {
+                                                proceedWithRegistration(email);
+                                            }
+                                        });
+                                    } else {
+                                        mainHandler.post(new Runnable() {
+                                            @Override
+                                            public void run() {
+                                                showEmailSentMessage();
+                                            }
+                                        });
+                                    }
+                                }
+                            });
                         }
                     });
                     TransitionManager.go(scene, transition);
@@ -136,7 +144,7 @@ public class LoginActivity extends ActionBarActivity {
             @Override
             public void onClick(View v) {
                 if (name.getText().length() > 0 && username.getText().length() > 0) {
-                    final Observable<Response> response = LoginActivity.this.mApi
+                    /*final Observable<Response> response = LoginActivity.this.mApi
                             .register(encodeEmail(email), email,
                                     username.getText().toString(),
                                     name.getText().toString()).cache();
@@ -156,7 +164,7 @@ public class LoginActivity extends ActionBarActivity {
                                     Toast.makeText(LoginActivity.this, throwable.getMessage(),
                                             Toast.LENGTH_SHORT).show();
                                 }
-                            });
+                            });*/
                 } else {
                     Toast.makeText(LoginActivity.this, "Please enter your name and username", Toast.LENGTH_SHORT).show();
                 }

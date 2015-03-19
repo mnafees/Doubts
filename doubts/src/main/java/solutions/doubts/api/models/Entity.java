@@ -5,34 +5,38 @@
 
 package solutions.doubts.api.models;
 
-import com.j256.ormlite.field.DatabaseField;
-import com.j256.ormlite.table.DatabaseTable;
-
 import java.io.Serializable;
 
-// FIXME: adjust accordingly with the DB table
-@DatabaseTable(tableName = "tags")
-public class Entity implements Serializable {
+import io.realm.RealmObject;
 
-    @DatabaseField
+public class Entity extends RealmObject implements Serializable {
+
     private int id;
-
-    @DatabaseField
     private String name;
-
-    @DatabaseField
     private String slug;
 
     public int getId() {
         return this.id;
     }
 
+    public void setId(int id) {
+        this.id = id;
+    }
+
     public String getName() {
         return this.name;
     }
 
+    public void setName(String name) {
+        this.name = name;
+    }
+
     public String getSlug() {
         return this.slug;
+    }
+
+    public void setSlug(String slug) {
+        this.slug = slug;
     }
 
     public static Builder newBuilder() {

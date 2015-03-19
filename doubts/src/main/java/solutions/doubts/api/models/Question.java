@@ -5,68 +5,95 @@
 
 package solutions.doubts.api.models;
 
-import com.j256.ormlite.field.DatabaseField;
-import com.j256.ormlite.table.DatabaseTable;
-
 import java.io.Serializable;
-import java.util.List;
 
-import retrofit.client.Response;
-import rx.Observable;
-import solutions.doubts.api.Query;
-import solutions.doubts.api.backend.QuestionApi;
-import solutions.doubts.core.util.RestAdapterUtil;
+import io.realm.RealmList;
+import io.realm.RealmObject;
+import io.realm.annotations.PrimaryKey;
 
-@DatabaseTable(tableName = "questions")
-public class Question implements Serializable {
+public class Question extends RealmObject implements Serializable {
 
-    @DatabaseField(id = true)
+    @PrimaryKey
     private int id;
-
-    @DatabaseField(canBeNull = false)
     private String slug;
-
-    @DatabaseField
+    private String desc;
     private String created;
-
-    @DatabaseField
     private String updated;
-
-    @DatabaseField
     private String title;
-
-    @DatabaseField(canBeNull = false, foreign = true)
+    private S3Image image;
     private User author;
-
-    @DatabaseField(canBeNull = false, foreign = true)
-    private List<Entity> tags;
+    private RealmList<Entity> tags;
 
     public int getId() {
         return this.id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
     }
 
     public String getSlug() {
         return this.slug;
     }
 
+    public void setSlug(String slug) {
+        this.slug = slug;
+    }
+
+    public String getDesc() {
+        return this.desc;
+    }
+
+    public void setDesc(String desc) {
+        this.desc = desc;
+    }
+
     public String getCreated() {
         return this.created;
+    }
+
+    public void setCreated(String created) {
+        this.created = created;
     }
 
     public String getUpdated() {
         return this.updated;
     }
 
+    public void setUpdated(String updated) {
+        this.updated = updated;
+    }
+
     public String getTitle() {
         return this.title;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
+    }
+
+    public S3Image getImage() {
+        return this.image;
+    }
+
+    public void setImage(S3Image image) {
+        this.image = image;
     }
 
     public User getAuthor() {
         return this.author;
     }
 
-    public List<Entity> getTags() {
+    public void setAuthor(User author) {
+        this.author = author;
+    }
+
+    public RealmList<Entity> getTags() {
         return this.tags;
+    }
+
+    public void setTags(RealmList<Entity> tags) {
+        this.tags = tags;
     }
 
     public static Builder newBuilder() {
@@ -77,12 +104,26 @@ public class Question implements Serializable {
 
         private Question mQuestion;
 
-        public Builder title(String title) {
+        private Builder() {
+            mQuestion = new Question();
+        }
+
+        public Builder title(final String title) {
             mQuestion.title = title;
             return this;
         }
 
-        public Builder tags(List<Entity> tags) {
+        public Builder image(final S3Image image) {
+            mQuestion.image = image;
+            return this;
+        }
+
+        public Builder description(final String desc) {
+            mQuestion.desc = desc;
+            return this;
+        }
+
+        public Builder tags(final RealmList<Entity> tags) {
             mQuestion.tags = tags;
             return this;
         }
@@ -90,60 +131,6 @@ public class Question implements Serializable {
         public Question build() {
             return mQuestion;
         }
-    }
-
-    public static class LocalQuery implements Query<Question> {
-        public LocalQuery() {
-
-        }
-
-        @Override
-        public Observable<Question> get(int id, String slug) {
-            return null;
-        }
-
-        @Override
-        public Observable<Response> save(Question question) {
-            return null;
-        }
-    }
-
-    public static class RemoteQuery implements Query<Question> {
-        QuestionApi mQuestionApiImpl;
-
-        public RemoteQuery() {
-            mQuestionApiImpl = RestAdapterUtil.getRestAdapter().create(QuestionApi.class);
-        }
-
-        @Override
-        public Observable<Question> get(int id, String slug) {
-            return mQuestionApiImpl.get(id, slug);
-        }
-
-        @Override
-        public Observable<Response> save(Question question) {
-            return mQuestionApiImpl.save(question);
-        }
-
-    }
-
-    private static LocalQuery sLocalQuery;
-    private static RemoteQuery sRemoteQuery;
-
-    private Question () {}
-
-    public static LocalQuery getLocal() {
-        if(sLocalQuery != null)
-            return sLocalQuery;
-        else
-            return sLocalQuery = new LocalQuery();
-    }
-
-    public static RemoteQuery getRemote() {
-        if(sRemoteQuery != null)
-            return sRemoteQuery;
-        else
-            return sRemoteQuery = new RemoteQuery();
     }
 
 }

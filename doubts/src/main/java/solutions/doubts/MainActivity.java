@@ -30,7 +30,7 @@ public class MainActivity extends ActionBarActivity {
             final Uri data = getIntent().getData();
             if ((data.getScheme().equals("http") ||
                  data.getScheme().equals("https")) &&
-                 /* data.getHost().equals("doubts.solutions") */
+                 /* data.getHost().equals("doubts.solutions")*/
                  data.getPath().contains("/auth/token/")) {
                 final int length = data.getPathSegments().size();
                 if (length != 5) {

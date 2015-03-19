@@ -33,10 +33,7 @@ import com.rengwuxian.materialedittext.MaterialEditText;
 import java.util.ArrayList;
 import java.util.List;
 
-import retrofit.client.Response;
-import rx.Observable;
-import rx.android.schedulers.AndroidSchedulers;
-import rx.functions.Action1;
+import solutions.doubts.DoubtsApplication;
 import solutions.doubts.R;
 import solutions.doubts.api.models.Question;
 
@@ -60,6 +57,7 @@ public class CreateDoubtActivity extends ActionBarActivity {
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.layout_create_doubt);
+        DoubtsApplication.getInstance().getBus().register(this);
 
         final Toolbar toolbar = (Toolbar)findViewById(R.id.action_bar);
         setSupportActionBar(toolbar);
@@ -140,23 +138,11 @@ public class CreateDoubtActivity extends ActionBarActivity {
         mCreateDoubtButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Log.d(TAG, "here");
                 final Question q = Question.newBuilder()
                         .title(mTitle.getText().toString())
                         .build();
-                Observable<Response> response = Question.getRemote().save(q);
-                response.observeOn(AndroidSchedulers.mainThread())
-                        .subscribe(new Action1<Response>() {
-                            @Override
-                            public void call(Response response) {
-                                Log.d(TAG, response.toString());
-                            }
-                        }, new Action1<Throwable>() {
-                            @Override
-                            public void call(Throwable throwable) {
-                                Log.d(TAG, throwable.getMessage());
-                            }
-                        });
+                //DoubtsApplication.getInstance().getBus().post(new NetworkEvent(NetworkEvent.Model.QUESTION,
+                //        NetworkEvent.Operation.CREATE, q));
             }
         });
     }

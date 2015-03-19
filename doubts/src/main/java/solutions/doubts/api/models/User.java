@@ -1,21 +1,15 @@
 package solutions.doubts.api.models;
 
-import com.j256.ormlite.field.DatabaseField;
-import com.j256.ormlite.table.DatabaseTable;
-
 import java.io.Serializable;
 
-@DatabaseTable(tableName = "users")
-public class User implements Serializable {
-    @DatabaseField(id = true)
+import io.realm.RealmObject;
+
+public class User extends RealmObject implements Serializable {
+
     private int id;
-
-    @DatabaseField(canBeNull = false)
-    private String email, username;
-
-    @DatabaseField
+    private String email;
+    private String username;
     private String name;
-
     private S3Image image;
 
     public int getId() {

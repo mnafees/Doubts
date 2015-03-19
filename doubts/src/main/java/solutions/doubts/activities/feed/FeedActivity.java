@@ -41,7 +41,6 @@ import solutions.doubts.R;
 import solutions.doubts.activities.common.FeedAdapter;
 import solutions.doubts.activities.createdoubt.CreateDoubtActivity;
 import solutions.doubts.activities.profile.ProfileActivity;
-import solutions.doubts.api.models.AuthToken;
 
 public class FeedActivity extends ActionBarActivity {
 
@@ -69,8 +68,7 @@ public class FeedActivity extends ActionBarActivity {
         LinearLayoutManager manager = new LinearLayoutManager(this);
         manager.setOrientation(LinearLayoutManager.VERTICAL);
         this.content.setLayoutManager(manager);
-        final AuthToken at = ((DoubtsApplication)getApplication()).getAuthToken();
-        final FeedAdapter feedAdapter = new FeedAdapter(this, at);
+        final FeedAdapter feedAdapter = new FeedAdapter(this);
         this.content.setAdapter(feedAdapter);
 
         final SwipeRefreshLayout swipeRefreshLayout = (SwipeRefreshLayout)findViewById(R.id.swipe_refresh_layout);

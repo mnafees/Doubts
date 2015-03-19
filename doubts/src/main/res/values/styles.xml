@@ -39,6 +39,9 @@
         <item name="android:textCursorDrawable">@null</item>
     </style>
 
+    <style name="AppTheme.FeedTheme" parent="AppTheme">
+    </style>
+
     <style name="AppTheme.ProfileTheme" parent="AppTheme">
     </style>
 
@@ -46,7 +49,7 @@
         <item name="android:background">@android:color/transparent</item>
     </style>
 
-    <style name="AppTheme.CreateNewDoubt">
+    <style name="AppTheme.CreateNewDoubt" parent="AppTheme">
         <item name="android:windowBackground">@android:color/white</item>
     </style>
 

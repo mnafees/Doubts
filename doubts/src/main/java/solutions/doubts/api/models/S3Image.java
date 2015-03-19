@@ -7,9 +7,26 @@ package solutions.doubts.api.models;
 
 import java.io.Serializable;
 
-public class S3Image implements Serializable {
+import io.realm.RealmObject;
 
-    int id;
-    String url;
+public class S3Image extends RealmObject implements Serializable {
 
+    private int id;
+    private String url;
+
+    public int getId() {
+        return this.id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public String getUrl() {
+        return this.url;
+    }
+
+    public void setUrl(String url) {
+        this.url = url;
+    }
 }

@@ -9,7 +9,11 @@ import android.app.Application;
 import android.content.Intent;
 import android.content.SharedPreferences;
 
+import com.squareup.otto.Bus;
+import com.squareup.otto.ThreadEnforcer;
+
 import solutions.doubts.api.models.AuthToken;
+import solutions.doubts.api.query.Query;
 import solutions.doubts.internal.StringConstants;
 
 public class DoubtsApplication extends Application {
@@ -17,6 +21,7 @@ public class DoubtsApplication extends Application {
     private static final String TAG = "DoubtsApplication";
     private SharedPreferences mSharedPreferences;
     private AuthToken mAuthToken;
+    private Bus mBus;
 
     private static DoubtsApplication INSTANCE;
 
@@ -25,6 +30,7 @@ public class DoubtsApplication extends Application {
         super.onCreate();
 
         INSTANCE = this;
+        mBus = new Bus(ThreadEnforcer.MAIN);
         mSharedPreferences = getSharedPreferences(StringConstants.PREFERENCES_NAME, 0);
         int userId = mSharedPreferences.getInt("user_id", -1);
         if (userId != -1) {
@@ -32,10 +38,16 @@ public class DoubtsApplication extends Application {
                     mSharedPreferences.getString("username", ""),
                     mSharedPreferences.getString("auth_token", ""));
         }
+
+        new Query().init();
     }
 
     public static DoubtsApplication getInstance() {
         return INSTANCE;
+    }
+
+    public Bus getBus() {
+        return mBus;
     }
 
     public AuthToken getAuthToken() {

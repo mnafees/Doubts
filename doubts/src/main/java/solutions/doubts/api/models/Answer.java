@@ -5,36 +5,17 @@
 
 package solutions.doubts.api.models;
 
-import com.j256.ormlite.field.DatabaseField;
-import com.j256.ormlite.table.DatabaseTable;
-
 import java.io.Serializable;
 
-@DatabaseTable(tableName = "answers")
 public class Answer implements Serializable {
 
-    @DatabaseField(canBeNull = false, id = true)
     private int id;
-
-    @DatabaseField
     private String created;
-
-    @DatabaseField
     private String updated;
-
-    @DatabaseField(foreign = true)
     private User author;
-
-    @DatabaseField
     private String title;
-
-    @DatabaseField
     private String slug;
-
-    @DatabaseField
     private S3Image image;
-
-    @DatabaseField
     private Entity question;
 
     public int getId() {

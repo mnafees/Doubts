@@ -13,32 +13,24 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.github.curioustechizen.ago.RelativeTimeTextView;
+import com.squareup.otto.Subscribe;
 
 import org.apmem.tools.layouts.FlowLayout;
 
-import java.util.LinkedList;
-import java.util.List;
-
-import rx.Observable;
-import rx.android.schedulers.AndroidSchedulers;
-import rx.functions.Action1;
+import solutions.doubts.DoubtsApplication;
 import solutions.doubts.R;
-import solutions.doubts.api.models.AuthToken;
 import solutions.doubts.api.models.Entity;
 import solutions.doubts.api.models.Feed;
 import solutions.doubts.api.models.Question;
+import solutions.doubts.core.events.FeedUpdatedEvent;
 import solutions.doubts.core.util.DateTimeUtil;
-import solutions.doubts.core.util.RestAdapterUtil;
 
 public class FeedAdapter extends RecyclerView.Adapter<FeedAdapter.ViewHolder> {
 
     private static final String TAG = "FeedAdapter";
-    private List<Question> mDataset;
     private Context mContext;
-    private AuthToken mAuthToken;
     private Feed mFeed;
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
@@ -69,13 +61,13 @@ public class FeedAdapter extends RecyclerView.Adapter<FeedAdapter.ViewHolder> {
 
     }
 
-    public FeedAdapter(final Context context, AuthToken authToken) {
+    public FeedAdapter(final Context context) {
         mContext = context;
-        mDataset = new LinkedList<Question>();
-        mAuthToken = authToken;
-        Feed.setRestAdapter(RestAdapterUtil.getRestAdapter());
-        mFeed = new Feed(mAuthToken);
-        update();
+        DoubtsApplication.getInstance().getBus().register(this);
+        mFeed = new Feed();
+        if (!mFeed.loadLocalRealmData()) {
+            update();
+        }
     }
 
     @Override
@@ -95,20 +87,13 @@ public class FeedAdapter extends RecyclerView.Adapter<FeedAdapter.ViewHolder> {
         return new ViewHolder(view);
     }
 
+    @Subscribe
+    public void onFeedUpdatedEvent(final FeedUpdatedEvent event) {
+        notifyDataSetChanged();
+    }
+
     public void update() {
-        final Observable<Feed> oq = mFeed.fetchNext();
-        oq.observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Action1<Feed>() {
-                    @Override
-                    public void call(Feed feed) {
-                        notifyDataSetChanged();
-                    }
-                }, new Action1<Throwable>() {
-                    @Override
-                    public void call(Throwable throwable) {
-                        Toast.makeText(mContext, throwable.getMessage(), Toast.LENGTH_SHORT).show();
-                    }
-                });
+        mFeed.fetchNext();
     }
 
     @Override

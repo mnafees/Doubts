@@ -21,9 +21,6 @@ import com.github.curioustechizen.ago.RelativeTimeTextView;
 import java.util.LinkedList;
 import java.util.List;
 
-import rx.Observable;
-import rx.android.schedulers.AndroidSchedulers;
-import rx.functions.Action1;
 import solutions.doubts.R;
 import solutions.doubts.api.models.Question;
 
@@ -85,7 +82,7 @@ public class QuestionsAdapter extends RecyclerView.Adapter<QuestionsAdapter.View
     }
 
     public void update() {
-        final Observable<Question> oq = Question.getRemote()
+        /*final Observable<Question> oq = Question.getRemote()
                 .get(1, "question0");
         oq.observeOn(AndroidSchedulers.mainThread())
             .subscribe(new Action1<Question>() {
@@ -100,7 +97,7 @@ public class QuestionsAdapter extends RecyclerView.Adapter<QuestionsAdapter.View
 
                 notifyDataSetChanged();
             }
-        });
+        });*/
     }
 
     @Override
