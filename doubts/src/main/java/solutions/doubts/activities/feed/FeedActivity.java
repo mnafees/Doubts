@@ -26,10 +26,9 @@ import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
 import android.widget.AdapterView;
 import android.widget.ListView;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-import com.getbase.floatingactionbutton.AddFloatingActionButton;
+import com.melnykov.fab.FloatingActionButton;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
@@ -46,7 +45,7 @@ public class FeedActivity extends ActionBarActivity {
 
     private static final String TAG = "FeedActivity";
 
-    private RecyclerView content;
+    private RecyclerView mRecyclerView;
     private CircleImageView profileImageView;
     private TextView name;
     private ViewGroup topProfileContainer;
@@ -63,13 +62,12 @@ public class FeedActivity extends ActionBarActivity {
         drawerLayout.setStatusBarBackgroundColor(getResources().getColor(R.color.primaryDark));
         mDrawerToggle = new ActionBarDrawerToggle(this, drawerLayout, 0, 0);
 
-        final RelativeLayout drawer = (RelativeLayout) findViewById(R.id.drawer);
-        this.content = (RecyclerView)findViewById(R.id.content);
-        LinearLayoutManager manager = new LinearLayoutManager(this);
+        mRecyclerView = (RecyclerView)findViewById(R.id.content);
+        final LinearLayoutManager manager = new LinearLayoutManager(this);
         manager.setOrientation(LinearLayoutManager.VERTICAL);
-        this.content.setLayoutManager(manager);
+        mRecyclerView.setLayoutManager(manager);
         final FeedAdapter feedAdapter = new FeedAdapter(this);
-        this.content.setAdapter(feedAdapter);
+        mRecyclerView.setAdapter(feedAdapter);
 
         final SwipeRefreshLayout swipeRefreshLayout = (SwipeRefreshLayout)findViewById(R.id.swipe_refresh_layout);
         swipeRefreshLayout.setColorSchemeColors(getResources().getColor(R.color.primary));
@@ -87,7 +85,7 @@ public class FeedActivity extends ActionBarActivity {
             }
         });
 
-        final AddFloatingActionButton addQuestionButton = (AddFloatingActionButton)findViewById(R.id.add_question_button);
+        final FloatingActionButton addQuestionButton = (FloatingActionButton)findViewById(R.id.add_question_button);
         addQuestionButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -95,9 +93,10 @@ public class FeedActivity extends ActionBarActivity {
                 startActivity(intent);
             }
         });
+        addQuestionButton.attachToRecyclerView(mRecyclerView);
 
         final List<DrawerListViewItem> list = new ArrayList<>();
-        final DrawerListViewItem logOutItem = new DrawerListViewItem(-1, "Log Out");
+        final DrawerListViewItem logOutItem = new DrawerListViewItem(-1, "Logout");
         list.add(logOutItem);
 
         /* BETA - Add Settings option */

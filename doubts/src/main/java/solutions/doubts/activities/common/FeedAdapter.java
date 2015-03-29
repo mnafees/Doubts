@@ -21,6 +21,7 @@ import org.apmem.tools.layouts.FlowLayout;
 
 import solutions.doubts.DoubtsApplication;
 import solutions.doubts.R;
+import solutions.doubts.activities.fullscreenimageview.FullscreenImageViewActivity;
 import solutions.doubts.api.models.Entity;
 import solutions.doubts.api.models.Feed;
 import solutions.doubts.api.models.Question;
@@ -35,7 +36,6 @@ public class FeedAdapter extends RecyclerView.Adapter<FeedAdapter.ViewHolder> {
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
 
-        public final Context context;
         public final View view;
         public final TextView question, username;
         public final ImageView imageView;
@@ -45,16 +45,9 @@ public class FeedAdapter extends RecyclerView.Adapter<FeedAdapter.ViewHolder> {
         public ViewHolder(final View view) {
             super(view);
             this.view = view;
-            this.context = view.getContext();
             this.question = (TextView)view.findViewById(R.id.title);
             this.username = (TextView)view.findViewById(R.id.username);
             this.imageView = (ImageView)view.findViewById(R.id.image);
-            this.imageView.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    /** @TODO: implement this */
-                }
-            });
             this.tagList = (FlowLayout)view.findViewById(R.id.tagList);
             this.time = (RelativeTimeTextView)view.findViewById(R.id.timestamp);
         }
@@ -65,9 +58,9 @@ public class FeedAdapter extends RecyclerView.Adapter<FeedAdapter.ViewHolder> {
         mContext = context;
         DoubtsApplication.getInstance().getBus().register(this);
         mFeed = new Feed();
-        if (!mFeed.loadLocalRealmData()) {
+        //if (!mFeed.loadLocalRealmData()) {
             update();
-        }
+        //}
     }
 
     @Override
@@ -108,9 +101,17 @@ public class FeedAdapter extends RecyclerView.Adapter<FeedAdapter.ViewHolder> {
         for (Entity tag : q.getTags()) {
             final View v = View.inflate(mContext, R.layout.layout_single_tag, null);
             final TextView textView = (TextView)v.findViewById(R.id.tag);
-            textView.setText("#" + tag.getName());
+            textView.setText("#" + tag.getName().replace(" ", ""));
             holder.tagList.addView(v);
         }
+        holder.imageView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                final Intent intent = new Intent(FeedAdapter.this.mContext,
+                        FullscreenImageViewActivity.class);
+                FeedAdapter.this.mContext.startActivity(intent);
+            }
+        });
     }
 
     @Override

@@ -70,6 +70,8 @@ public class DoubtsApplication extends Application {
     public void logOut() {
         // clear the Shared Preferences
         mSharedPreferences.edit().clear().apply();
+        // clear Realm
+        //Realm.getInstance(this).de
 
         // start MainActivity
         final Intent intent = new Intent(this, MainActivity.class);

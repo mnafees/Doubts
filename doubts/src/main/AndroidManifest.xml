@@ -62,6 +62,9 @@
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.CreateNewDoubt" >
         </activity>
+        <activity
+            android:name=".activities.fullscreenimageview.FullscreenImageViewActivity" >
+        </activity>
         <!-- BETA
         <activity
             android:name=".activities.settings.SettingsActivity"

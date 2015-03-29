@@ -25,6 +25,7 @@ import solutions.doubts.DoubtsApplication;
 import solutions.doubts.core.events.FeedUpdatedEvent;
 import solutions.doubts.core.events.NetworkEvent;
 import solutions.doubts.core.events.PageableDataEvent;
+import solutions.doubts.internal.RestConstants;
 
 public class Feed {
 
@@ -69,6 +70,7 @@ public class Feed {
     public void fetchNext() {
         final NetworkEvent networkEvent = NetworkEvent.newBuilder()
                 .operation(NetworkEvent.Operation.GETALL)
+                .url(RestConstants.API_ENDPOINT + "/api/v1/questions")
                 .clazz(Question.class)
                 .build();
         mNetworkEventId = networkEvent.getId();

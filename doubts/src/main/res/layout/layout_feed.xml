@@ -20,32 +20,31 @@
             android:id="@+id/swipe_refresh_layout"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_below="@+id/toolbar"
-            android:background="#F3E5F5">
+            android:layout_below="@+id/toolbar">
 
             <android.support.v7.widget.RecyclerView
                 android:id="@+id/content"
                 android:scrollbars="vertical"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:background="#F3E5F5" />
+                android:background="#F5F5F5" />
 
         </android.support.v4.widget.SwipeRefreshLayout>
 
         <android.support.v7.widget.Toolbar
             android:id="@+id/toolbar"
-            android:layout_height="wrap_content"
+            android:layout_height="?android:attr/actionBarSize"
             android:layout_width="match_parent"
-            android:minHeight="?attr/actionBarSize"
             android:background="?attr/colorPrimary" />
 
-        <com.getbase.floatingactionbutton.AddFloatingActionButton
+        <com.melnykov.fab.FloatingActionButton
             android:id="@+id/add_question_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            fab:fab_plusIconColor="@android:color/white"
+            android:src="@drawable/ic_add_white_24dp"
             fab:fab_colorNormal="@color/pink"
-            fab:fab_colorPressed="@color/pink_pressed"
+            fab:fab_colorPressed="@color/pink"
+            fab:fab_colorRipple="@color/pink_pressed"
             android:layout_alignParentBottom="true"
             android:layout_alignParentRight="true"
             android:layout_alignParentEnd="true"
