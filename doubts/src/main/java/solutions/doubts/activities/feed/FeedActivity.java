@@ -101,8 +101,8 @@ public class FeedActivity extends ActionBarActivity {
         addQuestionButton.attachToRecyclerView(mRecyclerView);
 
         final List<DrawerListViewItem> list = new ArrayList<>();
-        final DrawerListViewItem logOutItem = new DrawerListViewItem(-1, "Logout");
-        list.add(logOutItem);
+        list.add(new DrawerListViewItem(R.drawable.ic_bookmark_grey600_24dp, "Bookmarked posts"));
+        list.add(new DrawerListViewItem(-1, "Logout"));
 
         /* BETA - Add Settings option */
 
