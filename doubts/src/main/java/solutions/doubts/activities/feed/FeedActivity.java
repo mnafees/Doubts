@@ -5,10 +5,11 @@
 
 package solutions.doubts.activities.feed;
 
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.Configuration;
-import android.content.res.TypedArray;
 import android.os.Bundle;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v4.widget.SwipeRefreshLayout;
@@ -17,7 +18,6 @@ import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
-import android.util.TypedValue;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -29,6 +29,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import com.melnykov.fab.FloatingActionButton;
+import com.squareup.otto.Subscribe;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
@@ -40,6 +41,7 @@ import solutions.doubts.R;
 import solutions.doubts.activities.common.FeedAdapter;
 import solutions.doubts.activities.createdoubt.CreateDoubtActivity;
 import solutions.doubts.activities.profile.ProfileActivity;
+import solutions.doubts.core.events.LogoutEvent;
 
 public class FeedActivity extends ActionBarActivity {
 
@@ -57,6 +59,9 @@ public class FeedActivity extends ActionBarActivity {
 
         setContentView(R.layout.layout_feed);
         setSupportActionBar((Toolbar)findViewById(R.id.toolbar));
+        getSupportActionBar().setElevation(3.0f);
+
+        ((DoubtsApplication)getApplication()).getBus().register(this);
 
         final DrawerLayout drawerLayout = (DrawerLayout)findViewById(R.id.drawer_layout);
         drawerLayout.setStatusBarBackgroundColor(getResources().getColor(R.color.primaryDark));
@@ -107,8 +112,24 @@ public class FeedActivity extends ActionBarActivity {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 if (position == list.size() - 1) {
-                    // Log Out
-                    ((DoubtsApplication)getApplication()).logOut();
+                    // Logout
+                    final AlertDialog alertDialog = new AlertDialog.Builder(FeedActivity.this, AlertDialog.THEME_DEVICE_DEFAULT_LIGHT)
+                            .setMessage("Are you sure you want to logout?")
+                            .setCancelable(false)
+                            .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    ((DoubtsApplication)getApplication()).logout();
+                                }
+                            })
+                            .setNegativeButton("No", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    dialog.cancel();
+                                }
+                            })
+                            .create();
+                    alertDialog.show();
                 }
             }
         });
@@ -125,6 +146,11 @@ public class FeedActivity extends ActionBarActivity {
                 startActivity(intent);
             }
         });
+    }
+
+    @Subscribe
+    public void onLogoutEvent(final LogoutEvent event) {
+        finish();
     }
 
     @Override
@@ -159,16 +185,6 @@ public class FeedActivity extends ActionBarActivity {
             default:
                 return super.onOptionsItemSelected(item);
         }
-    }
-
-    private int getActionBarSize() {
-        TypedValue typedValue = new TypedValue();
-        int[] textSizeAttr = new int[]{android.R.attr.actionBarSize};
-        int indexOfAttrTextSize = 0;
-        TypedArray a = obtainStyledAttributes(typedValue.data, textSizeAttr);
-        int actionBarSize = a.getDimensionPixelSize(indexOfAttrTextSize, -1);
-        a.recycle();
-        return actionBarSize;
     }
 
     public void setImage(/* final String url */) {

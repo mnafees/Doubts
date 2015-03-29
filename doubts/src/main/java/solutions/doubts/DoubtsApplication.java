@@ -14,6 +14,7 @@ import com.squareup.otto.ThreadEnforcer;
 
 import solutions.doubts.api.models.AuthToken;
 import solutions.doubts.api.query.Query;
+import solutions.doubts.core.events.LogoutEvent;
 import solutions.doubts.internal.StringConstants;
 
 public class DoubtsApplication extends Application {
@@ -67,11 +68,13 @@ public class DoubtsApplication extends Application {
         mAuthToken = authToken;
     }
 
-    public void logOut() {
+    public void logout() {
         // clear the Shared Preferences
         mSharedPreferences.edit().clear().apply();
         // clear Realm
         //Realm.getInstance(this).de
+
+        mBus.post(new LogoutEvent());
 
         // start MainActivity
         final Intent intent = new Intent(this, MainActivity.class);
