@@ -7,10 +7,14 @@ package solutions.doubts.activities.common;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Color;
+import android.graphics.PorterDuff;
+import android.graphics.drawable.BitmapDrawable;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -68,6 +72,22 @@ public class FeedAdapter extends RecyclerView.Adapter<FeedAdapter.ViewHolder> {
                                                           int viewType) {
         final View view = LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.layout_card, parent, false);
+        final ImageButton bookmarkButton = (ImageButton)view.findViewById(R.id.bookmarkIconButton);
+        final BitmapDrawable hollowBookmarkDrawable = (BitmapDrawable)bookmarkButton.getDrawable();
+        hollowBookmarkDrawable.setColorFilter(Color.parseColor("#F44336"), PorterDuff.Mode.SRC_IN);
+        bookmarkButton.setImageDrawable(hollowBookmarkDrawable);
+        final BitmapDrawable solidBookmarkDrawable = (BitmapDrawable)mContext.getResources().getDrawable(R.drawable.ic_bookmark_black_36dp);
+        solidBookmarkDrawable.setColorFilter(Color.parseColor("#F44336"), PorterDuff.Mode.SRC_IN);
+        bookmarkButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (bookmarkButton.getDrawable().equals(hollowBookmarkDrawable)) {
+                    bookmarkButton.setImageDrawable(solidBookmarkDrawable);
+                } else {
+                    bookmarkButton.setImageDrawable(hollowBookmarkDrawable);
+                }
+            }
+        });
         view.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

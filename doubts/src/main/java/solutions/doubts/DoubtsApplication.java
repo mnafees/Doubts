@@ -40,7 +40,7 @@ public class DoubtsApplication extends Application {
                     mSharedPreferences.getString("auth_token", ""));
         }
 
-        new Query().init();
+        Query.init();
     }
 
     public static DoubtsApplication getInstance() {

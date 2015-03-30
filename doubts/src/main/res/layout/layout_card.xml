@@ -46,11 +46,11 @@
                 android:singleLine="false"
                 android:padding="10dp"
                 android:layout_gravity="center_horizontal"
-                android:layout_below="@+id/image"
                 android:layout_alignParentLeft="true"
                 android:layout_alignParentStart="false"
+                android:layout_below="@+id/authorContainer"
                 android:textColor="@android:color/black"
-                android:background="@drawable/border_bottom" />
+                android:textStyle="bold" />
 
             <org.apmem.tools.layouts.FlowLayout
                 android:id="@+id/tagList"
@@ -60,7 +60,8 @@
                 android:layout_below="@+id/title"
                 android:layout_marginLeft="10dp"
                 android:layout_marginTop="5dp"
-            />
+                android:background="@drawable/border_bottom"
+                android:layout_marginRight="10dp" />
 
             <com.github.curioustechizen.ago.RelativeTimeTextView
                 android:id="@+id/timestamp"
@@ -75,13 +76,15 @@
                 android:orientation="horizontal"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_below="@+id/tagList"
-                android:padding="10dp">
+                android:id="@+id/authorContainer"
+                android:layout_below="@+id/image"
+                android:paddingLeft="10dp"
+                android:paddingTop="10dp">
 
                 <de.hdodenhof.circleimageview.CircleImageView xmlns:app="http://schemas.android.com/apk/res-auto"
                     android:id="@+id/profileImage"
-                    android:layout_width="20dp"
-                    android:layout_height="20dp"
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
                     android:layout_below="@+id/tagList"
                     android:background="@android:color/transparent"
                     app:border_color="#757575"
@@ -99,7 +102,7 @@
                     android:layout_toRightOf="@+id/profileImage"
                     android:layout_marginLeft="4dp"
                     android:textColor="#757575"
-                    android:textSize="14.5dp"
+                    android:textSize="16dp"
                     android:layout_gravity="center_vertical" />
 
             </LinearLayout>
@@ -107,10 +110,12 @@
             <ImageButton
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:id="@+id/imageButton"
+                android:id="@+id/bookmarkIconButton"
                 android:src="@drawable/ic_bookmark_outline_black_36dp"
                 android:layout_alignParentRight="true"
-                android:background="@android:color/transparent" />
+                android:background="@android:color/transparent"
+                android:layout_below="@+id/image"
+                android:padding="7dp" />
 
         </RelativeLayout>
 

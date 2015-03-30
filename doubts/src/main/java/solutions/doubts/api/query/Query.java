@@ -36,27 +36,26 @@ public class Query {
     private static final String TAG = "Query";
     private static final MediaType MEDIA_TYPE_JSON = MediaType.parse("application/json");
 
-    private boolean mInitialised;
-    private OkHttpClient mOkHttpClient;
-    private Gson mGson;
-    private Handler mHandler;
+    private static boolean sInitialised;
+    private static OkHttpClient sOkHttpClient;
+    private static Gson sGson;
+    private static Handler sHandler;
 
-
-    public Query() {
-        mInitialised = false;
+    private Query() {
         DoubtsApplication.getInstance().getBus().register(this);
     }
 
-    public void init() {
-        if (mInitialised) {
-            Log.d(TAG, "Trying to initialise already initialised instance.");
+    public static void init() {
+        if (sInitialised) {
+            Log.w(TAG, "Trying to re-initialise Query instance.");
             return;
         } else {
-            mInitialised = true;
+            sInitialised = true;
+            new Query();
         }
 
-        mOkHttpClient = new OkHttpClient();
-        mOkHttpClient.interceptors().add(new Interceptor() {
+        sOkHttpClient = new OkHttpClient();
+        sOkHttpClient.interceptors().add(new Interceptor() {
             @Override
             public Response intercept(Chain chain) throws IOException {
                 final Request req = new Request.Builder()
@@ -69,7 +68,7 @@ public class Query {
                 return chain.proceed(req);
             }
         });
-        mGson = new GsonBuilder()
+        sGson = new GsonBuilder()
                 .setExclusionStrategies(new ExclusionStrategy() {
                     @Override
                     public boolean shouldSkipField(FieldAttributes f) {
@@ -94,12 +93,12 @@ public class Query {
                     }
                 })
                 .create();
-        mHandler = new Handler(DoubtsApplication.getInstance().getMainLooper());
+        sHandler = new Handler(DoubtsApplication.getInstance().getMainLooper());
     }
 
     @Subscribe
     public void onNetworkEvent(final NetworkEvent networkEvent) {
-        if (!mInitialised) {
+        if (!sInitialised) {
             throw new IllegalStateException("Did you forget to call init()?");
         }
 
@@ -127,11 +126,11 @@ public class Query {
                 .url(networkEvent.getUrl())
                 .addHeader(RestConstants.HEADER_AUTHORIZATION, DoubtsApplication
                         .getInstance().getAuthToken().toString())
-                .post(RequestBody.create(MEDIA_TYPE_JSON, mGson.toJson(
+                .post(RequestBody.create(MEDIA_TYPE_JSON, sGson.toJson(
                         networkEvent.getObject(),
                         networkEvent.getClazz())))
                 .build();
-        mOkHttpClient.newCall(req).enqueue(new Callback() {
+        sOkHttpClient.newCall(req).enqueue(new Callback() {
             @Override
             public void onFailure(Request request, IOException e) {
                 e.printStackTrace();
@@ -165,7 +164,7 @@ public class Query {
                         .getInstance().getAuthToken().toString())
                 .get()
                 .build();
-        mOkHttpClient.newCall(req).enqueue(new Callback() {
+        sOkHttpClient.newCall(req).enqueue(new Callback() {
             @Override
             public void onFailure(Request request, IOException e) {
                 e.printStackTrace();
@@ -178,7 +177,7 @@ public class Query {
                             ResourceEvent.newBuilder()
                                     .id(networkEvent.getId())
                                     .type(ResourceEvent.Type.SUCCESS)
-                                    .jsonObject(mGson.fromJson(
+                                    .jsonObject(sGson.fromJson(
                                             response.body().string(), JsonObject.class
                                     ))
                                     .build()
@@ -203,7 +202,7 @@ public class Query {
                 .get()
                 .build();
 
-        mOkHttpClient.newCall(req).enqueue(new Callback() {
+        sOkHttpClient.newCall(req).enqueue(new Callback() {
             @Override
             public void onFailure(Request request, IOException e) {
                 e.printStackTrace();
@@ -211,7 +210,7 @@ public class Query {
 
             @Override
             public void onResponse(final Response response) throws IOException {
-                final JsonObject json = mGson.fromJson(response.body().string(), JsonObject.class);
+                final JsonObject json = sGson.fromJson(response.body().string(), JsonObject.class);
 
                 final Class clazz = networkEvent.getClazz();
                 final String className = clazz.getName().toLowerCase()
@@ -219,7 +218,7 @@ public class Query {
                             clazz.getName().lastIndexOf(".") + 1
                         ) + "s";
 
-                mHandler.post(new Runnable() {
+                sHandler.post(new Runnable() {
                     @Override
                     public void run() {
                         DoubtsApplication.getInstance().getBus().post(
@@ -239,11 +238,11 @@ public class Query {
                 .url(networkEvent.getUrl())
                 .addHeader(RestConstants.HEADER_AUTHORIZATION, DoubtsApplication
                         .getInstance().getAuthToken().toString())
-                .put(RequestBody.create(MEDIA_TYPE_JSON, mGson.toJson(
+                .put(RequestBody.create(MEDIA_TYPE_JSON, sGson.toJson(
                         networkEvent.getObject(),
                         networkEvent.getClazz())))
                 .build();
-        mOkHttpClient.newCall(req).enqueue(new Callback() {
+        sOkHttpClient.newCall(req).enqueue(new Callback() {
             @Override
             public void onFailure(Request request, IOException e) {
                 e.printStackTrace();
@@ -277,7 +276,7 @@ public class Query {
                         .getInstance().getAuthToken().toString())
                 .delete()
                 .build();
-        mOkHttpClient.newCall(req).enqueue(new Callback() {
+        sOkHttpClient.newCall(req).enqueue(new Callback() {
             @Override
             public void onFailure(Request request, IOException e) {
                 e.printStackTrace();
