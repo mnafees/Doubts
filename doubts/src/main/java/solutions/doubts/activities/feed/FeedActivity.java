@@ -9,7 +9,9 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.res.Configuration;
+import android.net.ConnectivityManager;
 import android.os.Bundle;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v4.widget.SwipeRefreshLayout;
@@ -41,6 +43,8 @@ import solutions.doubts.R;
 import solutions.doubts.activities.common.FeedAdapter;
 import solutions.doubts.activities.createdoubt.CreateDoubtActivity;
 import solutions.doubts.activities.profile.ProfileActivity;
+import solutions.doubts.core.ConnectivityChangeReceiver;
+import solutions.doubts.core.events.ConnectivityChangedEvent;
 import solutions.doubts.core.events.LogoutEvent;
 
 public class FeedActivity extends ActionBarActivity {
@@ -52,6 +56,7 @@ public class FeedActivity extends ActionBarActivity {
     private TextView name;
     private ViewGroup topProfileContainer;
     private ActionBarDrawerToggle mDrawerToggle;
+    private TextView mConnectivityError;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -66,6 +71,8 @@ public class FeedActivity extends ActionBarActivity {
         final DrawerLayout drawerLayout = (DrawerLayout)findViewById(R.id.drawer_layout);
         drawerLayout.setStatusBarBackgroundColor(getResources().getColor(R.color.primaryDark));
         mDrawerToggle = new ActionBarDrawerToggle(this, drawerLayout, 0, 0);
+
+        mConnectivityError = (TextView)findViewById(R.id.no_internet_textview);
 
         mRecyclerView = (RecyclerView)findViewById(R.id.content);
         final LinearLayoutManager manager = new LinearLayoutManager(this);
@@ -146,11 +153,24 @@ public class FeedActivity extends ActionBarActivity {
                 startActivity(intent);
             }
         });
+
+        final IntentFilter intentFilter = new IntentFilter();
+        intentFilter.addAction(ConnectivityManager.CONNECTIVITY_ACTION);
+        registerReceiver(new ConnectivityChangeReceiver(), intentFilter);
     }
 
     @Subscribe
     public void onLogoutEvent(final LogoutEvent event) {
         finish();
+    }
+
+    @Subscribe
+    public void onConnectivityChangedEvent(final ConnectivityChangedEvent event) {
+        if (event.isConnected()) {
+            mConnectivityError.setVisibility(View.INVISIBLE);
+        } else {
+            mConnectivityError.setVisibility(View.VISIBLE);
+        }
     }
 
     @Override
