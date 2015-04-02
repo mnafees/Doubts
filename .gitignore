@@ -6,7 +6,6 @@ build
 .idea
 *.log
 *.class
-*.jar
 *.iml
 *.ipr
 *.iws
