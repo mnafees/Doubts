@@ -171,24 +171,40 @@ public class Query {
             }
 
             @Override
-            public void onResponse(Response response) throws IOException {
+            public void onResponse(final Response response) throws IOException {
                 if (response.code() == 200) {
-                    DoubtsApplication.getInstance().getBus().post(
-                            ResourceEvent.newBuilder()
-                                    .id(networkEvent.getId())
-                                    .type(ResourceEvent.Type.SUCCESS)
-                                    .jsonObject(sGson.fromJson(
-                                            response.body().string(), JsonObject.class
-                                    ))
-                                    .build()
-                    );
+                    sHandler.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            try {
+                                DoubtsApplication.getInstance().getBus().post(
+                                        ResourceEvent.newBuilder()
+                                                .id(networkEvent.getId())
+                                                .type(ResourceEvent.Type.SUCCESS)
+                                                .jsonObject(
+                                                        sGson.fromJson(
+                                                                response.body().string(), JsonObject.class
+                                                        )
+                                                )
+                                                .build()
+                                );
+                            } catch (IOException e) {
+
+                            }
+                        }
+                    });
                 } else {
-                    DoubtsApplication.getInstance().getBus().post(
-                            ResourceEvent.newBuilder()
-                                    .id(networkEvent.getId())
-                                    .type(ResourceEvent.Type.FAILURE)
-                                    .build()
-                    );
+                    sHandler.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            DoubtsApplication.getInstance().getBus().post(
+                                    ResourceEvent.newBuilder()
+                                            .id(networkEvent.getId())
+                                            .type(ResourceEvent.Type.FAILURE)
+                                            .build()
+                            );
+                        }
+                    });
                 }
             }
         });

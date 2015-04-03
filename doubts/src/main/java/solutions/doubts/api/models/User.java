@@ -8,6 +8,7 @@ public class User extends RealmObject implements Serializable {
 
     private int id;
     private String email;
+    private String bio;
     private String username;
     private String name;
     private S3Image image;
@@ -26,6 +27,14 @@ public class User extends RealmObject implements Serializable {
 
     public void setEmail(String email) {
         this.email = email;
+    }
+
+    public String getBio() {
+        return this.bio;
+    }
+
+    public void setBio(String bio) {
+        this.bio = bio;
     }
 
     public String getUsername() {

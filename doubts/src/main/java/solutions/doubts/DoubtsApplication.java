@@ -68,6 +68,14 @@ public class DoubtsApplication extends Application {
         mAuthToken = authToken;
     }
 
+    public int getUserId() {
+        return mSharedPreferences.getInt("user_id", -1);
+    }
+
+    public String getUsername() {
+        return mSharedPreferences.getString("username", "");
+    }
+
     public void logout() {
         // clear the Shared Preferences
         mSharedPreferences.edit().clear().apply();

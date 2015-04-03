@@ -94,7 +94,7 @@ public class FeedAdapter extends RecyclerView.Adapter<FeedAdapter.ViewHolder> {
                 final Intent intent = new Intent(FeedAdapter.this.mContext,
                         QuestionViewActivity.class);
                 intent.putExtra("question", (Question)view.getTag());
-                FeedAdapter.this.mContext.startActivity(intent);
+                //FeedAdapter.this.mContext.startActivity(intent);
             }
         });
         return new ViewHolder(view);

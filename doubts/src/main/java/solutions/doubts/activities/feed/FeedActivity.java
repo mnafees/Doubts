@@ -58,6 +58,9 @@ public class FeedActivity extends ActionBarActivity {
     private ActionBarDrawerToggle mDrawerToggle;
     private TextView mConnectivityError;
 
+    private final ConnectivityChangeReceiver mConnectivityChangeReceiver = new ConnectivityChangeReceiver();
+    private final IntentFilter mIntentFilter = new IntentFilter();
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -150,13 +153,25 @@ public class FeedActivity extends ActionBarActivity {
         this.topProfileContainer.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                startActivity(intent);
+                //startActivity(intent);
             }
         });
 
-        final IntentFilter intentFilter = new IntentFilter();
-        intentFilter.addAction(ConnectivityManager.CONNECTIVITY_ACTION);
-        registerReceiver(new ConnectivityChangeReceiver(), intentFilter);
+        mIntentFilter.addAction(ConnectivityManager.CONNECTIVITY_ACTION);
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+
+        registerReceiver(mConnectivityChangeReceiver, mIntentFilter);
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+
+        unregisterReceiver(mConnectivityChangeReceiver);
     }
 
     @Subscribe

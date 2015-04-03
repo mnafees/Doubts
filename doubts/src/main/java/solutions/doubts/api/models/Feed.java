@@ -83,11 +83,11 @@ public class Feed {
             final List<Question> questions = mGson.fromJson(event.getPageableData(),
                     new TypeToken<List<Question>>(){}.getType());
 
-            final Realm realm = Realm.getInstance(DoubtsApplication.getInstance());
+/*            final Realm realm = Realm.getInstance(DoubtsApplication.getInstance());
             realm.beginTransaction();
             realm.clear(Question.class);
             realm.copyToRealm(questions);
-            realm.commitTransaction();
+            realm.commitTransaction();*/
 
             mFeedItems.addAll(questions);
             postFeedUpdateEvent();

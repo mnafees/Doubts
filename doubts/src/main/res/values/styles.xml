@@ -12,6 +12,8 @@
     <color name="grey">#757575</color>
     <color name="lightGrey">#BDBDBD</color>
     <color name="dividerColor">#ebebeb</color>
+    <color name="loginBackground">#ffeb3b</color>
+    <color name="loginColorPrimary">#FDD835</color>
 
     <!-- Base application theme. -->
     <style name="AppTheme" parent="@style/Theme.AppCompat.NoActionBar">
@@ -24,18 +26,16 @@
         <item name="colorControlHighlight">@color/textEditBottom</item>
     </style>
 
-    <style name="AppTheme.LoginTheme">
-        <item name="android:windowBackground">@color/purple_very_light</item>
-        <item name="colorControlNormal">@color/pink</item>
+    <style name="AppTheme.LoginTheme" parent="@style/Theme.AppCompat.NoActionBar">
+        <item name="colorPrimary">@color/loginColorPrimary</item>
+        <item name="android:windowBackground">@color/loginBackground</item>
         <item name="android:buttonStyle">@style/AppTheme.LoginButton</item>
-        <item name="android:windowActionBar">false</item>
-        <item name="android:textColor">#892ca0</item>
         <item name="android:editTextStyle">@style/AppTheme.LoginTheme.EditText</item>
     </style>
 
     <style name="AppTheme.LoginTheme.EditText" parent="Widget.AppCompat.EditText">
-        <item name="android:textColor">#892ca0</item>
-        <item name="android:textColorHint">#CE93D8</item>
+        <item name="android:textColor">#546E7A</item>
+        <item name="android:textColorHint">#78909C</item>
         <item name="android:textCursorDrawable">@null</item>
     </style>
 
@@ -66,15 +66,9 @@
     <style name="AppTheme.LoginButton">
         <item name="android:gravity">center_vertical|center_horizontal</item>
         <item name="android:textColor">@android:color/white</item>
-        <item name="android:paddingBottom">10dp</item>
-        <item name="android:paddingTop">10dp</item>
-        <item name="android:paddingLeft">25dp</item>
-        <item name="android:paddingRight">25dp</item>
-        <item name="android:textSize">13sp</item>
         <item name="android:background">@drawable/login_button</item>
         <item name="android:focusable">true</item>
         <item name="android:clickable">true</item>
-        <item name="android:textAllCaps">true</item>
     </style>
 
 </resources>

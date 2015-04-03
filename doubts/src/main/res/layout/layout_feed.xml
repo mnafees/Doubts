@@ -59,12 +59,11 @@
             android:layout_below="@+id/toolbar"
             android:layout_alignParentLeft="true"
             android:layout_alignParentStart="true"
-            android:textSize="20dp"
-            android:textStyle="italic"
+            android:textSize="16dp"
+            android:textStyle="bold|italic"
             android:padding="10dp"
             android:textColor="@android:color/white"
-            android:background="#D32F2F"
-            android:visibility="invisible" />
+            android:background="#D32F2F" />
 
     </RelativeLayout>
 

@@ -25,24 +25,35 @@ import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
 import android.widget.EditText;
 
+import com.google.gson.ExclusionStrategy;
+import com.google.gson.FieldAttributes;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.squareup.otto.Subscribe;
 import com.squareup.picasso.Picasso;
 import com.squareup.picasso.Transformation;
 
 import de.hdodenhof.circleimageview.CircleImageView;
+import io.realm.RealmObject;
+import solutions.doubts.DoubtsApplication;
 import solutions.doubts.R;
 import solutions.doubts.activities.profile.fragments.AboutFragment;
 import solutions.doubts.activities.profile.fragments.AnswersFragment;
 import solutions.doubts.activities.profile.fragments.QuestionsFragment;
+import solutions.doubts.api.models.User;
+import solutions.doubts.core.events.NetworkEvent;
+import solutions.doubts.core.events.ResourceEvent;
 import solutions.doubts.core.util.ColorHolder;
 import solutions.doubts.core.util.PaletteHelperUtil;
 import solutions.doubts.core.util.PaletteHelperUtilListener;
+import solutions.doubts.internal.RestConstants;
 import solutions.doubts.thirdparty.ObservableVerticalScrollView;
 import solutions.doubts.thirdparty.SlidingTabLayout;
 import solutions.doubts.transitions.ChangeBoundsOnScrollTransition;
 
 public class ProfileActivity extends ActionBarActivity implements PaletteHelperUtilListener,
         ObservableVerticalScrollView.OnScrollCallback {
-    public static final String TAG = ProfileActivity.class.getName();
+    public static final String TAG = "ProfileActivity";
 
     private View mTopPanelContainer;
 
@@ -61,12 +72,15 @@ public class ProfileActivity extends ActionBarActivity implements PaletteHelperU
     private View mTopPanel;
 
     private boolean mEditingMode;
+    private int mNetworkEventId;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.layout_profile);
+
+        ((DoubtsApplication)getApplication()).getBus().register(this);
 
         mTopPanelContainer = findViewById(R.id.topPanelContainer);
         final View expandedTopPanel = getLayoutInflater().inflate(R.layout.layout_topbar_expanded, (ViewGroup) this.mTopPanelContainer, false);
@@ -121,7 +135,47 @@ public class ProfileActivity extends ActionBarActivity implements PaletteHelperU
         });
 
         mProfileImage = (CircleImageView) expandedTopPanel.findViewById(R.id.profileImage);
-        setImage();
+
+        startNetworkQuery();
+    }
+
+    private void startNetworkQuery() {
+        final NetworkEvent networkEvent = NetworkEvent.newBuilder()
+                .operation(NetworkEvent.Operation.GET)
+                .url(
+                        RestConstants.API_ENDPOINT + "/api/v1/users/" +
+                                Integer.toString(((DoubtsApplication)getApplication()).getUserId()) + "/" +
+                                ((DoubtsApplication)getApplication()).getUsername()
+                )
+                .build();
+        mNetworkEventId = networkEvent.getId();
+        networkEvent.post();
+    }
+
+    @Subscribe
+    public void onResourceEvent(final ResourceEvent event) {
+        if (event.getId() == mNetworkEventId) {
+            if (event.getType() == ResourceEvent.Type.FAILURE) {
+
+            } else {
+                final Gson gson = new GsonBuilder()
+                        .setExclusionStrategies(new ExclusionStrategy() {
+                            @Override
+                            public boolean shouldSkipField(FieldAttributes f) {
+                                return f.getDeclaringClass().equals(RealmObject.class);
+                            }
+
+                            @Override
+                            public boolean shouldSkipClass(Class<?> clazz) {
+                                return false;
+                            }
+                        })
+                        .create();
+                final User user = gson.fromJson(event.getJsonObject(), User.class);
+                mName.setText(user.getName());
+                mBio.setText(user.getBio());
+            }
+        }
     }
 
     private void setupActionBar() {
