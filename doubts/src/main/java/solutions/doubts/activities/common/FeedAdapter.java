@@ -91,10 +91,10 @@ public class FeedAdapter extends RecyclerView.Adapter<FeedAdapter.ViewHolder> {
         view.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                final Intent intent = new Intent(FeedAdapter.this.mContext,
+                /*final Intent intent = new Intent(FeedAdapter.this.mContext,
                         QuestionViewActivity.class);
                 intent.putExtra("question", (Question)view.getTag());
-                //FeedAdapter.this.mContext.startActivity(intent);
+                FeedAdapter.this.mContext.startActivity(intent);*/
             }
         });
         return new ViewHolder(view);
