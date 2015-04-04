@@ -44,7 +44,8 @@
         android:layout_height="fill_parent"
         android:layout_below="@+id/action_bar">
 
-        <LinearLayout
+        <org.apmem.tools.layouts.FlowLayout
+            android:orientation="horizontal"
             android:id="@+id/tags_container"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -75,7 +76,7 @@
                 android:textCursorDrawable="@null"
                 android:background="@android:color/transparent"/>
 
-        </LinearLayout>
+        </org.apmem.tools.layouts.FlowLayout>
 
         <ImageView
             android:layout_width="match_parent"
