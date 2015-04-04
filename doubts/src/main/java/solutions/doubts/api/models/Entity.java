@@ -43,11 +43,11 @@ public class Entity extends RealmObject implements Serializable {
         return new Builder();
     }
 
-    private static class Builder {
+    public static class Builder {
 
         Entity mTag;
 
-        public Builder() {
+        private Builder() {
             mTag = new Entity();
         }
 
