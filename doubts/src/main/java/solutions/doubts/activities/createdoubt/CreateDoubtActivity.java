@@ -16,7 +16,6 @@ import android.support.v7.app.ActionBarActivity;
 import android.support.v7.widget.Toolbar;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.util.Log;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -24,11 +23,14 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.melnykov.fab.FloatingActionButton;
 import com.rengwuxian.materialedittext.MaterialEditText;
+import com.squareup.otto.Subscribe;
+
+import org.apmem.tools.layouts.FlowLayout;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -36,14 +38,18 @@ import java.util.List;
 import solutions.doubts.DoubtsApplication;
 import solutions.doubts.R;
 import solutions.doubts.api.models.Question;
+import solutions.doubts.core.events.NetworkEvent;
+import solutions.doubts.core.events.ResourceEvent;
+import solutions.doubts.internal.RestConstants;
 
 public class CreateDoubtActivity extends ActionBarActivity {
 
     private static final String TAG = "CreateDoubtActivity";
     private static final int REQUEST_IMAGE_CAPTURE = 1;
 
-    private LinearLayout mTagsContainer;
+    private FlowLayout mTagsContainer;
     private EditText mTitle;
+    private EditText mDescription;
     private EditText mTags;
     private ImageView mImageView;
     private FloatingActionButton mCreateDoubtButton;
@@ -51,6 +57,7 @@ public class CreateDoubtActivity extends ActionBarActivity {
     private final List<String> mTagsList = new ArrayList<>();
     private String mLastEnteredTag;
     private int mTagIndex = 1;
+    private int mNetworkId;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -67,9 +74,10 @@ public class CreateDoubtActivity extends ActionBarActivity {
             getSupportActionBar().setStackedBackgroundDrawable(new ColorDrawable(Color.parseColor("#000000ff")));
         }
 
-        mTagsContainer = (LinearLayout)findViewById(R.id.tags_container);
+        mTagsContainer = (FlowLayout)findViewById(R.id.tags_container);
 
         mTitle = (MaterialEditText)findViewById(R.id.title);
+        mDescription = (EditText)findViewById(R.id.description_edit_text);
 
         mTags = (EditText)findViewById(R.id.tags_edit_text);
         mTags.addTextChangedListener(new TextWatcher() {
@@ -112,7 +120,6 @@ public class CreateDoubtActivity extends ActionBarActivity {
                 if (keyCode == KeyEvent.KEYCODE_DEL) {
                     if (mTags.getText().length() == 0 &&
                             !mTagsList.isEmpty()) {
-                        Log.d(TAG, "here");
                         --mTagIndex;
                         mTagsContainer.removeViewAt(mTagIndex);
                         mTags.setText("#" + mLastEnteredTag);
@@ -140,11 +147,32 @@ public class CreateDoubtActivity extends ActionBarActivity {
             public void onClick(View v) {
                 final Question q = Question.newBuilder()
                         .title(mTitle.getText().toString())
+                        .description(mDescription.getText().toString())
+                        .tags(mTagsList)
                         .build();
-                //DoubtsApplication.getInstance().getBus().post(new NetworkEvent(NetworkEvent.Model.QUESTION,
-                //        NetworkEvent.Operation.CREATE, q));
+                final NetworkEvent networkEvent = NetworkEvent.newBuilder()
+                        .url(RestConstants.API_ENDPOINT + "/api/v1/questions")
+                        .operation(NetworkEvent.Operation.CREATE)
+                        .clazz(Question.class)
+                        .object(q)
+                        .build();
+                mNetworkId = networkEvent.getId();
+                networkEvent.post();
             }
         });
+    }
+
+    @Subscribe
+    public void onResourceEvent(final ResourceEvent event) {
+        if (event.getId() == mNetworkId) {
+            if (event.getType() == ResourceEvent.Type.FAILURE) {
+
+            } else {
+                // success
+                Toast.makeText(this, "New question created!", Toast.LENGTH_SHORT).show();
+                finish();
+            }
+        }
     }
 
     @Override
@@ -170,7 +198,7 @@ public class CreateDoubtActivity extends ActionBarActivity {
         if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == RESULT_OK) {
             final Bundle extras = data.getExtras();
             final Bitmap imageBitmap = (Bitmap)extras.get("data");
-            mImageView.setScaleType(ImageView.ScaleType.FIT_CENTER);
+            mImageView.setScaleType(ImageView.ScaleType.FIT_XY);
             mImageView.setImageBitmap(imageBitmap);
         }
     }
