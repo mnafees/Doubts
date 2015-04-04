@@ -153,7 +153,7 @@ public class FeedActivity extends ActionBarActivity {
         this.topProfileContainer.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //startActivity(intent);
+                startActivity(intent);
             }
         });
 
