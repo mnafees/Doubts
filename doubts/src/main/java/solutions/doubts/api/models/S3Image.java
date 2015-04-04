@@ -13,6 +13,7 @@ public class S3Image extends RealmObject implements Serializable {
 
     private int id;
     private String url;
+    private String key;
 
     public int getId() {
         return this.id;
@@ -28,5 +29,13 @@ public class S3Image extends RealmObject implements Serializable {
 
     public void setUrl(String url) {
         this.url = url;
+    }
+
+    public String getKey() {
+        return this.key;
+    }
+
+    public void setKey(String key) {
+        this.key = key;
     }
 }
