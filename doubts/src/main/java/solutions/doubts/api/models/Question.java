@@ -6,6 +6,7 @@
 package solutions.doubts.api.models;
 
 import java.io.Serializable;
+import java.util.List;
 
 import io.realm.RealmList;
 import io.realm.RealmObject;
@@ -123,8 +124,15 @@ public class Question extends RealmObject implements Serializable {
             return this;
         }
 
-        public Builder tags(final RealmList<Entity> tags) {
-            mQuestion.tags = tags;
+        public Builder tags(final List<String> tags) {
+            final RealmList<Entity> list = new RealmList<>();
+            for (final String tag: tags) {
+                final Entity entity = Entity.newBuilder()
+                        .name(tag)
+                        .build();
+                list.add(entity);
+            }
+            mQuestion.tags = list;
             return this;
         }
 

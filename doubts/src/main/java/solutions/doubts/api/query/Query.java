@@ -83,8 +83,8 @@ public class Query {
                 .addSerializationExclusionStrategy(new ExclusionStrategy() {
                     @Override
                     public boolean shouldSkipField(FieldAttributes f) {
-                        return (f.getName().equals("id") && f.getDeclaringClass().equals(int.class)) ||
-                               (f.getName().equals("slug") && f.getDeclaringClass().equals(String.class));
+                        return (f.getName().equals("id")) ||
+                               (f.getName().equals("slug") && f.getDeclaringClass() == String.class);
                     }
 
                     @Override
@@ -139,19 +139,29 @@ public class Query {
             @Override
             public void onResponse(Response response) throws IOException {
                 if (response.code() == 200) {
-                    DoubtsApplication.getInstance().getBus().post(
-                            ResourceEvent.newBuilder()
-                                    .id(networkEvent.getId())
-                                    .type(ResourceEvent.Type.SUCCESS)
-                                    .build()
-                    );
+                    sHandler.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            DoubtsApplication.getInstance().getBus().post(
+                                    ResourceEvent.newBuilder()
+                                            .id(networkEvent.getId())
+                                            .type(ResourceEvent.Type.SUCCESS)
+                                            .build()
+                            );
+                        }
+                    });
                 } else {
-                    DoubtsApplication.getInstance().getBus().post(
-                            ResourceEvent.newBuilder()
-                                    .id(networkEvent.getId())
-                                    .type(ResourceEvent.Type.FAILURE)
-                                    .build()
-                    );
+                    sHandler.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            DoubtsApplication.getInstance().getBus().post(
+                                    ResourceEvent.newBuilder()
+                                            .id(networkEvent.getId())
+                                            .type(ResourceEvent.Type.FAILURE)
+                                            .build()
+                            );
+                        }
+                    });
                 }
             }
         });
@@ -173,24 +183,23 @@ public class Query {
             @Override
             public void onResponse(final Response response) throws IOException {
                 if (response.code() == 200) {
+                    JsonObject jsonObject = null;
+                    try {
+                        jsonObject = sGson.fromJson(response.body().string(), JsonObject.class);
+                    } catch (IOException e) {
+
+                    }
+                    final JsonObject json = jsonObject;
                     sHandler.post(new Runnable() {
                         @Override
                         public void run() {
-                            try {
-                                DoubtsApplication.getInstance().getBus().post(
-                                        ResourceEvent.newBuilder()
-                                                .id(networkEvent.getId())
-                                                .type(ResourceEvent.Type.SUCCESS)
-                                                .jsonObject(
-                                                        sGson.fromJson(
-                                                                response.body().string(), JsonObject.class
-                                                        )
-                                                )
-                                                .build()
-                                );
-                            } catch (IOException e) {
-
-                            }
+                            DoubtsApplication.getInstance().getBus().post(
+                                    ResourceEvent.newBuilder()
+                                            .id(networkEvent.getId())
+                                            .type(ResourceEvent.Type.SUCCESS)
+                                            .jsonObject(json)
+                                            .build()
+                            );
                         }
                     });
                 } else {

@@ -57,6 +57,7 @@
         </activity>
         <activity
             android:name=".activities.profile.ProfileActivity"
+            android:parentActivityName=".activities.feed.FeedActivity"
             android:theme="@style/AppTheme.ProfileTheme" >
         </activity>
         <activity

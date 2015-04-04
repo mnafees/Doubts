@@ -20,12 +20,14 @@ import android.widget.TextView;
 
 import com.github.curioustechizen.ago.RelativeTimeTextView;
 import com.squareup.otto.Subscribe;
+import com.squareup.picasso.Picasso;
 
 import org.apmem.tools.layouts.FlowLayout;
 
 import solutions.doubts.DoubtsApplication;
 import solutions.doubts.R;
 import solutions.doubts.activities.fullscreenimageview.FullscreenImageViewActivity;
+import solutions.doubts.activities.profile.ProfileActivity;
 import solutions.doubts.api.models.Entity;
 import solutions.doubts.api.models.Feed;
 import solutions.doubts.api.models.Question;
@@ -97,6 +99,16 @@ public class FeedAdapter extends RecyclerView.Adapter<FeedAdapter.ViewHolder> {
                 FeedAdapter.this.mContext.startActivity(intent);*/
             }
         });
+        final View authorContainer = (View)view.findViewById(R.id.authorContainer);
+        authorContainer.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                final Intent intent = new Intent(FeedAdapter.this.mContext,
+                        ProfileActivity.class);
+                intent.putExtra("user", ((Question)view.getTag()).getAuthor());
+                FeedAdapter.this.mContext.startActivity(intent);
+            }
+        });
         return new ViewHolder(view);
     }
 
@@ -132,6 +144,10 @@ public class FeedAdapter extends RecyclerView.Adapter<FeedAdapter.ViewHolder> {
                 FeedAdapter.this.mContext.startActivity(intent);
             }
         });
+        Picasso.with(FeedAdapter.this.mContext)
+                .load(q.getAuthor().getImage().getUrl())
+                //.resize(holder.imageView.getWidth(), holder.imageView.getHeight())
+                .into(holder.imageView);
     }
 
     @Override
