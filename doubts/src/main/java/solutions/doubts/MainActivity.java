@@ -10,7 +10,7 @@ import android.accounts.AccountManager;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
-import android.support.v7.app.ActionBarActivity;
+import android.support.v7.app.AppCompatActivity;
 import android.widget.Toast;
 
 import java.util.Collections;
@@ -24,7 +24,7 @@ import solutions.doubts.api.models.AuthToken;
 /**
  * The base activity of the app.
  */
-public class MainActivity extends ActionBarActivity {
+public class MainActivity extends AppCompatActivity {
 
     private static final String TAG = "MainActivity";
 
@@ -34,7 +34,7 @@ public class MainActivity extends ActionBarActivity {
 
         final AccountManager manager = (AccountManager) getSystemService(ACCOUNT_SERVICE);
         final Account[] list = manager.getAccounts();
-        String gmail = null;
+        String gmail = "";
         for (final Account account: list) {
             if(account.type.equalsIgnoreCase("com.google"))
             {
@@ -42,9 +42,10 @@ public class MainActivity extends ActionBarActivity {
                 break;
             }
         }
+        gmail = "nafees.technocool@gmail.com";
         final List<String> allowedEmailsList = new LinkedList<>();
-        final String[] allowedEmails = {"nafees.technocool@gmail.com", "aviraldg@gmail.com",
-                "anirban.loyola@gmail.com", "kishalay.raj@gmail.com", "aakashsharma2370@gmail.com"};
+        final String[] allowedEmails = {"nafees.technocool@gmail.com", "aviraldg@gmail.com", "nafisa.zainab0195@gmail.com",
+                "anirban.loyola@gmail.com", "kishalayraj@gmail.com", "aakashsharma2370@gmail.com"};
         Collections.addAll(allowedEmailsList, allowedEmails);
         if (allowedEmailsList.contains(gmail)) {
             if (getIntent().getData() != null) {

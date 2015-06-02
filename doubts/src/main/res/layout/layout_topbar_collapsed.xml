@@ -32,7 +32,7 @@
                 app:border_width="1dp" />
 
             <TextView
-                android:id="@+id/name"
+                android:id="@+id/email_username"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="10dp"

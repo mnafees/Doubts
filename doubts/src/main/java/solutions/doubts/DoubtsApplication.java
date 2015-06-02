@@ -8,18 +8,21 @@ package solutions.doubts;
 import android.app.Application;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.widget.Toast;
 
 import com.squareup.otto.Bus;
+import com.squareup.otto.Subscribe;
 import com.squareup.otto.ThreadEnforcer;
 
 import solutions.doubts.api.models.AuthToken;
-import solutions.doubts.api.query.Query;
 import solutions.doubts.core.events.LogoutEvent;
+import solutions.doubts.core.events.ResourceEvent;
 import solutions.doubts.internal.StringConstants;
 
 public class DoubtsApplication extends Application {
 
     private static final String TAG = "DoubtsApplication";
+
     private SharedPreferences mSharedPreferences;
     private AuthToken mAuthToken;
     private Bus mBus;
@@ -32,6 +35,7 @@ public class DoubtsApplication extends Application {
 
         INSTANCE = this;
         mBus = new Bus(ThreadEnforcer.MAIN);
+        mBus.register(this);
         mSharedPreferences = getSharedPreferences(StringConstants.PREFERENCES_NAME, 0);
         int userId = mSharedPreferences.getInt("user_id", -1);
         if (userId != -1) {
@@ -39,13 +43,12 @@ public class DoubtsApplication extends Application {
                     mSharedPreferences.getString("username", ""),
                     mSharedPreferences.getString("auth_token", ""));
         }
-
-        Query.init();
     }
 
     public static DoubtsApplication getInstance() {
         return INSTANCE;
     }
+
 
     public Bus getBus() {
         return mBus;
@@ -74,6 +77,14 @@ public class DoubtsApplication extends Application {
 
     public String getUsername() {
         return mSharedPreferences.getString("username", "");
+    }
+
+    @Subscribe
+    public void onResourceEvent(final ResourceEvent event) {
+        if (event.getType() == ResourceEvent.Type.UNAUTHORISED) {
+            Toast.makeText(this, "Please login again to continue", Toast.LENGTH_LONG).show();
+            logout();
+        }
     }
 
     public void logout() {

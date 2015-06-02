@@ -14,13 +14,13 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewTreeObserver;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.github.curioustechizen.ago.RelativeTimeTextView;
 import com.squareup.otto.Subscribe;
-import com.squareup.picasso.Picasso;
 
 import org.apmem.tools.layouts.FlowLayout;
 
@@ -44,7 +44,7 @@ public class FeedAdapter extends RecyclerView.Adapter<FeedAdapter.ViewHolder> {
 
         public final View view;
         public final TextView question, username;
-        public final ImageView imageView;
+        public final ImageView imageView, profileImageView;
         public final FlowLayout tagList;
         public final RelativeTimeTextView time;
 
@@ -54,6 +54,7 @@ public class FeedAdapter extends RecyclerView.Adapter<FeedAdapter.ViewHolder> {
             this.question = (TextView)view.findViewById(R.id.title);
             this.username = (TextView)view.findViewById(R.id.username);
             this.imageView = (ImageView)view.findViewById(R.id.image);
+            this.profileImageView = (ImageView)view.findViewById(R.id.profileImage);
             this.tagList = (FlowLayout)view.findViewById(R.id.tagList);
             this.time = (RelativeTimeTextView)view.findViewById(R.id.timestamp);
         }
@@ -144,10 +145,20 @@ public class FeedAdapter extends RecyclerView.Adapter<FeedAdapter.ViewHolder> {
                 FeedAdapter.this.mContext.startActivity(intent);
             }
         });
-        Picasso.with(FeedAdapter.this.mContext)
-                .load(q.getAuthor().getImage().getUrl())
-                //.resize(holder.imageView.getWidth(), holder.imageView.getHeight())
-                .into(holder.imageView);
+        holder.profileImageView.getViewTreeObserver().addOnGlobalLayoutListener(
+                new ViewTreeObserver.OnGlobalLayoutListener() {
+                    @Override
+                    public void onGlobalLayout() {
+                        if (q.getAuthor().getImage() != null) {
+                            /*Picasso.with(FeedAdapter.this.mContext)
+                                    .load(q.getAuthor().getImage().getUrl())
+                                    .resize(holder.profileImageView.getWidth(),
+                                            holder.profileImageView.getHeight())
+                                    .into(holder.profileImageView);*/
+                        }
+                    }
+                }
+        );
     }
 
     @Override

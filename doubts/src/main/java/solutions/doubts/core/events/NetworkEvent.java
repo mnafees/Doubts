@@ -7,8 +7,6 @@ package solutions.doubts.core.events;
 
 import java.util.Random;
 
-import solutions.doubts.DoubtsApplication;
-
 public class NetworkEvent {
 
     public enum Operation {
@@ -19,17 +17,12 @@ public class NetworkEvent {
         DELETE
     }
 
-    private int mId; // generated automatically
     private String mUrl;
     private Class mClazz;
     private Operation mOperation;
     private Object mObject;
 
     private NetworkEvent() {}
-
-    public int getId() {
-        return mId;
-    }
 
     public String getUrl() {
         return mUrl;
@@ -81,15 +74,33 @@ public class NetworkEvent {
         }
 
         public NetworkEvent build() {
-            // randomly generate an ID for this event
-            mNetworkEvent.mId = new Random().nextInt();
             return mNetworkEvent;
         }
 
     }
 
-    public void post() {
-        DoubtsApplication.getInstance().getBus().post(this);
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        NetworkEvent that = (NetworkEvent) o;
+
+        if (!mClazz.equals(that.mClazz)) return false;
+        if (!mObject.equals(that.mObject)) return false;
+        if (mOperation != that.mOperation) return false;
+        if (!mUrl.equals(that.mUrl)) return false;
+
+        return true;
     }
 
+    @Override
+    public int hashCode() {
+        int result = new Random().nextInt();
+        result = 31 * result + mUrl.hashCode();
+        result = 31 * result + mClazz.hashCode();
+        result = 31 * result + mOperation.hashCode();
+        result = 31 * result + mObject.hashCode();
+        return result;
+    }
 }

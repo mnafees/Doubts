@@ -9,14 +9,9 @@ import com.google.gson.JsonArray;
 
 public class PageableDataEvent {
 
-    private int mId; // the id of the network event that caused this event
     private JsonArray mPageableData;
 
     private PageableDataEvent() {}
-
-    public int getId() {
-        return mId;
-    }
 
     public JsonArray getPageableData() {
         return mPageableData;
@@ -32,12 +27,6 @@ public class PageableDataEvent {
 
         private Builder() {
             mEvent = new PageableDataEvent();
-        }
-
-        // the id of the network event that caused this event
-        public Builder id(final int id) {
-            mEvent.mId = id;
-            return this;
         }
 
         public Builder pageableData(final JsonArray data) {

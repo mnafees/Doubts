@@ -64,7 +64,7 @@
                     android:id="@+id/textView4"
                     android:layout_gravity="center_horizontal"
                     android:textSize="12sp"
-                    android:textColor="@color/lightGrey" />
+                    android:textColor="@color/grey_light" />
             </LinearLayout>
 
             <LinearLayout
@@ -100,7 +100,7 @@
                     android:id="@+id/textView5"
                     android:layout_gravity="center_horizontal"
                     android:textSize="12sp"
-                    android:textColor="@color/lightGrey"/>
+                    android:textColor="@color/grey_light"/>
             </LinearLayout>
 
             <LinearLayout
@@ -136,7 +136,7 @@
                     android:id="@+id/textView6"
                     android:layout_gravity="center_horizontal"
                     android:textSize="12sp"
-                    android:textColor="@color/lightGrey"/>
+                    android:textColor="@color/grey_light"/>
             </LinearLayout>
         </LinearLayout>
 

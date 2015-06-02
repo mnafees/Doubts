@@ -24,7 +24,6 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.melnykov.fab.FloatingActionButton;
 import com.rengwuxian.materialedittext.MaterialEditText;
@@ -156,15 +155,15 @@ public class CreateDoubtActivity extends ActionBarActivity {
                         .clazz(Question.class)
                         .object(q)
                         .build();
-                mNetworkId = networkEvent.getId();
-                networkEvent.post();
+                //mNetworkId = networkEvent.getId();
+                //networkEvent.post();
             }
         });
     }
 
     @Subscribe
     public void onResourceEvent(final ResourceEvent event) {
-        if (event.getId() == mNetworkId) {
+        /*if (event.getId() == mNetworkId) {
             if (event.getType() == ResourceEvent.Type.FAILURE) {
 
             } else {
@@ -172,7 +171,7 @@ public class CreateDoubtActivity extends ActionBarActivity {
                 Toast.makeText(this, "New question created!", Toast.LENGTH_SHORT).show();
                 finish();
             }
-        }
+        }*/
     }
 
     @Override

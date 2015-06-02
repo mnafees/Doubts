@@ -6,7 +6,6 @@
 package solutions.doubts.activities.profile;
 
 import android.content.res.TypedArray;
-import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.ColorDrawable;
@@ -24,18 +23,10 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
 import android.widget.EditText;
-import android.widget.Toast;
 
-import com.google.gson.ExclusionStrategy;
-import com.google.gson.FieldAttributes;
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import com.squareup.otto.Subscribe;
-import com.squareup.picasso.Picasso;
-import com.squareup.picasso.Transformation;
 
 import de.hdodenhof.circleimageview.CircleImageView;
-import io.realm.RealmObject;
 import solutions.doubts.DoubtsApplication;
 import solutions.doubts.R;
 import solutions.doubts.activities.profile.fragments.AboutFragment;
@@ -103,7 +94,7 @@ public class ProfileActivity extends ActionBarActivity implements PaletteHelperU
 
         mPaletteHelperUtil.setPaletteHelperUtilListener(this);
 
-        mName = (EditText) expandedTopPanel.findViewById(R.id.name);
+        //mName = (EditText) expandedTopPanel.findViewById(R.id.email_name);
         mName.setFocusable(false);
         mName.setFocusableInTouchMode(false);
         mName.setClickable(false);
@@ -167,13 +158,13 @@ public class ProfileActivity extends ActionBarActivity implements PaletteHelperU
 
                 )
                 .build();
-        mNetworkEventId = networkEvent.getId();
-        networkEvent.post();
+        //mNetworkEventId = networkEvent.getId();
+        //networkEvent.post();
     }
 
     @Subscribe
     public void onResourceEvent(final ResourceEvent event) {
-        if (event.getId() == mNetworkEventId) {
+        /*if (event.getId() == mNetworkEventId) {
             if (event.getType() == ResourceEvent.Type.FAILURE) {
 
             } else {
@@ -205,7 +196,7 @@ public class ProfileActivity extends ActionBarActivity implements PaletteHelperU
                 // success
                 Toast.makeText(this, "You are now following this user", Toast.LENGTH_SHORT).show();
             }
-        }
+        }*/
     }
 
     private void setupActionBar() {
@@ -219,7 +210,7 @@ public class ProfileActivity extends ActionBarActivity implements PaletteHelperU
     }
 
     public void setImage(/* final String url */) {
-        mProfileImage.getViewTreeObserver().addOnGlobalLayoutListener(
+        /*mProfileImage.getViewTreeObserver().addOnGlobalLayoutListener(
                 new ViewTreeObserver.OnGlobalLayoutListener() {
                     @Override
                     public void onGlobalLayout() {
@@ -242,7 +233,7 @@ public class ProfileActivity extends ActionBarActivity implements PaletteHelperU
                                 .into(mProfileImage);
                     }
                 }
-        );
+        );*/
     }
 
     @Override
@@ -283,8 +274,8 @@ public class ProfileActivity extends ActionBarActivity implements PaletteHelperU
                         Integer.toString(((DoubtsApplication)getApplication()).getUserId()) + "/" +
                         ((DoubtsApplication)getApplication()).getUsername() + "/following")
                 .build();
-        mFollowNetworkEventId = networkEvent.getId();
-        networkEvent.post();
+        //mFollowNetworkEventId = networkEvent.getId();
+        //networkEvent.post();
     }
 
     @Override

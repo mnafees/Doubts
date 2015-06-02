@@ -4,80 +4,140 @@
   ~ Copyright (c) 2015 Mohammed Nafees (original author) <nafees.technocool@gmail.com>.
   -->
 
-<RelativeLayout
+<android.support.design.widget.CoordinatorLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:padding="20dp"
-    android:theme="@style/AppTheme.LoginTheme">
+    android:theme="@style/AppTheme.RegisterTheme">
 
-    <RelativeLayout
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_centerInParent="true"
-        android:id="@+id/relativeLayout">
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
 
-        <RelativeLayout
+        <android.support.design.widget.AppBarLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:padding="10dp"
-            android:layout_below="@+id/profileImage">
+            android:padding="10dp">
 
-            <EditText
-                android:layout_width="match_parent"
+            <android.support.v7.widget.Toolbar
                 android:layout_height="wrap_content"
-                android:id="@+id/name"
-                android:layout_gravity="center_horizontal"
-                android:hint="Name"
-                android:background="@drawable/login_edittext"
-                android:padding="10dp" />
-
-            <EditText
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:id="@+id/username"
-                android:layout_gravity="center_horizontal"
-                android:hint="Username"
-                android:layout_below="@+id/name"
-                android:padding="10dp"
-                android:background="@drawable/login_edittext" />
+                app:layout_scrollFlags="scroll|enterAlways"
+                app:elevation="2dp"
+                android:paddingRight="10dp">
 
-            <Button
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
+
+                    <com.rengwuxian.materialedittext.MaterialEditText
+                        android:id="@+id/name"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:hint="Name"
+                        android:textSize="25sp"
+                        app:met_baseColor="@android:color/white"
+                        app:met_floatingLabel="highlight"
+                        app:met_primaryColor="?colorAccent"
+                        app:met_singleLineEllipsis="true"/>
+
+                    <com.rengwuxian.materialedittext.MaterialEditText
+                        android:id="@+id/bio"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:hint="Bio (optional)"
+                        android:textSize="20sp"
+                        app:met_baseColor="@android:color/white"
+                        app:met_floatingLabel="highlight"
+                        app:met_maxCharacters="160"
+                        app:met_primaryColor="?colorAccent"
+                        app:met_singleLineEllipsis="true" />
+
+                </LinearLayout>
+
+            </android.support.v7.widget.Toolbar>
+
+        </android.support.design.widget.AppBarLayout>
+
+        <android.support.v4.widget.NestedScrollView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:layout_behavior="@string/appbar_scrolling_view_behavior">
+
+            <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="Register"
-                android:id="@+id/registerButton"
-                android:layout_gravity="center_horizontal"
-                android:layout_marginTop="10dp"
-                android:layout_below="@+id/username"
-                android:padding="10dp"
-                android:textColor="#FFC107" />
+                android:layout_height="match_parent"
+                android:orientation="vertical">
 
-        </RelativeLayout>
+                <android.support.v7.widget.CardView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    app:cardElevation="8dp">
 
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:padding="10dp">
 
-        <de.hdodenhof.circleimageview.CircleImageView
-            xmlns:app="http://schemas.android.com/apk/res-auto"
-            android:id="@+id/profileImage"
-            android:layout_width="150dp"
-            android:layout_height="150dp"
-            android:background="@android:color/transparent"
-            app:border_color="@android:color/white"
-            app:border_width="2dp"
-            android:src="@drawable/no_profile_image"
-            android:layout_alignParentTop="true"
-            android:layout_centerHorizontal="true" />
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="Competetive Exams"
+                            android:id="@+id/textView12"
+                            android:textColor="@color/material_blue_grey_900"
+                            android:padding="10dp"
+                            android:textSize="13sp"
+                            android:textStyle="bold" />
 
-    </RelativeLayout>
+                        <solutions.doubts.activities.login.ExpandableGridView
+                            android:id="@+id/competetive_exams"
+                            android:numColumns="2"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content" />
 
-    <ImageView
-        android:layout_width="50dp"
-        android:layout_height="wrap_content"
-        android:id="@+id/logoView"
-        android:src="@drawable/login_banner"
-        android:layout_alignParentTop="true"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true"
-        android:layout_marginTop="-480dp" />
+                    </LinearLayout>
 
-</RelativeLayout>
+                </android.support.v7.widget.CardView>
+
+                <android.support.v7.widget.CardView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    app:cardElevation="8dp">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:padding="10dp">
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="Competetive Exams"
+                            android:id="@+id/textView12"
+                            android:textColor="@color/material_blue_grey_900"
+                            android:padding="10dp"
+                            android:textSize="13sp"
+                            android:textStyle="bold" />
+
+                        <solutions.doubts.activities.login.ExpandableGridView
+                            android:id="@+id/competetive_exams"
+                            android:numColumns="2"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content" />
+
+                    </LinearLayout>
+
+                </android.support.v7.widget.CardView>
+
+            </LinearLayout>
+
+        </android.support.v4.widget.NestedScrollView>
+
+    </LinearLayout>
+
+</android.support.design.widget.CoordinatorLayout>

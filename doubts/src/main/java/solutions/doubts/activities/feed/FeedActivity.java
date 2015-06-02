@@ -6,7 +6,6 @@
 package solutions.doubts.activities.feed;
 
 import android.app.AlertDialog;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
@@ -17,6 +16,7 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.app.ActionBarDrawerToggle;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
@@ -25,18 +25,17 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.ViewTreeObserver;
 import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.TextView;
 
 import com.melnykov.fab.FloatingActionButton;
 import com.squareup.otto.Subscribe;
-import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import butterknife.ButterKnife;
 import de.hdodenhof.circleimageview.CircleImageView;
 import solutions.doubts.DoubtsApplication;
 import solutions.doubts.R;
@@ -47,13 +46,13 @@ import solutions.doubts.core.ConnectivityChangeReceiver;
 import solutions.doubts.core.events.ConnectivityChangedEvent;
 import solutions.doubts.core.events.LogoutEvent;
 
-public class FeedActivity extends ActionBarActivity {
+public class FeedActivity extends AppCompatActivity {
 
     private static final String TAG = "FeedActivity";
 
     private RecyclerView mRecyclerView;
     private CircleImageView profileImageView;
-    private TextView name;
+    private TextView mName;
     private ViewGroup topProfileContainer;
     private ActionBarDrawerToggle mDrawerToggle;
     private TextView mConnectivityError;
@@ -64,15 +63,15 @@ public class FeedActivity extends ActionBarActivity {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
         setContentView(R.layout.layout_feed);
-        setSupportActionBar((Toolbar)findViewById(R.id.toolbar));
+        ButterKnife.inject(this);
+        setSupportActionBar((Toolbar) findViewById(R.id.toolbar));
         getSupportActionBar().setElevation(3.0f);
 
         ((DoubtsApplication)getApplication()).getBus().register(this);
 
         final DrawerLayout drawerLayout = (DrawerLayout)findViewById(R.id.drawer_layout);
-        drawerLayout.setStatusBarBackgroundColor(getResources().getColor(R.color.primaryDark));
+        drawerLayout.setStatusBarBackgroundColor(getResources().getColor(R.color.primary_dark));
         mDrawerToggle = new ActionBarDrawerToggle(this, drawerLayout, 0, 0);
 
         mConnectivityError = (TextView)findViewById(R.id.no_internet_textview);
@@ -148,7 +147,7 @@ public class FeedActivity extends ActionBarActivity {
         final Intent intent = new Intent(this, ProfileActivity.class);
         this.topProfileContainer = (ViewGroup)findViewById(R.id.top_profile_view);
         this.profileImageView = (CircleImageView)this.topProfileContainer.findViewById(R.id.profileImage);
-        this.name = (TextView)this.topProfileContainer.findViewById(R.id.name);
+        //this.mName = (TextView)this.topProfileContainer.findViewById(R.id.email_name);
         setImage();
         this.topProfileContainer.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -223,7 +222,7 @@ public class FeedActivity extends ActionBarActivity {
     }
 
     public void setImage(/* final String url */) {
-        final Context context = this;
+        /*final Context context = this;
         this.profileImageView.getViewTreeObserver().addOnGlobalLayoutListener(
                 new ViewTreeObserver.OnGlobalLayoutListener() {
                     @Override
@@ -235,7 +234,7 @@ public class FeedActivity extends ActionBarActivity {
                                 .into(profileImageView);
                     }
                 }
-        );
+        );*/
     }
 
 }

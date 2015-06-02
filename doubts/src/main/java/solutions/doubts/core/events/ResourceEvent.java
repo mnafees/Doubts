@@ -11,18 +11,14 @@ public class ResourceEvent {
 
     public enum Type {
         SUCCESS,
-        FAILURE
+        FAILURE,
+        UNAUTHORISED
     }
 
-    private int mId; // the id of the network event that caused this event
     private Type mType;
     private JsonObject mJsonObject; // in case of a successful GET operation
 
     private ResourceEvent() {}
-
-    public int getId() {
-        return mId;
-    }
 
     public Type getType() {
         return mType;
@@ -42,11 +38,6 @@ public class ResourceEvent {
 
         private Builder() {
             mResourceEvent = new ResourceEvent();
-        }
-
-        public Builder id(final int id) {
-            mResourceEvent.mId = id;
-            return this;
         }
 
         public Builder type(final Type type) {

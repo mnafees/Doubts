@@ -28,10 +28,10 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:maxLines="5"
-                app:baseColor="@android:color/white"
+                app:met_baseColor="@android:color/white"
                 android:hint="Doubt Title"
-                app:floatingLabel="highlight"
-                app:primaryColor="#2196F3"
+                app:met_floatingLabel="highlight"
+                app:met_primaryColor="#2196F3"
                 android:textColorHint="#2196F3"
                 android:textColor="@android:color/white" />
 
@@ -71,7 +71,7 @@
                 android:hint="Tags separated by comma"
                 android:textSize="14sp"
                 android:textColor="#757575"
-                android:textColorHint="@color/lightGrey"
+                android:textColorHint="@color/grey_light"
                 android:layout_gravity="center_vertical"
                 android:textCursorDrawable="@null"
                 android:background="@android:color/transparent"/>
@@ -86,7 +86,7 @@
             android:layout_centerHorizontal="true"
             android:src="@drawable/camera_backdrop"
             android:scaleType="centerInside"
-            android:background="@color/lightGrey"/>
+            android:background="@color/grey_light"/>
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -111,7 +111,7 @@
                 android:hint="Description"
                 android:textSize="14sp"
                 android:textColor="#757575"
-                android:textColorHint="@color/lightGrey"
+                android:textColorHint="@color/grey_light"
                 android:layout_marginLeft="10dp"
                 android:textCursorDrawable="@null"
                 android:background="@android:color/transparent"

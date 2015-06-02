@@ -4,89 +4,107 @@
   ~ Copyright (c) 2015 Mohammed Nafees (original author) <nafees.technocool@gmail.com>.
   -->
 
-<RelativeLayout
+<android.support.design.widget.CoordinatorLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/container"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:theme="@style/AppTheme.LoginTheme">
+    android:theme="@style/AppTheme.LoginTheme"
+    android:id="@+id/main_container">
 
     <RelativeLayout
-        android:id="@+id/innerContainer"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:layout_centerInParent="true">
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:id="@+id/scene_root">
 
-        <EditText
-            android:layout_width="250dp"
-            android:layout_height="wrap_content"
-            android:inputType="textEmailAddress"
-            android:ems="10"
-            android:id="@+id/email"
-            android:layout_gravity="center"
-            android:hint="Email"
-            android:imeOptions="actionDone"
-            android:background="@drawable/login_edittext"
-            android:padding="10dp"
-            android:textSize="16sp"
-            android:layout_below="@+id/greeting" />
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:id="@+id/logo_container"
+            android:background="@drawable/login_container_bg"
+            android:layout_above="@+id/email_container">
 
-        <Button
-            android:layout_width="250dp"
-            android:layout_height="45dp"
-            android:text="Login"
-            android:id="@+id/loginButton"
-            android:layout_gravity="center_horizontal"
-            android:layout_marginTop="10dp"
-            android:layout_below="@+id/email"
-            android:textColor="#FFC107"
-            android:textStyle="bold"
-            android:textSize="16sp"
-            android:padding="10dp" />
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/logo"
+                android:src="@drawable/login_banner"
+                android:layout_centerInParent="true" />
 
-        <TextView
+        </RelativeLayout>
+
+        <RelativeLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Hello!"
-            android:id="@+id/greeting"
-            android:textColor="#303030"
-            android:textSize="50sp"
-            android:layout_centerHorizontal="true"
-            android:layout_marginBottom="15dp"
-            android:textStyle="bold|italic" />
+            android:padding="20dp"
+            android:id="@+id/email_container"
+            android:layout_alignParentBottom="true">
 
-        <ProgressBar
-            style="?android:attr/progressBarStyleLarge"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:id="@+id/progressBar"
-            android:indeterminate="false"
-            android:visibility="invisible"
-            android:layout_centerInParent="true" />
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <android.support.design.widget.TextInputLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/text_input_layout"
+                    android:layout_centerHorizontal="true">
+
+                    <android.support.v7.widget.AppCompatAutoCompleteTextView
+                        android:layout_width="280dp"
+                        android:layout_height="wrap_content"
+                        android:id="@+id/email_username"
+                        android:layout_gravity="center_horizontal"
+                        android:padding="10dp"
+                        android:layout_centerHorizontal="true"
+                        android:lines="1"
+                        android:maxLines="1"
+                        android:inputType="textEmailAddress"
+                        android:textColor="@color/material_blue_grey_800"
+                        android:textColorHint="@color/material_blue_600"
+                        android:background="@drawable/login_edit_text_bg" />
+
+                </android.support.design.widget.TextInputLayout>
+
+                <Button
+                    android:layout_width="280dp"
+                    android:layout_height="wrap_content"
+                    android:text="@string/login_button_text"
+                    android:id="@+id/button"
+                    android:layout_gravity="center_horizontal"
+                    android:layout_marginTop="10dp"
+                    android:padding="10dp"
+                    android:layout_centerHorizontal="true"
+                    android:layout_below="@+id/text_input_layout" />
+
+            </RelativeLayout>
+
+            <ProgressBar
+                style="?android:attr/progressBarStyleLarge"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/throbber"
+                android:indeterminate="true"
+                android:indeterminateOnly="true"
+                android:layout_row="0"
+                android:layout_column="0"
+                android:layout_alignParentLeft="false"
+                android:layout_alignParentTop="false"
+                android:visibility="invisible"
+                android:layout_centerInParent="true" />
+
+            <TextView
+                android:layout_width="250dp"
+                android:layout_height="wrap_content"
+                android:id="@+id/email_message"
+                android:layout_centerInParent="true"
+                android:textSize="15sp"
+                android:textColor="@color/primary"
+                android:text="Email sent"
+                android:gravity="center"
+                android:visibility="invisible" />
+
+        </RelativeLayout>
 
     </RelativeLayout>
 
-    <ImageView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/logoView"
-        android:src="@drawable/login_banner"
-        android:layout_alignParentTop="false"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="20dp" />
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/appVersion"
-        android:id="@+id/appVersion"
-        android:layout_alignParentBottom="true"
-        android:layout_centerHorizontal="true"
-        android:textColor="#FFC107"
-        android:textSize="16dp"
-        android:textAllCaps="false"
-        android:layout_marginBottom="10dp"
-        android:textStyle="bold" />
-
-</RelativeLayout>
+</android.support.design.widget.CoordinatorLayout>

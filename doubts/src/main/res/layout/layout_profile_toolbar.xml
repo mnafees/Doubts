@@ -17,7 +17,7 @@
         android:layout_height="wrap_content"
         android:textAppearance="?android:attr/textAppearanceLarge"
         android:text="Mohammed Nafees"
-        android:id="@+id/name"
+        android:id="@+id/email_username"
         android:layout_gravity="center_horizontal"
         android:background="@android:color/transparent"
         android:layout_marginBottom="5dp" />

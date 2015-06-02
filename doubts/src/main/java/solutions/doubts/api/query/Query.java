@@ -5,70 +5,28 @@
 
 package solutions.doubts.api.query;
 
+import android.content.Context;
 import android.os.Handler;
-import android.util.Log;
 
 import com.google.gson.ExclusionStrategy;
 import com.google.gson.FieldAttributes;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.google.gson.JsonObject;
-import com.squareup.okhttp.Callback;
-import com.squareup.okhttp.Interceptor;
 import com.squareup.okhttp.MediaType;
-import com.squareup.okhttp.OkHttpClient;
-import com.squareup.okhttp.Request;
-import com.squareup.okhttp.RequestBody;
-import com.squareup.okhttp.Response;
-import com.squareup.otto.Subscribe;
-
-import java.io.IOException;
 
 import io.realm.RealmObject;
 import solutions.doubts.DoubtsApplication;
-import solutions.doubts.core.events.NetworkEvent;
-import solutions.doubts.core.events.PageableDataEvent;
-import solutions.doubts.core.events.ResourceEvent;
-import solutions.doubts.internal.RestConstants;
 
 public class Query {
 
     private static final String TAG = "Query";
     private static final MediaType MEDIA_TYPE_JSON = MediaType.parse("application/json");
 
-    private static boolean sInitialised;
-    private static OkHttpClient sOkHttpClient;
-    private static Gson sGson;
-    private static Handler sHandler;
+    private Gson mGson;
+    private Handler mHandler;
 
-    private Query() {
-        DoubtsApplication.getInstance().getBus().register(this);
-    }
-
-    public static void init() {
-        if (sInitialised) {
-            Log.w(TAG, "Trying to re-initialise Query instance.");
-            return;
-        } else {
-            sInitialised = true;
-            new Query();
-        }
-
-        sOkHttpClient = new OkHttpClient();
-        sOkHttpClient.interceptors().add(new Interceptor() {
-            @Override
-            public Response intercept(Chain chain) throws IOException {
-                final Request req = new Request.Builder()
-                        .addHeader(RestConstants.HEADER_AUTHORIZATION, DoubtsApplication
-                                .getInstance().getAuthToken().toString())
-                        .url(chain.request().url())
-                        .method(chain.request().method(), chain.request().body())
-                        .headers(chain.request().headers())
-                        .build();
-                return chain.proceed(req);
-            }
-        });
-        sGson = new GsonBuilder()
+    Query() {
+        mGson = new GsonBuilder()
                 .setExclusionStrategies(new ExclusionStrategy() {
                     @Override
                     public boolean shouldSkipField(FieldAttributes f) {
@@ -84,7 +42,7 @@ public class Query {
                     @Override
                     public boolean shouldSkipField(FieldAttributes f) {
                         return (f.getName().equals("id")) ||
-                               (f.getName().equals("slug") && f.getDeclaringClass() == String.class);
+                                (f.getName().equals("slug") && f.getDeclaringClass() == String.class);
                     }
 
                     @Override
@@ -93,199 +51,189 @@ public class Query {
                     }
                 })
                 .create();
-        sHandler = new Handler(DoubtsApplication.getInstance().getMainLooper());
+        mHandler = new Handler(DoubtsApplication.getInstance().getMainLooper());
     }
 
-    @Subscribe
-    public void onNetworkEvent(final NetworkEvent networkEvent) {
-        if (!sInitialised) {
-            throw new IllegalStateException("Did you forget to call init()?");
-        }
+    public static Query with(final Context context) {
+        return QueryPool.getQueryForContext(context);
+    }
 
-        switch (networkEvent.getOperation()) {
+    public void start() {
+        /*if (mNetworkEvent == null) {
+            throw new IllegalStateException("start() called without assigning a NetworkEvent");
+        }
+        if (mCallback == null) {
+            throw new IllegalStateException("start() called without assigning a QueryCallback");
+        }
+        switch (mNetworkEvent.getOperation()) {
             case CREATE:
-                create(networkEvent);
+                create();
                 break;
             case GET:
-                get(networkEvent);
+                get();
                 break;
             case GETALL:
-                getAll(networkEvent);
+                getAll();
                 break;
             case UPDATE:
-                update(networkEvent);
+                update();
                 break;
             case DELETE:
-                delete(networkEvent);
+                delete();
                 break;
-        }
+        }*/
     }
 
-    private void create(final NetworkEvent networkEvent) {
+    /*private void create() {
         final Request req = new Request.Builder()
-                .url(networkEvent.getUrl())
+                .url(mNetworkEvent.getUrl())
                 .addHeader(RestConstants.HEADER_AUTHORIZATION, DoubtsApplication
                         .getInstance().getAuthToken().toString())
-                .post(RequestBody.create(MEDIA_TYPE_JSON, sGson.toJson(
-                        networkEvent.getObject(),
-                        networkEvent.getClazz())))
+                .post(RequestBody.create(MEDIA_TYPE_JSON, mGson.toJson(
+                        mNetworkEvent.getObject(),
+                        mNetworkEvent.getClazz())))
                 .build();
-        sOkHttpClient.newCall(req).enqueue(new Callback() {
+        DoubtsApplication.getInstance().getOkHttpClient().newCall(req).enqueue(new Callback() {
             @Override
             public void onFailure(Request request, IOException e) {
-                e.printStackTrace();
+                mCallback.onFailure(e);
             }
 
             @Override
             public void onResponse(Response response) throws IOException {
                 if (response.code() == 200) {
-                    sHandler.post(new Runnable() {
-                        @Override
-                        public void run() {
-                            DoubtsApplication.getInstance().getBus().post(
-                                    ResourceEvent.newBuilder()
-                                            .id(networkEvent.getId())
-                                            .type(ResourceEvent.Type.SUCCESS)
-                                            .build()
-                            );
-                        }
-                    });
+                    mCallback.onSuccess(
+                            ResourceEvent.newBuilder()
+                                    .type(ResourceEvent.Type.SUCCESS)
+                                    .build()
+                    );
+                } else if (response.code() == 401) {
+                    mCallback.onSuccess(
+                            ResourceEvent.newBuilder()
+                                    .type(ResourceEvent.Type.UNAUTHORISED)
+                                    .build()
+                    );
                 } else {
-                    sHandler.post(new Runnable() {
-                        @Override
-                        public void run() {
-                            DoubtsApplication.getInstance().getBus().post(
-                                    ResourceEvent.newBuilder()
-                                            .id(networkEvent.getId())
-                                            .type(ResourceEvent.Type.FAILURE)
-                                            .build()
-                            );
-                        }
-                    });
+                    mCallback.onSuccess(
+                            ResourceEvent.newBuilder()
+                                    .type(ResourceEvent.Type.FAILURE)
+                                    .build()
+                    );
                 }
             }
         });
     }
 
-    private void get(final NetworkEvent networkEvent) {
+    private void get() {
         final Request req = new Request.Builder()
-                .url(networkEvent.getUrl())
+                .url(mNetworkEvent.getUrl())
                 .addHeader(RestConstants.HEADER_AUTHORIZATION, DoubtsApplication
                         .getInstance().getAuthToken().toString())
                 .get()
                 .build();
-        sOkHttpClient.newCall(req).enqueue(new Callback() {
+        DoubtsApplication.getInstance().getOkHttpClient().newCall(req).enqueue(new Callback() {
             @Override
             public void onFailure(Request request, IOException e) {
-                e.printStackTrace();
+                mCallback.onFailure(e);
             }
 
             @Override
             public void onResponse(final Response response) throws IOException {
                 if (response.code() == 200) {
-                    JsonObject jsonObject = null;
                     try {
-                        jsonObject = sGson.fromJson(response.body().string(), JsonObject.class);
+                        final JsonObject jsonObject = mGson.fromJson(response.body().string(), JsonObject.class);
+                        mCallback.onSuccess(
+                                ResourceEvent.newBuilder()
+                                        .type(ResourceEvent.Type.SUCCESS)
+                                        .jsonObject(jsonObject)
+                                        .build()
+                        );
                     } catch (IOException e) {
-
+                        throw new IllegalStateException(e);
                     }
-                    final JsonObject json = jsonObject;
-                    sHandler.post(new Runnable() {
-                        @Override
-                        public void run() {
-                            DoubtsApplication.getInstance().getBus().post(
-                                    ResourceEvent.newBuilder()
-                                            .id(networkEvent.getId())
-                                            .type(ResourceEvent.Type.SUCCESS)
-                                            .jsonObject(json)
-                                            .build()
-                            );
-                        }
-                    });
+                } else if (response.code() == 401) {
+                    mCallback.onSuccess(
+                            ResourceEvent.newBuilder()
+                                    .type(ResourceEvent.Type.UNAUTHORISED)
+                                    .build()
+                    );
                 } else {
-                    sHandler.post(new Runnable() {
-                        @Override
-                        public void run() {
-                            DoubtsApplication.getInstance().getBus().post(
-                                    ResourceEvent.newBuilder()
-                                            .id(networkEvent.getId())
-                                            .type(ResourceEvent.Type.FAILURE)
-                                            .build()
-                            );
-                        }
-                    });
+                    mCallback.onSuccess(
+                            ResourceEvent.newBuilder()
+                                    .type(ResourceEvent.Type.FAILURE)
+                                    .build()
+                    );
                 }
             }
         });
     }
 
-    private void getAll(final NetworkEvent networkEvent) {
+    private void getAll() {
         final Request req = new Request.Builder()
-                .url(networkEvent.getUrl())
+                .url(mNetworkEvent.getUrl())
                 .addHeader(RestConstants.HEADER_AUTHORIZATION, DoubtsApplication
                         .getInstance().getAuthToken().toString())
                 .get()
                 .build();
 
-        sOkHttpClient.newCall(req).enqueue(new Callback() {
+        DoubtsApplication.getInstance().getOkHttpClient().newCall(req).enqueue(new Callback() {
             @Override
             public void onFailure(Request request, IOException e) {
-                e.printStackTrace();
+                mCallback.onFailure(e);
             }
 
             @Override
             public void onResponse(final Response response) throws IOException {
-                final JsonObject json = sGson.fromJson(response.body().string(), JsonObject.class);
+                final JsonObject json = mGson.fromJson(response.body().string(), JsonObject.class);
 
-                final Class clazz = networkEvent.getClazz();
+                final Class clazz = mNetworkEvent.getClazz();
                 final String className = clazz.getName().toLowerCase()
                         .substring(
                             clazz.getName().lastIndexOf(".") + 1
                         ) + "s";
 
-                sHandler.post(new Runnable() {
-                    @Override
-                    public void run() {
-                        DoubtsApplication.getInstance().getBus().post(
-                                PageableDataEvent.newBuilder()
-                                        .pageableData(json.getAsJsonArray(className))
-                                        .id(networkEvent.getId())
-                                        .build()
-                        );
-                    }
-                });
+                mCallback.onSuccess(
+                        PageableDataEvent.newBuilder()
+                                .pageableData(json.getAsJsonArray(className))
+                                .build()
+                );
             }
         });
     }
 
-    private void update(final NetworkEvent networkEvent) {
+    private void update() {
         final Request req = new Request.Builder()
-                .url(networkEvent.getUrl())
+                .url(mNetworkEvent.getUrl())
                 .addHeader(RestConstants.HEADER_AUTHORIZATION, DoubtsApplication
                         .getInstance().getAuthToken().toString())
-                .put(RequestBody.create(MEDIA_TYPE_JSON, sGson.toJson(
-                        networkEvent.getObject(),
-                        networkEvent.getClazz())))
+                .put(RequestBody.create(MEDIA_TYPE_JSON, mGson.toJson(
+                        mNetworkEvent.getObject(),
+                        mNetworkEvent.getClazz())))
                 .build();
-        sOkHttpClient.newCall(req).enqueue(new Callback() {
+
+        DoubtsApplication.getInstance().getOkHttpClient().newCall(req).enqueue(new Callback() {
             @Override
             public void onFailure(Request request, IOException e) {
-                e.printStackTrace();
+                mCallback.onFailure(e);
             }
 
             @Override
             public void onResponse(Response response) throws IOException {
                 if (response.code() == 200) {
-                    DoubtsApplication.getInstance().getBus().post(
+                    mCallback.onSuccess(
                             ResourceEvent.newBuilder()
-                                    .id(networkEvent.getId())
                                     .type(ResourceEvent.Type.SUCCESS)
                                     .build()
                     );
-                } else {
-                    DoubtsApplication.getInstance().getBus().post(
+                } else if (response.code() == 401) {
+                    mCallback.onSuccess(
                             ResourceEvent.newBuilder()
-                                    .id(networkEvent.getId())
+                                    .type(ResourceEvent.Type.UNAUTHORISED)
+                                    .build()
+                    );
+                } else {
+                    mCallback.onSuccess(
+                            ResourceEvent.newBuilder()
                                     .type(ResourceEvent.Type.FAILURE)
                                     .build()
                     );
@@ -294,38 +242,43 @@ public class Query {
         });
     }
 
-    private void delete(final NetworkEvent networkEvent) {
+    private void delete() {
         final Request req = new Request.Builder()
-                .url(networkEvent.getUrl())
+                .url(mNetworkEvent.getUrl())
                 .addHeader(RestConstants.HEADER_AUTHORIZATION, DoubtsApplication
                         .getInstance().getAuthToken().toString())
                 .delete()
                 .build();
-        sOkHttpClient.newCall(req).enqueue(new Callback() {
+
+        DoubtsApplication.getInstance().getOkHttpClient().newCall(req).enqueue(new Callback() {
             @Override
             public void onFailure(Request request, IOException e) {
-                e.printStackTrace();
+                mCallback.onFailure(e);
             }
 
             @Override
             public void onResponse(Response response) throws IOException {
                 if (response.code() == 200) {
-                    DoubtsApplication.getInstance().getBus().post(
+                    mCallback.onSuccess(
                             ResourceEvent.newBuilder()
-                                    .id(networkEvent.getId())
                                     .type(ResourceEvent.Type.SUCCESS)
                                     .build()
                     );
-                } else {
-                    DoubtsApplication.getInstance().getBus().post(
+                } else if (response.code() == 401) {
+                    mCallback.onSuccess(
                             ResourceEvent.newBuilder()
-                                    .id(networkEvent.getId())
+                                    .type(ResourceEvent.Type.UNAUTHORISED)
+                                    .build()
+                    );
+                } else {
+                    mCallback.onSuccess(
+                            ResourceEvent.newBuilder()
                                     .type(ResourceEvent.Type.FAILURE)
                                     .build()
                     );
                 }
             }
         });
-    }
+    }*/
 
 }

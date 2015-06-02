@@ -11,12 +11,10 @@ import com.google.gson.ExclusionStrategy;
 import com.google.gson.FieldAttributes;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.google.gson.reflect.TypeToken;
 import com.squareup.otto.Subscribe;
 
 import java.util.Collections;
 import java.util.LinkedList;
-import java.util.List;
 
 import io.realm.Realm;
 import io.realm.RealmObject;
@@ -32,7 +30,6 @@ public class Feed {
     private static final String TAG = "Feed";
 
     private LinkedList<Question> mFeedItems;
-    private int mNetworkEventId;
     private Gson mGson;
 
     public Feed() {
@@ -73,25 +70,23 @@ public class Feed {
                 .url(RestConstants.API_ENDPOINT + "/api/v1/questions")
                 .clazz(Question.class)
                 .build();
-        mNetworkEventId = networkEvent.getId();
-        networkEvent.post();
+
     }
 
     @Subscribe
     public void onPageableDataEvent(final PageableDataEvent event) {
-        if (event.getId() == mNetworkEventId) {
+        /*if (event.getId() == mNetworkEventId) {
             final List<Question> questions = mGson.fromJson(event.getPageableData(),
                     new TypeToken<List<Question>>(){}.getType());
-
-/*            final Realm realm = Realm.getInstance(DoubtsApplication.getInstance());
+            final Realm realm = Realm.getInstance(DoubtsApplication.getInstance());
             realm.beginTransaction();
             realm.clear(Question.class);
             realm.copyToRealm(questions);
-            realm.commitTransaction();*/
+            realm.commitTransaction();
 
             mFeedItems.addAll(questions);
             postFeedUpdateEvent();
-        }
+        }*/
     }
 
     private void postFeedUpdateEvent() {

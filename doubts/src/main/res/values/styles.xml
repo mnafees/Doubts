@@ -1,43 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ This file is part of Doubts.
+  ~ Copyright (c) 2015 Mohammed Nafees (original author) <nafees.technocool@gmail.com>.
+  -->
+
 <resources>
 
-    <color name="primary">#9C27B0</color>
-    <color name="primaryLight">#AB47BC</color>
-    <color name="primaryDark">#7B1FA2</color>
-    <color name="accent">#ffffff</color>
-    <color name="windowBackground">#ffffff</color>
-    <color name="textEditBottom">#ffffff</color>
-    <color name="pink">#EC407A</color>
-    <color name="pink_pressed">#F48FB1</color>
-    <color name="purple_very_light">#F3E5F5</color>
-    <color name="grey">#757575</color>
-    <color name="lightGrey">#BDBDBD</color>
-    <color name="dividerColor">#ebebeb</color>
-    <color name="loginBackground">#ffeb3b</color>
-    <color name="loginColorPrimary">#FDD835</color>
-
-    <!-- Base application theme. -->
+    <!-- Base application theme -->
     <style name="AppTheme" parent="@style/Theme.AppCompat.NoActionBar">
         <item name="colorPrimary">@color/primary</item>
-        <item name="colorPrimaryDark">@color/primaryDark</item>
-        <item name="colorAccent">@color/accent</item>
-        <item name="android:textColorPrimary">@color/accent</item>
-        <item name="colorControlNormal">@color/accent</item>
-        <item name="colorControlActivated">@color/textEditBottom</item>
-        <item name="colorControlHighlight">@color/textEditBottom</item>
+        <item name="colorPrimaryDark">@color/primary_dark</item>
     </style>
 
-    <style name="AppTheme.LoginTheme" parent="@style/Theme.AppCompat.NoActionBar">
-        <item name="colorPrimary">@color/loginColorPrimary</item>
-        <item name="android:windowBackground">@color/loginBackground</item>
-        <item name="android:buttonStyle">@style/AppTheme.LoginButton</item>
-        <item name="android:editTextStyle">@style/AppTheme.LoginTheme.EditText</item>
+    <!-- start
+        Login activity related styles
+    -->
+
+    <!-- activity theme -->
+    <style name="AppTheme.LoginTheme" parent="AppTheme">
+        <item name="android:windowBackground">@android:color/white</item>
+        <item name="android:buttonStyle">@style/AppTheme.LoginTheme.LoginButton</item>
+        <item name="colorControlNormal">#546E7A</item>
+        <item name="colorControlActivated">#546E7A</item>
+        <item name="colorControlHighlight">#546E7A</item>
     </style>
 
+    <style name="AppTheme.RegisterTheme" parent="AppTheme">
+        <item name="android:windowBackground">@color/grey_light</item>
+    </style>
+
+    <!-- activity button -->
+    <style name="AppTheme.LoginTheme.LoginButton">
+        <item name="android:gravity">center_vertical|center_horizontal</item>
+        <item name="android:textColor">@android:color/white</item>
+        <item name="android:background">@drawable/login_button</item>
+        <item name="android:focusable">true</item>
+        <item name="android:textSize">15sp</item>
+        <item name="android:clickable">true</item>
+    </style>
+
+    <!-- activity edit text -->
     <style name="AppTheme.LoginTheme.EditText" parent="Widget.AppCompat.EditText">
-        <item name="android:textColor">#546E7A</item>
-        <item name="android:textColorHint">#78909C</item>
+        <item name="android:textColor">#263238</item>
+        <item name="android:textColorHint">#546E7A</item>
+        <item name="android:textSize">15sp</item>
         <item name="android:textCursorDrawable">@null</item>
     </style>
+
+    <!-- end
+        Login activity related styles
+    -->
 
     <style name="AppTheme.FeedTheme" parent="AppTheme">
     </style>
@@ -60,15 +72,6 @@
 
     <style name="AppTheme.PicturePreview" parent="AppTheme">
         <item name="android:windowBackground">@android:color/black</item>
-    </style>
-
-    <!-- Login button -->
-    <style name="AppTheme.LoginButton">
-        <item name="android:gravity">center_vertical|center_horizontal</item>
-        <item name="android:textColor">@android:color/white</item>
-        <item name="android:background">@drawable/login_button</item>
-        <item name="android:focusable">true</item>
-        <item name="android:clickable">true</item>
     </style>
 
 </resources>
