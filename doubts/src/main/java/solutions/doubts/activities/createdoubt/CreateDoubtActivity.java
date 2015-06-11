@@ -39,7 +39,7 @@ import solutions.doubts.R;
 import solutions.doubts.api.models.Question;
 import solutions.doubts.core.events.NetworkEvent;
 import solutions.doubts.core.events.ResourceEvent;
-import solutions.doubts.internal.RestConstants;
+import solutions.doubts.internal.ApiConstants;
 
 public class CreateDoubtActivity extends ActionBarActivity {
 
@@ -150,7 +150,7 @@ public class CreateDoubtActivity extends ActionBarActivity {
                         .tags(mTagsList)
                         .build();
                 final NetworkEvent networkEvent = NetworkEvent.newBuilder()
-                        .url(RestConstants.API_ENDPOINT + "/api/v1/questions")
+                        .url(ApiConstants.API_ENDPOINT + "/api/v1/questions")
                         .operation(NetworkEvent.Operation.CREATE)
                         .clazz(Question.class)
                         .object(q)

@@ -8,9 +8,11 @@ package solutions.doubts.api.models;
 import java.io.Serializable;
 
 import io.realm.RealmObject;
+import io.realm.annotations.PrimaryKey;
 
 public class Entity extends RealmObject implements Serializable {
 
+    @PrimaryKey
     private int id;
     private String name;
     private String slug;
@@ -39,21 +41,16 @@ public class Entity extends RealmObject implements Serializable {
         this.slug = slug;
     }
 
-    public static Builder newBuilder() {
+    public static Builder newEntity() {
         return new Builder();
     }
 
     public static class Builder {
 
-        Entity mTag;
+        private Entity mTag;
 
         private Builder() {
             mTag = new Entity();
-        }
-
-        public Builder id(int id) {
-            mTag.id = id;
-            return this;
         }
 
         public Builder name(String name) {
@@ -61,12 +58,7 @@ public class Entity extends RealmObject implements Serializable {
             return this;
         }
 
-        public Builder slug(String slug) {
-            mTag.slug = slug;
-            return this;
-        }
-
-        public Entity build() {
+        public Entity create() {
             return mTag;
         }
 

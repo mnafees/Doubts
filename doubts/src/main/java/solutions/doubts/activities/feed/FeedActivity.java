@@ -14,7 +14,6 @@ import android.net.ConnectivityManager;
 import android.os.Bundle;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v4.widget.SwipeRefreshLayout;
-import android.support.v7.app.ActionBarActivity;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
@@ -45,6 +44,7 @@ import solutions.doubts.activities.profile.ProfileActivity;
 import solutions.doubts.core.ConnectivityChangeReceiver;
 import solutions.doubts.core.events.ConnectivityChangedEvent;
 import solutions.doubts.core.events.LogoutEvent;
+import solutions.doubts.core.util.TransitionUtil;
 
 public class FeedActivity extends AppCompatActivity {
 
@@ -181,9 +181,9 @@ public class FeedActivity extends AppCompatActivity {
     @Subscribe
     public void onConnectivityChangedEvent(final ConnectivityChangedEvent event) {
         if (event.isConnected()) {
-            mConnectivityError.setVisibility(View.INVISIBLE);
+            TransitionUtil.hideWithFadeOut(mConnectivityError);
         } else {
-            mConnectivityError.setVisibility(View.VISIBLE);
+            TransitionUtil.showWithFadeIn(mConnectivityError);
         }
     }
 

@@ -3,7 +3,7 @@
  * Copyright (c) 2015 Mohammed Nafees (original author) <nafees.technocool@gmail.com>.
  */
 
-package solutions.doubts.activities.login;
+package solutions.doubts.activities.authentication;
 
 import android.content.Context;
 import android.util.AttributeSet;

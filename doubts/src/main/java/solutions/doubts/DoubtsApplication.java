@@ -6,15 +6,25 @@
 package solutions.doubts;
 
 import android.app.Application;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.widget.Toast;
 
+import com.google.gson.ExclusionStrategy;
+import com.google.gson.FieldAttributes;
+import com.google.gson.FieldNamingPolicy;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.koushikdutta.ion.Ion;
+import com.squareup.leakcanary.LeakCanary;
+import com.squareup.leakcanary.RefWatcher;
 import com.squareup.otto.Bus;
 import com.squareup.otto.Subscribe;
 import com.squareup.otto.ThreadEnforcer;
 
-import solutions.doubts.api.models.AuthToken;
+import io.realm.RealmObject;
+import solutions.doubts.internal.AuthToken;
 import solutions.doubts.core.events.LogoutEvent;
 import solutions.doubts.core.events.ResourceEvent;
 import solutions.doubts.internal.StringConstants;
@@ -26,13 +36,19 @@ public class DoubtsApplication extends Application {
     private SharedPreferences mSharedPreferences;
     private AuthToken mAuthToken;
     private Bus mBus;
+    private RefWatcher mRefWatcher;
 
     private static DoubtsApplication INSTANCE;
+
+    public static RefWatcher getRefWatcher(Context context) {
+        return INSTANCE.mRefWatcher;
+    }
 
     @Override
     public void onCreate() {
         super.onCreate();
 
+        mRefWatcher = LeakCanary.install(this);
         INSTANCE = this;
         mBus = new Bus(ThreadEnforcer.MAIN);
         mBus.register(this);
@@ -43,12 +59,40 @@ public class DoubtsApplication extends Application {
                     mSharedPreferences.getString("username", ""),
                     mSharedPreferences.getString("auth_token", ""));
         }
+
+        Gson gson = new GsonBuilder()
+                .setFieldNamingPolicy(FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES)
+                .setExclusionStrategies(new ExclusionStrategy() {
+                    @Override
+                    public boolean shouldSkipField(FieldAttributes f) {
+                        return f.getDeclaringClass().equals(RealmObject.class);
+                    }
+
+                    @Override
+                    public boolean shouldSkipClass(Class<?> clazz) {
+                        return false;
+                    }
+                })
+                .addSerializationExclusionStrategy(new ExclusionStrategy() {
+                    @Override
+                    public boolean shouldSkipField(FieldAttributes f) {
+                        return (f.getName().equals("id") ||
+                                f.getName().equals("slug") ||
+                                f.getName().equals("question_count"));
+                    }
+
+                    @Override
+                    public boolean shouldSkipClass(Class<?> clazz) {
+                        return false;
+                    }
+                })
+                .create();
+        Ion.getDefault(this).configure().setGson(gson);
     }
 
     public static DoubtsApplication getInstance() {
         return INSTANCE;
     }
-
 
     public Bus getBus() {
         return mBus;
@@ -90,8 +134,6 @@ public class DoubtsApplication extends Application {
     public void logout() {
         // clear the Shared Preferences
         mSharedPreferences.edit().clear().apply();
-        // clear Realm
-        //Realm.getInstance(this).de
 
         mBus.post(new LogoutEvent());
 

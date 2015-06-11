@@ -8,5 +8,10 @@
     <string name="gcm_sender_id">536147997512</string>
     <string name="network_error_message">Sorry, we could not process your request at the moment. Please try again.</string>
     <string name="login_button_text">Let\'s get started!</string>
+    <string name="competitive_exams_string">Competitive Exams</string>
+    <string name="subjects_string">Subjects</string>
+    <string name="competitions_string">Competitions</string>
+    <string name="username_string">Username</string>
+    <string name="name_string">Name</string>
 
 </resources>

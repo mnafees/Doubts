@@ -18,8 +18,8 @@ import java.util.LinkedList;
 import java.util.List;
 
 import solutions.doubts.activities.feed.FeedActivity;
-import solutions.doubts.activities.login.LoginActivity;
-import solutions.doubts.api.models.AuthToken;
+import solutions.doubts.activities.authentication.AuthenticationActivity;
+import solutions.doubts.internal.AuthToken;
 
 /**
  * The base activity of the app.
@@ -58,7 +58,7 @@ public class MainActivity extends AppCompatActivity {
                     if (length != 5) {
                         // mischief alert!
                         Toast.makeText(this, "Invalid authentication URL", Toast.LENGTH_LONG).show();
-                        startLoginActivity();
+                        startAuthenticationActivity();
                     } else {
                         try {
                             final int id = Integer.valueOf(data.getPathSegments().get(length - 3));
@@ -73,7 +73,7 @@ public class MainActivity extends AppCompatActivity {
                         } catch (NumberFormatException e) {
                             // mischief alert!
                             Toast.makeText(this, "Invalid authentication URL", Toast.LENGTH_LONG).show();
-                            startLoginActivity();
+                            startAuthenticationActivity();
                         }
                     }
                 }
@@ -81,7 +81,7 @@ public class MainActivity extends AppCompatActivity {
                 if (DoubtsApplication.getInstance().getAuthToken() != null) {
                     startFeedActivity();
                 } else {
-                    startLoginActivity();
+                    startAuthenticationActivity();
                 }
             }
         } else {
@@ -91,8 +91,8 @@ public class MainActivity extends AppCompatActivity {
         finish();
     }
 
-    private void startLoginActivity() {
-        final Intent intent = new Intent(this, LoginActivity.class);
+    private void startAuthenticationActivity() {
+        final Intent intent = new Intent(this, AuthenticationActivity.class);
         startActivity(intent);
     }
 

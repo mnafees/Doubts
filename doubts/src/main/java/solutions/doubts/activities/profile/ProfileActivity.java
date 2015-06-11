@@ -38,7 +38,7 @@ import solutions.doubts.core.events.ResourceEvent;
 import solutions.doubts.core.util.ColorHolder;
 import solutions.doubts.core.util.PaletteHelperUtil;
 import solutions.doubts.core.util.PaletteHelperUtilListener;
-import solutions.doubts.internal.RestConstants;
+import solutions.doubts.internal.ApiConstants;
 import solutions.doubts.thirdparty.ObservableVerticalScrollView;
 import solutions.doubts.thirdparty.SlidingTabLayout;
 import solutions.doubts.transitions.ChangeBoundsOnScrollTransition;
@@ -153,7 +153,7 @@ public class ProfileActivity extends ActionBarActivity implements PaletteHelperU
         final NetworkEvent networkEvent = NetworkEvent.newBuilder()
                 .operation(NetworkEvent.Operation.GET)
                 .url(
-                        RestConstants.API_ENDPOINT + "/api/v1/users/" +
+                        ApiConstants.API_ENDPOINT + "/api/v1/users/" +
                                 id + "/" + username
 
                 )
@@ -270,7 +270,7 @@ public class ProfileActivity extends ActionBarActivity implements PaletteHelperU
                 .operation(NetworkEvent.Operation.CREATE)
                 .object(mUser)
                 .clazz(User.class)
-                .url(RestConstants.API_ENDPOINT + "/api/v1/users/" +
+                .url(ApiConstants.API_ENDPOINT + "/api/v1/users/" +
                         Integer.toString(((DoubtsApplication)getApplication()).getUserId()) + "/" +
                         ((DoubtsApplication)getApplication()).getUsername() + "/following")
                 .build();

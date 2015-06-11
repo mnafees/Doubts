@@ -127,10 +127,7 @@ public class Question extends RealmObject implements Serializable {
         public Builder tags(final List<String> tags) {
             final RealmList<Entity> list = new RealmList<>();
             for (final String tag: tags) {
-                final Entity entity = Entity.newBuilder()
-                        .name(tag)
-                        .build();
-                list.add(entity);
+                list.add(Entity.newEntity().name(tag).create());
             }
             mQuestion.tags = list;
             return this;

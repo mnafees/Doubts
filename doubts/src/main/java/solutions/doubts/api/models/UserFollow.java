@@ -10,34 +10,35 @@ import java.io.Serializable;
 import io.realm.RealmObject;
 import io.realm.annotations.PrimaryKey;
 
-public class S3Image extends RealmObject implements Serializable {
+public class UserFollow extends RealmObject implements Serializable {
 
     @PrimaryKey
     private int id;
-    private String url;
-    private String key;
+    private String name;
+    private String username;
 
     public int getId() {
-        return this.id;
+        return id;
     }
 
     public void setId(int id) {
         this.id = id;
     }
 
-    public String getUrl() {
-        return this.url;
+    public String getName() {
+        return name;
     }
 
-    public void setUrl(String url) {
-        this.url = url;
+    public void setName(String name) {
+        this.name = name;
     }
 
-    public String getKey() {
-        return this.key;
+    public String getUsername() {
+        return username;
     }
 
-    public void setKey(String key) {
-        this.key = key;
+    public void setUsername(String username) {
+        this.username = username;
     }
+
 }

@@ -64,7 +64,7 @@ public class FeedAdapter extends RecyclerView.Adapter<FeedAdapter.ViewHolder> {
     public FeedAdapter(final Context context) {
         mContext = context;
         DoubtsApplication.getInstance().getBus().register(this);
-        mFeed = new Feed();
+        mFeed = new Feed(mContext);
         //if (!mFeed.loadLocalRealmData()) {
             update();
         //}

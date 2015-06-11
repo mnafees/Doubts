@@ -9,135 +9,186 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:focusable="false"
+    android:id="@+id/main_container"
     android:theme="@style/AppTheme.RegisterTheme">
 
-    <LinearLayout
+    <android.support.design.widget.AppBarLayout
+        android:id="@+id/appbar"
+        android:focusable="false"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="vertical">
+        android:layout_height="wrap_content">
 
-        <android.support.design.widget.AppBarLayout
-            android:layout_width="match_parent"
+        <android.support.v7.widget.Toolbar
             android:layout_height="wrap_content"
-            android:padding="10dp">
-
-            <android.support.v7.widget.Toolbar
-                android:layout_height="wrap_content"
-                android:layout_width="match_parent"
-                app:layout_scrollFlags="scroll|enterAlways"
-                app:elevation="2dp"
-                android:paddingRight="10dp">
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="vertical">
-
-                    <com.rengwuxian.materialedittext.MaterialEditText
-                        android:id="@+id/name"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:hint="Name"
-                        android:textSize="25sp"
-                        app:met_baseColor="@android:color/white"
-                        app:met_floatingLabel="highlight"
-                        app:met_primaryColor="?colorAccent"
-                        app:met_singleLineEllipsis="true"/>
-
-                    <com.rengwuxian.materialedittext.MaterialEditText
-                        android:id="@+id/bio"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:hint="Bio (optional)"
-                        android:textSize="20sp"
-                        app:met_baseColor="@android:color/white"
-                        app:met_floatingLabel="highlight"
-                        app:met_maxCharacters="160"
-                        app:met_primaryColor="?colorAccent"
-                        app:met_singleLineEllipsis="true" />
-
-                </LinearLayout>
-
-            </android.support.v7.widget.Toolbar>
-
-        </android.support.design.widget.AppBarLayout>
-
-        <android.support.v4.widget.NestedScrollView
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            app:layout_behavior="@string/appbar_scrolling_view_behavior">
+            app:layout_scrollFlags="scroll|enterAlways"
+            app:elevation="5dp">
 
             <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:orientation="vertical">
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:paddingLeft="-10dp"
+                android:paddingRight="20dp"
+                android:paddingTop="20dp"
+                android:paddingBottom="20dp">
 
-                <android.support.v7.widget.CardView
+                <com.rengwuxian.materialedittext.MaterialEditText
+                    android:id="@+id/name"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    app:cardElevation="8dp">
+                    android:hint="@string/name_string"
+                    android:textSize="20sp"
+                    app:met_baseColor="@android:color/white"
+                    app:met_floatingLabel="highlight"
+                    app:met_primaryColor="?colorAccent"
+                    app:met_errorColor="#E57373"
+                    app:met_singleLineEllipsis="true"
+                    app:met_iconLeft="@drawable/ic_account_circle_black_24dp"/>
 
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:orientation="vertical"
-                        android:padding="10dp">
-
-                        <TextView
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:text="Competetive Exams"
-                            android:id="@+id/textView12"
-                            android:textColor="@color/material_blue_grey_900"
-                            android:padding="10dp"
-                            android:textSize="13sp"
-                            android:textStyle="bold" />
-
-                        <solutions.doubts.activities.login.ExpandableGridView
-                            android:id="@+id/competetive_exams"
-                            android:numColumns="2"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content" />
-
-                    </LinearLayout>
-
-                </android.support.v7.widget.CardView>
-
-                <android.support.v7.widget.CardView
+                <com.rengwuxian.materialedittext.MaterialEditText
+                    android:id="@+id/username"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    app:cardElevation="8dp">
-
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:orientation="vertical"
-                        android:padding="10dp">
-
-                        <TextView
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:text="Competetive Exams"
-                            android:id="@+id/textView12"
-                            android:textColor="@color/material_blue_grey_900"
-                            android:padding="10dp"
-                            android:textSize="13sp"
-                            android:textStyle="bold" />
-
-                        <solutions.doubts.activities.login.ExpandableGridView
-                            android:id="@+id/competetive_exams"
-                            android:numColumns="2"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content" />
-
-                    </LinearLayout>
-
-                </android.support.v7.widget.CardView>
+                    android:hint="@string/username_string"
+                    android:textSize="16sp"
+                    app:met_baseColor="@android:color/white"
+                    app:met_floatingLabel="highlight"
+                    app:met_primaryColor="?colorAccent"
+                    app:met_errorColor="#E57373"
+                    app:met_singleLineEllipsis="true"
+                    app:met_iconLeft="@drawable/ic_info_black_24dp"/>
 
             </LinearLayout>
 
-        </android.support.v4.widget.NestedScrollView>
+        </android.support.v7.widget.Toolbar>
 
-    </LinearLayout>
+    </android.support.design.widget.AppBarLayout>
+
+    <android.support.v4.widget.NestedScrollView
+        android:id="@+id/scroll_view"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:focusable="false"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:focusable="false"
+            android:orientation="vertical">
+
+            <me.grantland.widget.AutofitTextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="What are your interests?"
+                android:layout_marginTop="13dp"
+                android:singleLine="true"
+                android:id="@+id/interests_text"
+                android:textColor="@color/material_blue_grey_800"
+                android:padding="10dp"
+                android:textSize="10000sp"
+                android:gravity="center"
+                android:textStyle="bold" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/competitive_exams_string"
+                android:id="@+id/competitive_exams_text"
+                android:textColor="@color/material_blue_grey_900"
+                android:padding="10dp"
+                android:textSize="13sp"
+                android:textStyle="bold" />
+
+            <solutions.doubts.activities.authentication.ExpandableGridView
+                android:id="@+id/competitive_exams"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="1dp"
+                android:layout_marginStart="1dp"
+                android:layout_marginRight="1dp"
+                android:layout_marginEnd="1dp"
+                android:columnWidth="100dp"
+                android:drawSelectorOnTop="true"
+                android:gravity="center"
+                android:verticalSpacing="1dp"
+                android:horizontalSpacing="1dp"
+                android:numColumns="auto_fit"
+                android:stretchMode="columnWidth"
+                android:focusable="true"
+                android:clickable="true" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/subjects_string"
+                android:id="@+id/subjects_text"
+                android:textColor="@color/material_blue_grey_900"
+                android:padding="10dp"
+                android:textSize="13sp"
+                android:textStyle="bold" />
+
+            <solutions.doubts.activities.authentication.ExpandableGridView
+                android:id="@+id/subjects"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="1dp"
+                android:layout_marginStart="1dp"
+                android:layout_marginRight="1dp"
+                android:layout_marginEnd="1dp"
+                android:columnWidth="100dp"
+                android:drawSelectorOnTop="true"
+                android:gravity="center"
+                android:verticalSpacing="1dp"
+                android:horizontalSpacing="1dp"
+                android:numColumns="auto_fit"
+                android:stretchMode="columnWidth"
+                android:focusable="true"
+                android:clickable="true" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/competitions_string"
+                android:id="@+id/competitions_text"
+                android:textColor="@color/material_blue_grey_900"
+                android:padding="10dp"
+                android:textSize="13sp"
+                android:textStyle="bold" />
+
+            <solutions.doubts.activities.authentication.ExpandableGridView
+                android:id="@+id/competitions"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="1dp"
+                android:layout_marginStart="1dp"
+                android:layout_marginRight="1dp"
+                android:layout_marginEnd="1dp"
+                android:columnWidth="100dp"
+                android:drawSelectorOnTop="true"
+                android:gravity="center"
+                android:verticalSpacing="1dp"
+                android:horizontalSpacing="1dp"
+                android:numColumns="auto_fit"
+                android:stretchMode="columnWidth"
+                android:focusable="true"
+                android:clickable="true" />
+
+        </LinearLayout>
+
+    </android.support.v4.widget.NestedScrollView>
+
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/button"
+        android:layout_height="wrap_content"
+        android:layout_width="wrap_content"
+        app:layout_anchor="@id/appbar"
+        app:layout_anchorGravity="bottom|right|end"
+        android:src="@drawable/ic_done_white_24dp"
+        android:layout_margin="16dp"
+        android:clickable="true"
+        app:elevation="5dp"/>
 
 </android.support.design.widget.CoordinatorLayout>
