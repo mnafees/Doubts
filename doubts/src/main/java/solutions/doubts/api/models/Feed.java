@@ -43,7 +43,7 @@ public class Feed {
                     Toast.makeText(mRemoteQuery.getContext(), e.getMessage(), Toast.LENGTH_LONG)
                     .show();
                 } else {
-                    mFeedItems.addAll(result.getResult().getQuestions());
+                    mFeedItems.addAll(0, result.getResult().getQuestions());
                     mOffset += 10;
                     mHandler.post(new Runnable() {
                         @Override

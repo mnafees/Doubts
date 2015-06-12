@@ -23,6 +23,8 @@ import com.github.curioustechizen.ago.RelativeTimeTextView;
 import com.squareup.otto.Subscribe;
 
 import org.apmem.tools.layouts.FlowLayout;
+import org.joda.time.format.DateTimeFormatter;
+import org.joda.time.format.ISODateTimeFormat;
 
 import solutions.doubts.DoubtsApplication;
 import solutions.doubts.R;
@@ -32,7 +34,6 @@ import solutions.doubts.api.models.Entity;
 import solutions.doubts.api.models.Feed;
 import solutions.doubts.api.models.Question;
 import solutions.doubts.core.events.FeedUpdatedEvent;
-import solutions.doubts.core.util.DateTimeUtil;
 
 public class FeedAdapter extends RecyclerView.Adapter<FeedAdapter.ViewHolder> {
 
@@ -128,7 +129,9 @@ public class FeedAdapter extends RecyclerView.Adapter<FeedAdapter.ViewHolder> {
         holder.view.setTag(q);
         holder.question.setText(q.getTitle());
         holder.username.setText(q.getAuthor().getUsername());
-        holder.time.setReferenceTime(DateTimeUtil.getMillis(q.getCreated()));
+        DateTimeFormatter formatter = ISODateTimeFormat.dateTimeParser();
+        long time = formatter.parseMillis(q.getCreated());
+        holder.time.setReferenceTime(time);
         // FIXME: later tags will be limited to at most 5
         holder.tagList.removeAllViews();
         for (Entity tag : q.getTags()) {

@@ -61,7 +61,7 @@ public class RemoteQuery<T> {
                 .addQuery("order", order.name())
                 .addQuery("sort", sort)
                 .addQuery("page.offset", Integer.toString(offset))
-                .as(new TypeToken<T>(){})
+                .as(mClazz)
                 .withResponse();
     }
 

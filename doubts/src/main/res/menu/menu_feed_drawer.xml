@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ This file is part of Doubts.
+  ~ Copyright (c) 2015 Mohammed Nafees (original author) <nafees.technocool@gmail.com>.
+  -->
+
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <group android:checkableBehavior="single">
+        <item
+            android:id="@+id/bookmarked_doubts"
+            android:icon="@drawable/ic_bookmark_grey600_24dp"
+            android:title="Bookmarked Doubts"/>
+    </group>
+</menu>
