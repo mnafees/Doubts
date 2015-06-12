@@ -35,6 +35,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.ButterKnife;
+import butterknife.InjectView;
 import de.hdodenhof.circleimageview.CircleImageView;
 import solutions.doubts.DoubtsApplication;
 import solutions.doubts.R;
@@ -50,10 +51,10 @@ public class FeedActivity extends AppCompatActivity {
 
     private static final String TAG = "FeedActivity";
 
-    private RecyclerView mRecyclerView;
-    private CircleImageView profileImageView;
+    @InjectView(R.id.feed)
+    RecyclerView mRecyclerView;
+    private CircleImageView mProfileImage;
     private TextView mName;
-    private ViewGroup topProfileContainer;
     private ActionBarDrawerToggle mDrawerToggle;
     private TextView mConnectivityError;
 
@@ -76,7 +77,7 @@ public class FeedActivity extends AppCompatActivity {
 
         mConnectivityError = (TextView)findViewById(R.id.no_internet_textview);
 
-        mRecyclerView = (RecyclerView)findViewById(R.id.content);
+        mRecyclerView = (RecyclerView)findViewById(R.id.feed);
         final LinearLayoutManager manager = new LinearLayoutManager(this);
         manager.setOrientation(LinearLayoutManager.VERTICAL);
         mRecyclerView.setLayoutManager(manager);
@@ -85,6 +86,7 @@ public class FeedActivity extends AppCompatActivity {
 
         final SwipeRefreshLayout swipeRefreshLayout = (SwipeRefreshLayout)findViewById(R.id.swipe_refresh_layout);
         swipeRefreshLayout.setColorSchemeColors(getResources().getColor(R.color.primary));
+        swipeRefreshLayout.setRefreshing(true);
         swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
@@ -145,11 +147,11 @@ public class FeedActivity extends AppCompatActivity {
         listView.setAdapter(adapter);
 
         final Intent intent = new Intent(this, ProfileActivity.class);
-        this.topProfileContainer = (ViewGroup)findViewById(R.id.top_profile_view);
-        this.profileImageView = (CircleImageView)this.topProfileContainer.findViewById(R.id.profileImage);
+        ViewGroup topProfileContainer = (ViewGroup) findViewById(R.id.top_profile_view);
+        this.mProfileImage = (CircleImageView) topProfileContainer.findViewById(R.id.profileImage);
         //this.mName = (TextView)this.topProfileContainer.findViewById(R.id.email_name);
         setImage();
-        this.topProfileContainer.setOnClickListener(new View.OnClickListener() {
+        topProfileContainer.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 startActivity(intent);

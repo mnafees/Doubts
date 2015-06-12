@@ -7,56 +7,53 @@ package solutions.doubts.api.models;
 
 import android.content.Context;
 import android.os.Handler;
+import android.widget.Toast;
 
-import com.google.gson.reflect.TypeToken;
 import com.koushikdutta.async.future.FutureCallback;
-import com.koushikdutta.ion.Ion;
+import com.koushikdutta.ion.Response;
 
 import java.util.LinkedList;
-import java.util.List;
 
 import solutions.doubts.DoubtsApplication;
+import solutions.doubts.api.query.QuestionsResource;
+import solutions.doubts.api.query.RemoteQuery;
 import solutions.doubts.core.events.FeedUpdatedEvent;
-import solutions.doubts.internal.ApiConstants;
 
 public class Feed {
 
     private static final String TAG = "Feed";
 
     private final Handler mHandler = new Handler(DoubtsApplication.getInstance().getMainLooper());
-    private Context mContext;
     private LinkedList<Question> mFeedItems;
+    private RemoteQuery<QuestionsResource> mRemoteQuery;
+    private int mOffset;
 
     public Feed(final Context context) {
-        mContext = context;
         mFeedItems = new LinkedList<>();
-
-        DoubtsApplication.getInstance().getBus().register(this);
+        mRemoteQuery = new RemoteQuery<>(QuestionsResource.class);
+        mRemoteQuery.setContext(context);
     }
 
     public void fetchNext() {
-        Ion.with(mContext)
-                .load(ApiConstants.API_ENDPOINT + "/api/v1/questions")
-                .setHeader(ApiConstants.HEADER_AUTHORIZATION, DoubtsApplication.getInstance().getAuthToken().toString())
-                .as(new TypeToken<List<Question>>(){})
-                .setCallback(new FutureCallback<List<Question>>() {
-                    @Override
-                    public void onCompleted(Exception e, List<Question> result) {
-                        if (e != null) {
-
-                        } else {
-                            mFeedItems.addAll(result);
-                            mHandler.post(new Runnable() {
-                                @Override
-                                public void run() {
-                                    DoubtsApplication.getInstance().getBus().post(
-                                            new FeedUpdatedEvent()
-                                    );
-                                }
-                            });
+        mRemoteQuery.getAll(null, null, mOffset).setCallback(
+                new FutureCallback<Response<QuestionsResource>>() {
+            @Override
+            public void onCompleted(Exception e, Response<QuestionsResource> result) {
+                if (e != null) {
+                    Toast.makeText(mRemoteQuery.getContext(), e.getMessage(), Toast.LENGTH_LONG)
+                    .show();
+                } else {
+                    mFeedItems.addAll(result.getResult().getQuestions());
+                    mOffset += 10;
+                    mHandler.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            DoubtsApplication.getInstance().getBus().post(new FeedUpdatedEvent());
                         }
-                    }
-                });
+                    });
+                }
+            }
+        });
     }
 
     public void reset() {

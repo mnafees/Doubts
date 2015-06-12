@@ -9,6 +9,7 @@ import android.app.Application;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.util.Log;
 import android.widget.Toast;
 
 import com.google.gson.ExclusionStrategy;
@@ -24,9 +25,9 @@ import com.squareup.otto.Subscribe;
 import com.squareup.otto.ThreadEnforcer;
 
 import io.realm.RealmObject;
-import solutions.doubts.internal.AuthToken;
 import solutions.doubts.core.events.LogoutEvent;
 import solutions.doubts.core.events.ResourceEvent;
+import solutions.doubts.internal.AuthToken;
 import solutions.doubts.internal.StringConstants;
 
 public class DoubtsApplication extends Application {
@@ -88,6 +89,7 @@ public class DoubtsApplication extends Application {
                 })
                 .create();
         Ion.getDefault(this).configure().setGson(gson);
+        Ion.getDefault(this).configure().setLogging("Ion Logs", Log.DEBUG);
     }
 
     public static DoubtsApplication getInstance() {

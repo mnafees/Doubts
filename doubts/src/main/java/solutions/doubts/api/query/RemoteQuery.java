@@ -17,7 +17,6 @@ import java.util.List;
 import java.util.Map;
 
 import solutions.doubts.api.models.Answer;
-import solutions.doubts.api.models.Question;
 import solutions.doubts.api.models.User;
 import solutions.doubts.internal.ApiConstants;
 
@@ -54,12 +53,15 @@ public class RemoteQuery<T> {
                 .withResponse();
     }
 
-    public Future<Response<List<T>>> getAll(Order order, String sort) {
+    public Future<Response<T>> getAll(Order order, String sort, int offset) {
+        if (order == null) order = Order.desc;
+        if (sort == null) sort = "id";
         return Ion.with(mContext)
                 .load("GET", mapClassToUrl(mClazz))
                 .addQuery("order", order.name())
                 .addQuery("sort", sort)
-                .as(new TypeToken<List<T>>(){})
+                .addQuery("page.offset", Integer.toString(offset))
+                .as(new TypeToken<T>(){})
                 .withResponse();
     }
 
@@ -105,7 +107,7 @@ public class RemoteQuery<T> {
     private boolean allowedType(Class<T> clazz) {
         if (clazz.equals(User.class)) {
             return true;
-        } else if (clazz.equals(Question.class)) {
+        } else if (clazz.equals(QuestionsResource.class)) {
             return true;
         } else if (clazz.equals(Answer.class)) {
             return true;
@@ -116,7 +118,7 @@ public class RemoteQuery<T> {
     private String mapClassToUrl(Class<T> clazz) {
         if (clazz.equals(User.class)) {
             return ApiConstants.USER_RESOURCE;
-        } else if (clazz.equals(Question.class)) {
+        } else if (clazz.equals(QuestionsResource.class)) {
             return ApiConstants.QUESTION_RESOURCE;
         } else if (clazz.equals(Answer.class)) {
             return ApiConstants.ANSWER_RESOURCE;
