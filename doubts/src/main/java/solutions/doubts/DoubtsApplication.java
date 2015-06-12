@@ -25,6 +25,7 @@ import com.squareup.otto.Subscribe;
 import com.squareup.otto.ThreadEnforcer;
 
 import io.realm.RealmObject;
+import solutions.doubts.api.models.Feed;
 import solutions.doubts.core.events.LogoutEvent;
 import solutions.doubts.core.events.ResourceEvent;
 import solutions.doubts.internal.AuthToken;
@@ -38,6 +39,7 @@ public class DoubtsApplication extends Application {
     private AuthToken mAuthToken;
     private Bus mBus;
     private RefWatcher mRefWatcher;
+    private Feed mFeed;
 
     private static DoubtsApplication INSTANCE;
 
@@ -115,6 +117,17 @@ public class DoubtsApplication extends Application {
                 .putString("auth_token", authToken.getToken())
                 .apply();
         mAuthToken = authToken;
+    }
+
+    public Feed getFeedInstance() {
+        if (mAuthToken != null) {
+            synchronized (DoubtsApplication.class) {
+                if (mFeed == null) {
+                    mFeed = new Feed(this);
+                }
+            }
+        }
+        return mFeed;
     }
 
     public int getUserId() {

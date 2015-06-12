@@ -34,26 +34,30 @@ public class Feed {
         mRemoteQuery.setContext(context);
     }
 
-    public void fetchNext() {
-        mRemoteQuery.getAll(null, null, mOffset).setCallback(
-                new FutureCallback<Response<QuestionsResource>>() {
-            @Override
-            public void onCompleted(Exception e, Response<QuestionsResource> result) {
-                if (e != null) {
-                    Toast.makeText(mRemoteQuery.getContext(), e.getMessage(), Toast.LENGTH_LONG)
-                    .show();
-                } else {
-                    mFeedItems.addAll(0, result.getResult().getQuestions());
-                    mOffset += 10;
-                    mHandler.post(new Runnable() {
+    public void fetchNext(boolean firstUpdate) {
+        if (firstUpdate && mFeedItems.size() > 0) {
+            DoubtsApplication.getInstance().getBus().post(new FeedUpdatedEvent());
+        } else {
+            mRemoteQuery.getAll(null, null, mOffset).setCallback(
+                    new FutureCallback<Response<QuestionsResource>>() {
                         @Override
-                        public void run() {
-                            DoubtsApplication.getInstance().getBus().post(new FeedUpdatedEvent());
+                        public void onCompleted(Exception e, Response<QuestionsResource> result) {
+                            if (e != null) {
+                                Toast.makeText(mRemoteQuery.getContext(), e.getMessage(), Toast.LENGTH_LONG)
+                                        .show();
+                            } else {
+                                mFeedItems.addAll(0, result.getResult().getQuestions());
+                                mOffset += 10;
+                                mHandler.post(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        DoubtsApplication.getInstance().getBus().post(new FeedUpdatedEvent());
+                                    }
+                                });
+                            }
                         }
                     });
-                }
-            }
-        });
+        }
     }
 
     public void reset() {

@@ -65,9 +65,9 @@ public class FeedAdapter extends RecyclerView.Adapter<FeedAdapter.ViewHolder> {
     public FeedAdapter(final Context context) {
         mContext = context;
         DoubtsApplication.getInstance().getBus().register(this);
-        mFeed = new Feed(mContext);
+        mFeed = DoubtsApplication.getInstance().getFeedInstance();
         //if (!mFeed.loadLocalRealmData()) {
-            update();
+            update(true);
         //}
     }
 
@@ -119,8 +119,8 @@ public class FeedAdapter extends RecyclerView.Adapter<FeedAdapter.ViewHolder> {
         notifyDataSetChanged();
     }
 
-    public void update() {
-        mFeed.fetchNext();
+    public void update(boolean firstUpdate) {
+        mFeed.fetchNext(firstUpdate);
     }
 
     @Override
