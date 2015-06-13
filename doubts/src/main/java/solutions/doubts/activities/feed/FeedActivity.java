@@ -5,8 +5,10 @@
 
 package solutions.doubts.activities.feed;
 
+import android.app.FragmentTransaction;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.graphics.Typeface;
 import android.net.ConnectivityManager;
 import android.os.Bundle;
 import android.support.design.widget.NavigationView;
@@ -39,6 +41,7 @@ import solutions.doubts.core.events.LogoutEvent;
 public class FeedActivity extends AppCompatActivity {
 
     private static final String TAG = "FeedActivity";
+    private static final String SEARCHVIEW_TAG = "SearchView";
 
     @InjectView(R.id.drawer_layout)
     DrawerLayout mDrawerLayout;
@@ -57,9 +60,16 @@ public class FeedActivity extends AppCompatActivity {
         ((DoubtsApplication)getApplication()).getBus().register(this);
 
         Toolbar toolbar = (Toolbar)findViewById(R.id.toolbar);
+        toolbar.setTransitionName("toolbarTransition");
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setHomeAsUpIndicator(R.drawable.ic_menu_white_24dp);
+        View titleView = View.inflate(this, R.layout.layout_title_action_bar, null);
+        TextView title = (TextView)titleView.findViewById(R.id.brand_text);
+        title.setTypeface(Typeface.createFromAsset(getAssets(), "fonts/Pacifico.ttf"));
+        getSupportActionBar().setTitle("");
+        getSupportActionBar().setDisplayShowCustomEnabled(true);
+        getSupportActionBar().setCustomView(titleView);
 
         NavigationView navigationView = (NavigationView)findViewById(R.id.navigation_view);
         navigationView.setNavigationItemSelectedListener(
@@ -134,11 +144,6 @@ public class FeedActivity extends AppCompatActivity {
     }
 
     @Override
-    protected void onPostCreate(Bundle savedInstanceState) {
-        super.onPostCreate(savedInstanceState);
-    }
-
-    @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         final MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.menu_feed_activity, menu);
@@ -152,11 +157,40 @@ public class FeedActivity extends AppCompatActivity {
                 mDrawerLayout.openDrawer(GravityCompat.START);
                 return true;
             case R.id.action_search:
-                // do something here
+                enterSearchUi();
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
         }
+    }
+
+    private void enterSearchUi() {
+        FragmentTransaction transaction = getFragmentManager().beginTransaction();
+        SearchViewFragment fragment = (SearchViewFragment)getFragmentManager().findFragmentByTag(SEARCHVIEW_TAG);
+        transaction.setCustomAnimations(android.R.animator.fade_in, android.R.animator.fade_out);
+        transaction.addSharedElement(findViewById(R.id.toolbar), "toolbarTransition");
+        if (fragment == null) {
+            fragment = new SearchViewFragment();
+            fragment.setOnBackListener(new SearchViewFragment.OnBackListener() {
+                @Override
+                public void backPressed() {
+                    exitSearchUi();
+                }
+            });
+            transaction.add(R.id.drawer_layout, fragment, SEARCHVIEW_TAG);
+        } else {
+            transaction.show(fragment);
+        }
+        transaction.commit();
+        mDrawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
+    }
+
+    public void exitSearchUi() {
+        FragmentTransaction transaction = getFragmentManager().beginTransaction();
+        transaction.setCustomAnimations(R.animator.fade_in, R.animator.fade_out);
+        transaction.remove(getFragmentManager().findFragmentByTag(SEARCHVIEW_TAG));
+        transaction.commit();
+        mDrawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED);
     }
 
 }

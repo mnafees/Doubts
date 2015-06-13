@@ -54,6 +54,10 @@
     <style name="AppTheme.FeedTheme" parent="AppTheme">
     </style>
 
+    <style name="AppTheme.FeedTheme.SearchView">
+        <item name="android:windowBackground">@android:color/white</item>
+    </style>
+
     <style name="AppTheme.ProfileTheme" parent="AppTheme">
     </style>
 
