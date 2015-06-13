@@ -7,50 +7,105 @@ package solutions.doubts.api.models;
 
 import java.io.Serializable;
 
-public class Answer implements Serializable {
+import io.realm.RealmList;
+import io.realm.RealmObject;
+import io.realm.annotations.PrimaryKey;
 
+public class Answer extends RealmObject implements Serializable {
+
+    @PrimaryKey
     private int id;
     private String created;
     private String updated;
     private User author;
     private String title;
+    private String desc;
     private String slug;
     private S3Image image;
     private Entity question;
+    private RealmList<Entity> tags;
 
     public int getId() {
-        return this.id;
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
     }
 
     public String getCreated() {
-        return this.created;
+        return created;
+    }
+
+    public void setCreated(String created) {
+        this.created = created;
     }
 
     public String getUpdated() {
-        return this.updated;
+        return updated;
+    }
+
+    public void setUpdated(String updated) {
+        this.updated = updated;
     }
 
     public User getAuthor() {
-        return this.author;
+        return author;
+    }
+
+    public void setAuthor(User author) {
+        this.author = author;
     }
 
     public String getTitle() {
-        return this.title;
+        return title;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
+    }
+
+    public String getDesc() {
+        return desc;
+    }
+
+    public void setDesc(String desc) {
+        this.desc = desc;
     }
 
     public String getSlug() {
-        return this.slug;
+        return slug;
+    }
+
+    public void setSlug(String slug) {
+        this.slug = slug;
     }
 
     public S3Image getImage() {
-        return this.image;
+        return image;
+    }
+
+    public void setImage(S3Image image) {
+        this.image = image;
     }
 
     public Entity getQuestion() {
-        return this.question;
+        return question;
     }
 
-    public static Builder newBuilder() {
+    public void setQuestion(Entity question) {
+        this.question = question;
+    }
+
+    public RealmList<Entity> getTags() {
+        return tags;
+    }
+
+    public void setTags(RealmList<Entity> tags) {
+        this.tags = tags;
+    }
+
+    public static Builder newAnswer() {
         return new Builder();
     }
 
@@ -84,6 +139,16 @@ public class Answer implements Serializable {
 
         public Builder slug(String slug) {
             mAnswer.slug = slug;
+            return this;
+        }
+
+        public Builder desc(String desc) {
+            mAnswer.desc = desc;
+            return this;
+        }
+
+        public Builder tags(RealmList<Entity> tags) {
+            mAnswer.tags = tags;
             return this;
         }
 
