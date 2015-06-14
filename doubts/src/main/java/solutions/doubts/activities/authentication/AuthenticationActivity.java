@@ -48,6 +48,15 @@ public class AuthenticationActivity extends AppCompatActivity {
         Ion.getDefault(this).cancelAll();
     }
 
+    @Override
+    public void onBackPressed() {
+        if (mViewPager.getCurrentItem() == 1) {
+            mViewPager.setCurrentItem(0);
+        } else {
+            super.onBackPressed();
+        }
+    }
+
     @Subscribe
     public void onUserRegistrationEvent(final UserRegistrationEvent event) {
         mViewPager.setCurrentItem(1);

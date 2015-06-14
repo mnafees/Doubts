@@ -6,7 +6,6 @@
 package solutions.doubts.activities.authentication;
 
 import android.content.Context;
-import android.graphics.Color;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.Animation;
@@ -15,20 +14,15 @@ import android.view.animation.ScaleAnimation;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
 
-import java.util.Random;
-
 import me.grantland.widget.AutofitTextView;
 import solutions.doubts.R;
+import solutions.doubts.core.util.MaterialColorsUtil;
 
 public class InterestsAdapter extends BaseAdapter {
 
     private Context mContext;
     private String[] mInterests;
-    private String[] mColors = new String[] {"#F44336", "#E91E63", "#673AB7", "#2196F3",
-            "#03A9F4", "#00BCD4", "#009688", "#4CAF50", "#8BC34A", "#CDDC39", "#FFEB3B",
-            "#FFC107", "#FF9800", "#FF5722"};
-    private int[] mTileColors;
-    private boolean[] mChecked;
+    private MaterialColorsUtil mMaterialColorsUtil;
     private InterestToggleCallback mCallback;
 
     public InterestsAdapter(final Context context) {
@@ -37,8 +31,7 @@ public class InterestsAdapter extends BaseAdapter {
 
     public void setInterests(final String[] interests) {
         mInterests = interests;
-        mTileColors = new int[mInterests.length];
-        mChecked = new boolean[mInterests.length];
+        mMaterialColorsUtil = new MaterialColorsUtil();
     }
 
     @Override
@@ -66,13 +59,12 @@ public class InterestsAdapter extends BaseAdapter {
                 textView.setMaxLines(2);
             }
             textView.setText(mInterests[position]);
-            convertView.setBackgroundColor(randomColor(position));
+            convertView.setBackgroundColor(mMaterialColorsUtil.generateColor());
             final ImageView check = (ImageView)convertView.findViewById(R.id.check);
             convertView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
                     if (check.isShown()) {
-                        mChecked[position] = false;
                         ScaleAnimation shrink = new ScaleAnimation(1.0f, 0.0f, 1.0f, 0.0f, Animation.RELATIVE_TO_SELF, 0.5f, Animation.RELATIVE_TO_SELF, 0.5f);
                         shrink.setFillAfter(true);
                         shrink.setDuration(100);
@@ -92,7 +84,6 @@ public class InterestsAdapter extends BaseAdapter {
                         });
                         check.startAnimation(shrink);
                     } else {
-                        mChecked[position] = true;
                         ScaleAnimation grow = new ScaleAnimation(0.0f, 1.0f, 0.0f, 1.0f, Animation.RELATIVE_TO_SELF, 0.5f, Animation.RELATIVE_TO_SELF, 0.5f);
                         grow.setFillAfter(true);
                         grow.setDuration(100);
@@ -121,20 +112,6 @@ public class InterestsAdapter extends BaseAdapter {
 
     public void setInterestToggleCallback(final InterestToggleCallback callback) {
         mCallback = callback;
-    }
-
-    private int randomColor(final int position) {
-        if (mTileColors[position] == 0) {
-            int random = new Random().nextInt(getCount());
-            if (position != 0 && position != getCount() - 1) {
-                while (random == mTileColors[position - 1] && random == mTileColors[position + 1]) {
-                    random = new Random().nextInt(getCount());
-                }
-            }
-            mTileColors[position] = Color.parseColor(mColors[random]);
-        }
-
-        return mTileColors[position];
     }
 
     public interface InterestToggleCallback {

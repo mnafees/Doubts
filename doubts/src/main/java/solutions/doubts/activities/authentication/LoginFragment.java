@@ -10,8 +10,6 @@ import android.accounts.AccountManager;
 import android.content.Context;
 import android.graphics.PorterDuff;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Looper;
 import android.support.design.widget.Snackbar;
 import android.support.design.widget.TextInputLayout;
 import android.support.v4.app.Fragment;
@@ -61,9 +59,6 @@ public class LoginFragment extends Fragment {
     TextView mEmailMessage;
     @InjectView(R.id.login_elements)
     View mLoginElementsContainer;
-
-    // Other private members
-    private final Handler mMainHandler = new Handler(Looper.getMainLooper());
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -129,47 +124,29 @@ public class LoginFragment extends Fragment {
                     @Override
                     public void onCompleted(Exception e, Response<String> result) {
                         if (e != null) {
-                            mMainHandler.post(new Runnable() {
-                                @Override
-                                public void run() {
-                                    TransitionUtil.hideWithFadeOut(mThrobber);
-                                    Snackbar.make(mMainContainer, R.string.network_error_message, Snackbar.LENGTH_SHORT)
-                                            .show();
-                                    TransitionUtil.showWithFadeIn(mLoginElementsContainer);
-                                }
-                            });
+                            TransitionUtil.hideWithFadeOut(mThrobber);
+                            Snackbar.make(mMainContainer, R.string.network_error_message, Snackbar.LENGTH_SHORT)
+                                    .show();
+                            TransitionUtil.showWithFadeIn(mLoginElementsContainer);
                             return;
                         }
 
                         if (result.getHeaders().code() == 200) {
                             if (result.getRequest().getUri().getLastPathSegment().equals("register")) {
                                 // user needs to register
-                                mMainHandler.post(new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        DoubtsApplication.getInstance().getBus().post(new
-                                                AuthenticationActivity.UserRegistrationEvent(email));
-                                    }
-                                });
+                                TransitionUtil.hideWithFadeOut(mThrobber);
+                                TransitionUtil.showWithFadeIn(mLoginElementsContainer);
+                                DoubtsApplication.getInstance().getBus().post(new
+                                        AuthenticationActivity.UserRegistrationEvent(email));
                             } else {
                                 // login
-                                mMainHandler.post(new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        showEmailSentMessage();
-                                    }
-                                });
+                                showEmailSentMessage();
                             }
                         } else {
-                            mMainHandler.post(new Runnable() {
-                                @Override
-                                public void run() {
-                                    TransitionUtil.hideWithFadeOut(mThrobber);
-                                    Snackbar.make(mMainContainer, R.string.network_error_message, Snackbar.LENGTH_SHORT)
-                                            .show();
-                                    TransitionUtil.showWithFadeIn(mLoginElementsContainer);
-                                }
-                            });
+                            TransitionUtil.hideWithFadeOut(mThrobber);
+                            Snackbar.make(mMainContainer, R.string.network_error_message, Snackbar.LENGTH_SHORT)
+                                    .show();
+                            TransitionUtil.showWithFadeIn(mLoginElementsContainer);
                         }
                     }
                 });
