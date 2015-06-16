@@ -3,7 +3,7 @@
  * Copyright (c) 2015 Mohammed Nafees (original author) <nafees.technocool@gmail.com>.
  */
 
-package solutions.doubts.activities.common;
+package solutions.doubts.activities.feed;
 
 import android.content.Context;
 import android.content.Intent;
@@ -18,6 +18,7 @@ import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.TextView;
 
+import com.facebook.drawee.generic.RoundingParams;
 import com.facebook.drawee.view.SimpleDraweeView;
 import com.github.curioustechizen.ago.RelativeTimeTextView;
 import com.squareup.otto.Subscribe;
@@ -59,7 +60,7 @@ public class FeedAdapter extends RecyclerView.Adapter<FeedAdapter.ViewHolder> {
         @InjectView(R.id.author_image)
         SimpleDraweeView authorImage;
         @InjectView(R.id.tags_layout)
-        FlowLayout tagList;
+        FlowLayout tagsLayout;
         @InjectView(R.id.timestamp)
         RelativeTimeTextView time;
 
@@ -155,19 +156,25 @@ public class FeedAdapter extends RecyclerView.Adapter<FeedAdapter.ViewHolder> {
         long time = formatter.parseMillis(q.getCreated());
         holder.time.setReferenceTime(time);
         // FIXME: later tags will be limited to at most 5
+        holder.tagsLayout.removeAllViews();
         for (Entity tag : q.getTags()) {
             final View v = View.inflate(mContext, R.layout.layout_single_tag, null);
             final TextView textView = (TextView)v.findViewById(R.id.tag);
             textView.setText("#" + tag.getName().replace(" ", "").toLowerCase());
-            holder.tagList.addView(v);
+            holder.tagsLayout.addView(v);
         }
         if (q.getImage() != null) {
             if (q.getImage().getUrl() != null) {
                 holder.doubtImage.setImageURI(Uri.parse(q.getImage().getUrl()));
             }
         }
-        String gravatar = String.format("http://www.gravatar.com/avatar/%s?s=200&d=retro", md5(q.getAuthor().getUsername()));
+        String gravatar = String.format("http://www.gravatar.com/avatar/%s?s=200&d=wavatar", md5(q.getAuthor().getUsername()));
         holder.authorImage.setImageURI(Uri.parse(gravatar));
+        RoundingParams params = new RoundingParams();
+        params.setRoundAsCircle(true);
+        holder.authorImage.getHierarchy().setRoundingParams(params);
+        String doubtImage = String.format("http://www.gravatar.com/avatar/%s?s=500&d=retro", md5(q.getTitle()));
+        holder.doubtImage.setImageURI(Uri.parse(doubtImage));
     }
 
     @Override

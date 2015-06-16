@@ -50,7 +50,7 @@ public class CreateDoubtActivity extends AppCompatActivity {
     private static final int REQUEST_IMAGE_CAPTURE = 1;
 
     // UI elements
-    @InjectView(R.id.tags_container)
+    @InjectView(R.id.tags_layout)
     FlowLayout mTagsContainer;
     @InjectView(R.id.title)
     EditText mTitle;

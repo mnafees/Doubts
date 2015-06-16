@@ -35,7 +35,6 @@ import butterknife.ButterKnife;
 import butterknife.InjectView;
 import solutions.doubts.DoubtsApplication;
 import solutions.doubts.R;
-import solutions.doubts.activities.common.FeedAdapter;
 import solutions.doubts.activities.createdoubt.CreateDoubtActivity;
 import solutions.doubts.core.ConnectivityChangeReceiver;
 import solutions.doubts.core.events.ConnectivityChangedEvent;
@@ -46,14 +45,20 @@ public class FeedActivity extends AppCompatActivity {
     private static final String TAG = "FeedActivity";
     private static final String SEARCHVIEW_TAG = "SearchView";
 
+    // UI elements
     @InjectView(R.id.drawer_layout)
     DrawerLayout mDrawerLayout;
     @InjectView(R.id.feed)
     RecyclerView mRecyclerView;
     private TextView mName;
 
+    // Other members
     private final ConnectivityChangeReceiver mConnectivityChangeReceiver = new ConnectivityChangeReceiver();
     private final IntentFilter mIntentFilter = new IntentFilter();
+    private int mPreviousTotal;
+    private boolean mLoading = true;
+    private int mVisibleThreshold = 5;
+    private int mFirstVisibleItem, mVisibleItemCount, mTotalItemCount;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -106,11 +111,33 @@ public class FeedActivity extends AppCompatActivity {
                     }
                 });
 
-        LinearLayoutManager manager = new LinearLayoutManager(this);
-        manager.setOrientation(LinearLayoutManager.VERTICAL);
-        mRecyclerView.setLayoutManager(manager);
+        final LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
+        linearLayoutManager.setOrientation(LinearLayoutManager.VERTICAL);
+        mRecyclerView.setLayoutManager(linearLayoutManager);
         final FeedAdapter feedAdapter = new FeedAdapter(this);
         mRecyclerView.setAdapter(feedAdapter);
+        mRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+                super.onScrolled(recyclerView, dx, dy);
+
+                mVisibleItemCount = recyclerView.getChildCount();
+                mTotalItemCount = linearLayoutManager.getItemCount();
+                mFirstVisibleItem = linearLayoutManager.findFirstVisibleItemPosition();
+
+                if (mLoading) {
+                    if (mTotalItemCount > mPreviousTotal) {
+                        mLoading = false;
+                        mPreviousTotal = mTotalItemCount;
+                    }
+                }
+                if (!mLoading && (mTotalItemCount - mVisibleItemCount)
+                        <= (mFirstVisibleItem + mVisibleThreshold)) {
+                    mLoading = true;
+                    feedAdapter.update(false);
+                }
+            }
+        });
 
         final SwipeRefreshLayout swipeRefreshLayout = (SwipeRefreshLayout)findViewById(R.id.swipe_refresh_layout);
         swipeRefreshLayout.setColorSchemeColors(getResources().getColor(R.color.primary));
