@@ -18,6 +18,9 @@ import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.TextView;
 
+import com.facebook.drawee.drawable.ProgressBarDrawable;
+import com.facebook.drawee.generic.GenericDraweeHierarchy;
+import com.facebook.drawee.generic.GenericDraweeHierarchyBuilder;
 import com.facebook.drawee.generic.RoundingParams;
 import com.facebook.drawee.view.SimpleDraweeView;
 import com.github.curioustechizen.ago.RelativeTimeTextView;
@@ -174,6 +177,11 @@ public class FeedAdapter extends RecyclerView.Adapter<FeedAdapter.ViewHolder> {
         params.setRoundAsCircle(true);
         holder.authorImage.getHierarchy().setRoundingParams(params);
         String doubtImage = String.format("http://www.gravatar.com/avatar/%s?s=500&d=retro", md5(q.getTitle()));
+        GenericDraweeHierarchy hierarchy = new GenericDraweeHierarchyBuilder(mContext.getResources())
+                .setFadeDuration(300)
+                .setProgressBarImage(new ProgressBarDrawable())
+                .build();
+        holder.doubtImage.setHierarchy(hierarchy);
         holder.doubtImage.setImageURI(Uri.parse(doubtImage));
     }
 
