@@ -42,14 +42,16 @@
 
             </LinearLayout>
 
-            <de.hdodenhof.circleimageview.CircleImageView xmlns:app="http://schemas.android.com/apk/res-auto"
-                android:id="@+id/profileImage"
+            <com.facebook.drawee.view.SimpleDraweeView
+                xmlns:fresco="http://schemas.android.com/apk/res-auto"
+                android:id="@+id/author_image"
                 android:layout_width="100dp"
                 android:layout_height="100dp"
                 android:layout_centerInParent="true"
                 android:background="@android:color/transparent"
-                app:border_color="@android:color/white"
-                app:border_width="2dp" />
+                fresco:fadeDuration="300"
+                fresco:actualImageScaleType="focusCrop"
+                fresco:roundAsCircle="true" />
 
             <EditText
                 android:id="@+id/bio"

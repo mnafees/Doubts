@@ -97,7 +97,7 @@ public class Question extends RealmObject implements Serializable {
         this.tags = tags;
     }
 
-    public static Builder newBuilder() {
+    public static Builder newQuestion() {
         return new Builder();
     }
 
@@ -133,7 +133,7 @@ public class Question extends RealmObject implements Serializable {
             return this;
         }
 
-        public Question build() {
+        public Question create() {
             return mQuestion;
         }
     }

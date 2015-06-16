@@ -10,15 +10,15 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.BitmapDrawable;
+import android.net.Uri;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.ViewTreeObserver;
 import android.widget.ImageButton;
-import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.facebook.drawee.view.SimpleDraweeView;
 import com.github.curioustechizen.ago.RelativeTimeTextView;
 import com.squareup.otto.Subscribe;
 
@@ -26,38 +26,47 @@ import org.apmem.tools.layouts.FlowLayout;
 import org.joda.time.format.DateTimeFormatter;
 import org.joda.time.format.ISODateTimeFormat;
 
+import butterknife.ButterKnife;
+import butterknife.InjectView;
 import solutions.doubts.DoubtsApplication;
 import solutions.doubts.R;
-import solutions.doubts.activities.fullscreenimageview.FullscreenImageViewActivity;
 import solutions.doubts.activities.profile.ProfileActivity;
 import solutions.doubts.api.models.Entity;
 import solutions.doubts.api.models.Feed;
 import solutions.doubts.api.models.Question;
+import solutions.doubts.api.models.User;
+import solutions.doubts.api.query.RemoteQuery;
 import solutions.doubts.core.events.FeedUpdatedEvent;
+import solutions.doubts.core.util.MaterialColorsUtil;
 
 public class FeedAdapter extends RecyclerView.Adapter<FeedAdapter.ViewHolder> {
 
     private static final String TAG = "FeedAdapter";
     private Context mContext;
     private Feed mFeed;
+    private RemoteQuery<User> mRemoteQuery;
+    private MaterialColorsUtil mMaterialColorsUtil;
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
 
-        public final View view;
-        public final TextView question, username;
-        public final ImageView imageView, profileImageView;
-        public final FlowLayout tagList;
-        public final RelativeTimeTextView time;
+        View view;
+        @InjectView(R.id.title)
+        TextView title;
+        @InjectView(R.id.username)
+        TextView username;
+        @InjectView(R.id.doubt_image)
+        SimpleDraweeView doubtImage;
+        @InjectView(R.id.author_image)
+        SimpleDraweeView authorImage;
+        @InjectView(R.id.tags_layout)
+        FlowLayout tagList;
+        @InjectView(R.id.timestamp)
+        RelativeTimeTextView time;
 
         public ViewHolder(final View view) {
             super(view);
+            ButterKnife.inject(this, view);
             this.view = view;
-            this.question = (TextView)view.findViewById(R.id.title);
-            this.username = (TextView)view.findViewById(R.id.username);
-            this.imageView = (ImageView)view.findViewById(R.id.image);
-            this.profileImageView = (ImageView)view.findViewById(R.id.profileImage);
-            this.tagList = (FlowLayout)view.findViewById(R.id.tagList);
-            this.time = (RelativeTimeTextView)view.findViewById(R.id.timestamp);
         }
 
     }
@@ -66,14 +75,13 @@ public class FeedAdapter extends RecyclerView.Adapter<FeedAdapter.ViewHolder> {
         mContext = context;
         DoubtsApplication.getInstance().getBus().register(this);
         mFeed = DoubtsApplication.getInstance().getFeedInstance();
-        //if (!mFeed.loadLocalRealmData()) {
-            update(true);
-        //}
+        mRemoteQuery = new RemoteQuery<>(User.class);
+        mMaterialColorsUtil = new MaterialColorsUtil();
+        update(true /* first update */);
     }
 
     @Override
-    public FeedAdapter.ViewHolder onCreateViewHolder(final ViewGroup parent,
-                                                          int viewType) {
+    public FeedAdapter.ViewHolder onCreateViewHolder(final ViewGroup parent, int viewType) {
         final View view = LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.layout_card, parent, false);
         final ImageButton bookmarkButton = (ImageButton)view.findViewById(R.id.bookmarkIconButton);
@@ -101,7 +109,7 @@ public class FeedAdapter extends RecyclerView.Adapter<FeedAdapter.ViewHolder> {
                 FeedAdapter.this.mContext.startActivity(intent);*/
             }
         });
-        final View authorContainer = (View)view.findViewById(R.id.authorContainer);
+        final View authorContainer = view.findViewById(R.id.author_container);
         authorContainer.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -112,6 +120,20 @@ public class FeedAdapter extends RecyclerView.Adapter<FeedAdapter.ViewHolder> {
             }
         });
         return new ViewHolder(view);
+    }
+
+    public static String md5(String md5) {
+        try {
+            java.security.MessageDigest md = java.security.MessageDigest.getInstance("MD5");
+            byte[] array = md.digest(md5.getBytes());
+            StringBuffer sb = new StringBuffer();
+            for (int i = 0; i < array.length; ++i) {
+                sb.append(Integer.toHexString((array[i] & 0xFF) | 0x100).substring(1,3));
+            }
+            return sb.toString();
+        } catch (java.security.NoSuchAlgorithmException e) {
+        }
+        return null;
     }
 
     @Subscribe
@@ -127,41 +149,25 @@ public class FeedAdapter extends RecyclerView.Adapter<FeedAdapter.ViewHolder> {
     public void onBindViewHolder(final ViewHolder holder, final int position) {
         final Question q = mFeed.getItem(position);
         holder.view.setTag(q);
-        holder.question.setText(q.getTitle());
+        holder.title.setText(q.getTitle());
         holder.username.setText(q.getAuthor().getUsername());
         DateTimeFormatter formatter = ISODateTimeFormat.dateTimeParser();
         long time = formatter.parseMillis(q.getCreated());
         holder.time.setReferenceTime(time);
         // FIXME: later tags will be limited to at most 5
-        holder.tagList.removeAllViews();
         for (Entity tag : q.getTags()) {
             final View v = View.inflate(mContext, R.layout.layout_single_tag, null);
             final TextView textView = (TextView)v.findViewById(R.id.tag);
-            textView.setText("#" + tag.getName().replace(" ", ""));
+            textView.setText("#" + tag.getName().replace(" ", "").toLowerCase());
             holder.tagList.addView(v);
         }
-        holder.imageView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                final Intent intent = new Intent(FeedAdapter.this.mContext,
-                        FullscreenImageViewActivity.class);
-                FeedAdapter.this.mContext.startActivity(intent);
+        if (q.getImage() != null) {
+            if (q.getImage().getUrl() != null) {
+                holder.doubtImage.setImageURI(Uri.parse(q.getImage().getUrl()));
             }
-        });
-        holder.profileImageView.getViewTreeObserver().addOnGlobalLayoutListener(
-                new ViewTreeObserver.OnGlobalLayoutListener() {
-                    @Override
-                    public void onGlobalLayout() {
-                        if (q.getAuthor().getImage() != null) {
-                            /*Picasso.with(FeedAdapter.this.mContext)
-                                    .load(q.getAuthor().getImage().getUrl())
-                                    .resize(holder.profileImageView.getWidth(),
-                                            holder.profileImageView.getHeight())
-                                    .into(holder.profileImageView);*/
-                        }
-                    }
-                }
-        );
+        }
+        String gravatar = String.format("http://www.gravatar.com/avatar/%s?s=200&d=retro", md5(q.getAuthor().getUsername()));
+        holder.authorImage.setImageURI(Uri.parse(gravatar));
     }
 
     @Override

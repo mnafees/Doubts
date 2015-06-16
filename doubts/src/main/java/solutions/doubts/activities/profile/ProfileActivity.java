@@ -13,7 +13,7 @@ import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.view.ViewPager;
-import android.support.v7.app.ActionBarActivity;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.TypedValue;
 import android.view.Menu;
@@ -24,9 +24,9 @@ import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
 import android.widget.EditText;
 
+import com.facebook.drawee.view.SimpleDraweeView;
 import com.squareup.otto.Subscribe;
 
-import de.hdodenhof.circleimageview.CircleImageView;
 import solutions.doubts.DoubtsApplication;
 import solutions.doubts.R;
 import solutions.doubts.activities.profile.fragments.AboutFragment;
@@ -43,13 +43,13 @@ import solutions.doubts.thirdparty.ObservableVerticalScrollView;
 import solutions.doubts.thirdparty.SlidingTabLayout;
 import solutions.doubts.transitions.ChangeBoundsOnScrollTransition;
 
-public class ProfileActivity extends ActionBarActivity implements PaletteHelperUtilListener,
+public class ProfileActivity extends AppCompatActivity implements PaletteHelperUtilListener,
         ObservableVerticalScrollView.OnScrollCallback {
     public static final String TAG = "ProfileActivity";
 
     private View mTopPanelContainer;
 
-    private CircleImageView mProfileImage;
+    private SimpleDraweeView mProfileImage;
     private EditText mName;
     private EditText mBio;
 
@@ -71,9 +71,7 @@ public class ProfileActivity extends ActionBarActivity implements PaletteHelperU
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
         setContentView(R.layout.layout_profile);
-
         ((DoubtsApplication)getApplication()).getBus().register(this);
 
         if (getIntent() != null) {
@@ -133,9 +131,6 @@ public class ProfileActivity extends ActionBarActivity implements PaletteHelperU
                 return false;
             }
         });
-
-        mProfileImage = (CircleImageView) expandedTopPanel.findViewById(R.id.profileImage);
-
         startNetworkQuery();
     }
 
@@ -303,7 +298,7 @@ public class ProfileActivity extends ActionBarActivity implements PaletteHelperU
         }
 
         // change color of image view border
-        mProfileImage.setBorderColor(colorHolder.bodyText);
+        //mProfileImage.setBorderColor(colorHolder.bodyText);
 
         // change the color of the main toolbar
         mName.setTextColor(colorHolder.bodyText);

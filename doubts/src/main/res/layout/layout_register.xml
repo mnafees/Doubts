@@ -29,36 +29,37 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
-                android:paddingLeft="-10dp"
-                android:paddingRight="20dp"
-                android:paddingTop="20dp"
-                android:paddingBottom="20dp">
+                android:padding="10dp">
 
-                <com.rengwuxian.materialedittext.MaterialEditText
-                    android:id="@+id/name"
+                <android.support.design.widget.TextInputLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:hint="@string/name_string"
-                    android:textSize="20sp"
-                    app:met_baseColor="@android:color/white"
-                    app:met_floatingLabel="highlight"
-                    app:met_primaryColor="?colorAccent"
-                    app:met_errorColor="#E57373"
-                    app:met_singleLineEllipsis="true"
-                    app:met_iconLeft="@drawable/ic_account_circle_black_24dp"/>
+                    android:id="@+id/name_text_input_layout"
+                    app:errorEnabled="true">
 
-                <com.rengwuxian.materialedittext.MaterialEditText
-                    android:id="@+id/username"
+                    <EditText
+                        android:id="@+id/name"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:hint="@string/name_string"
+                        android:textSize="20sp"/>
+
+                </android.support.design.widget.TextInputLayout>
+
+                <android.support.design.widget.TextInputLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:hint="@string/username_string"
-                    android:textSize="16sp"
-                    app:met_baseColor="@android:color/white"
-                    app:met_floatingLabel="highlight"
-                    app:met_primaryColor="?colorAccent"
-                    app:met_errorColor="#E57373"
-                    app:met_singleLineEllipsis="true"
-                    app:met_iconLeft="@drawable/ic_info_black_24dp"/>
+                    android:id="@+id/username_text_input_layout"
+                    app:errorEnabled="true">
+
+                    <EditText
+                        android:id="@+id/username"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:hint="@string/username_string"
+                        android:textSize="16sp"/>
+
+                </android.support.design.widget.TextInputLayout>
 
             </LinearLayout>
 

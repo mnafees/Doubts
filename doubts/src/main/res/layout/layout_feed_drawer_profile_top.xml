@@ -6,6 +6,7 @@
 
 <RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:fresco="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="120dp"
@@ -14,22 +15,22 @@
     android:gravity="center_vertical"
     android:background="@drawable/border_bottom">
 
-    <de.hdodenhof.circleimageview.CircleImageView
-        xmlns:app="http://schemas.android.com/apk/res-auto"
-        android:id="@+id/profileImage"
+    <com.facebook.drawee.view.SimpleDraweeView
+        android:id="@+id/author_image"
         android:layout_width="40dp"
         android:layout_height="40dp"
-        android:background="@android:color/transparent"
-        app:border_color="@android:color/white"
-        app:border_width="1dp"
         android:layout_marginTop="24dp"
-        android:layout_centerVertical="true"/>
+        android:layout_centerVertical="true"
+        fresco:fadeDuration="300"
+        fresco:actualImageScaleType="focusCrop"
+        fresco:placeholderImage="@drawable/person"
+        fresco:placeholderImageScaleType="fitCenter"
+        fresco:roundAsCircle="true"/>
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Mohammed Nafees"
-        android:id="@+id/email_username"
+        android:id="@+id/name"
         android:gravity="center"
         android:textSize="16sp"
         android:textStyle="bold"

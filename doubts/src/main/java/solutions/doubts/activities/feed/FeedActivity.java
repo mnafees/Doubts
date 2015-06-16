@@ -5,7 +5,9 @@
 
 package solutions.doubts.activities.feed;
 
+import android.app.AlertDialog;
 import android.app.FragmentTransaction;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.graphics.Typeface;
@@ -25,6 +27,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
 
+import com.facebook.drawee.backends.pipeline.Fresco;
 import com.melnykov.fab.FloatingActionButton;
 import com.squareup.otto.Subscribe;
 
@@ -55,6 +58,7 @@ public class FeedActivity extends AppCompatActivity {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        Fresco.initialize(this);
         setContentView(R.layout.layout_feed);
         ButterKnife.inject(this);
         ((DoubtsApplication)getApplication()).getBus().register(this);
@@ -77,7 +81,27 @@ public class FeedActivity extends AppCompatActivity {
                     @Override
                     public boolean onNavigationItemSelected(MenuItem menuItem) {
                         menuItem.setChecked(true);
-                        mDrawerLayout.closeDrawers();
+                        switch (menuItem.getItemId()) {
+                            case R.id.logout:
+                                AlertDialog dialog = new AlertDialog.Builder(FeedActivity.this, R.style.Base_Theme_AppCompat_Light_Dialog_Alert)
+                                        .setTitle("Doubts")
+                                        .setIcon(R.mipmap.ic_launcher)
+                                        .setMessage("Are you sure you want to logout?")
+                                        .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                                            @Override
+                                            public void onClick(DialogInterface dialogInterface, int i) {
+                                                DoubtsApplication.getInstance().logout();
+                                            }
+                                        })
+                                        .setNegativeButton("No", new DialogInterface.OnClickListener() {
+                                            @Override
+                                            public void onClick(DialogInterface dialogInterface, int i) {
+                                                dialogInterface.cancel();
+                                            }
+                                        })
+                                        .create();
+                                dialog.show();
+                        }
                         return true;
                     }
                 });

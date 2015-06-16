@@ -17,8 +17,8 @@ import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
-import solutions.doubts.activities.feed.FeedActivity;
 import solutions.doubts.activities.authentication.AuthenticationActivity;
+import solutions.doubts.activities.feed.FeedActivity;
 import solutions.doubts.internal.AuthToken;
 
 /**
@@ -52,7 +52,6 @@ public class MainActivity extends AppCompatActivity {
                 final Uri data = getIntent().getData();
                 if ((data.getScheme().equals("http") ||
                         data.getScheme().equals("https")) &&
-                 /* data.getHost().equals("doubts.solutions")*/
                         data.getPath().contains("/auth/token/")) {
                     final int length = data.getPathSegments().size();
                     if (length != 5) {
@@ -87,7 +86,6 @@ public class MainActivity extends AppCompatActivity {
         } else {
             Toast.makeText(this, "You're not authorised to use this app.", Toast.LENGTH_LONG).show();
         }
-
         finish();
     }
 

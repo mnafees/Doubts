@@ -4,12 +4,11 @@
   ~ Copyright (c) 2015 Mohammed Nafees (original author) <nafees.technocool@gmail.com>.
   -->
 
-<RelativeLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:card_view="http://schemas.android.com/apk/res-auto"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:fresco="http://schemas.android.com/tools"
     android:paddingRight="-4dp"
     android:paddingLeft="-4dp"
     android:paddingBottom="5dp"
@@ -17,7 +16,7 @@
 
     <android.support.v7.widget.CardView
         xmlns:card_view="http://schemas.android.com/apk/res-auto"
-        android:id="@+id/cardView"
+        android:id="@+id/card_view"
         android:layout_gravity="center"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -29,31 +28,31 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
-            <ImageView
+            <com.facebook.drawee.view.SimpleDraweeView
                 android:layout_width="match_parent"
-                android:layout_height="200dp"
-                android:id="@+id/image"
-                android:src="@mipmap/bg_test"
-                android:scaleType="centerCrop"
-                android:clickable="true" />
+                android:layout_height="250dp"
+                android:id="@+id/doubt_image"
+                android:layout_below="@+id/author_container"
+                fresco:fadeDuration="300"
+                fresco:actualImageScaleType="focusCrop"
+                fresco:backgroundImage="@color/grey"/>
 
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:textAppearance="?android:attr/textAppearanceMedium"
-                android:text="Question/Answer"
                 android:id="@+id/title"
                 android:singleLine="false"
                 android:padding="10dp"
                 android:layout_gravity="center_horizontal"
                 android:layout_alignParentLeft="true"
                 android:layout_alignParentStart="false"
-                android:layout_below="@+id/authorContainer"
+                android:layout_below="@+id/doubt_image"
                 android:textColor="@android:color/black"
                 android:textStyle="bold" />
 
             <org.apmem.tools.layouts.FlowLayout
-                android:id="@+id/tagList"
+                android:id="@+id/tags_layout"
                 android:orientation="horizontal"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -68,7 +67,7 @@
                 android:padding="10dp"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_below="@+id/tagList"
+                android:layout_below="@+id/tags_layout"
                 android:textColor="#757575"
                 android:layout_alignParentRight="true" />
 
@@ -76,34 +75,30 @@
                 android:orientation="horizontal"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:id="@+id/authorContainer"
-                android:layout_below="@+id/image"
-                android:paddingLeft="10dp"
-                android:paddingTop="10dp">
+                android:id="@+id/author_container"
+                android:padding="10dp">
 
-                <de.hdodenhof.circleimageview.CircleImageView xmlns:app="http://schemas.android.com/apk/res-auto"
-                    android:id="@+id/profileImage"
-                    android:layout_width="30dp"
-                    android:layout_height="30dp"
-                    android:layout_below="@+id/tagList"
+                <com.facebook.drawee.view.SimpleDraweeView
+                    android:id="@+id/author_image"
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
                     android:background="@android:color/transparent"
-                    app:border_color="#757575"
-                    android:layout_alignParentLeft="true"
-                    app:border_width="1dp"
-                    android:src="@mipmap/bg_test"
-                    android:layout_gravity="center_vertical" />
+                    android:layout_gravity="center_vertical"
+                    fresco:fadeDuration="300"
+                    fresco:actualImageScaleType="focusCrop"
+                    fresco:backgroundImage="@drawable/person"
+                    fresco:roundAsCircle="true"/>
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="binaryking"
                     android:id="@+id/username"
-                    android:layout_below="@+id/tagList"
-                    android:layout_toRightOf="@+id/profileImage"
-                    android:layout_marginLeft="4dp"
-                    android:textColor="#757575"
-                    android:textSize="16dp"
-                    android:layout_gravity="center_vertical" />
+                    android:layout_marginLeft="10dp"
+                    android:layout_marginStart="10dp"
+                    android:textSize="18sp"
+                    android:layout_gravity="center_vertical"
+                    android:textColor="@android:color/black"
+                    android:textStyle="bold|italic" />
 
             </LinearLayout>
 
@@ -113,9 +108,8 @@
                 android:id="@+id/bookmarkIconButton"
                 android:src="@drawable/ic_bookmark_outline_black_36dp"
                 android:layout_alignParentRight="true"
-                android:background="@android:color/transparent"
-                android:layout_below="@+id/image"
-                android:padding="7dp" />
+                android:layout_alignParentEnd="true"
+                android:background="@android:color/transparent" />
 
         </RelativeLayout>
 

@@ -94,6 +94,12 @@ public class DoubtsApplication extends Application {
         Ion.getDefault(this).configure().setLogging("Ion Logs", Log.DEBUG);
     }
 
+    @Override
+    public void onTerminate() {
+        super.onTerminate();
+        Ion.getDefault(this).cancelAll();
+    }
+
     public static DoubtsApplication getInstance() {
         return INSTANCE;
     }
@@ -103,10 +109,6 @@ public class DoubtsApplication extends Application {
     }
 
     public AuthToken getAuthToken() {
-        if (mSharedPreferences.getInt("user_id", -1) == -1) {
-            return null;
-        }
-
         return mAuthToken;
     }
 
@@ -149,6 +151,7 @@ public class DoubtsApplication extends Application {
     public void logout() {
         // clear the Shared Preferences
         mSharedPreferences.edit().clear().apply();
+        mAuthToken = null;
 
         mBus.post(new LogoutEvent());
 

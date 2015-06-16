@@ -19,7 +19,6 @@
     <!-- activity theme -->
     <style name="AppTheme.LoginTheme" parent="AppTheme">
         <item name="android:windowBackground">@android:color/white</item>
-        <item name="android:buttonStyle">@style/AppTheme.LoginTheme.LoginButton</item>
         <item name="colorControlNormal">#546E7A</item>
         <item name="colorControlActivated">#546E7A</item>
         <item name="colorControlHighlight">#546E7A</item>
@@ -30,12 +29,12 @@
     </style>
 
     <!-- activity button -->
-    <style name="AppTheme.LoginTheme.LoginButton">
+    <style name="AppTheme.LoginTheme.LoginButton" parent="Base.Widget.AppCompat.Button">
         <item name="android:gravity">center_vertical|center_horizontal</item>
-        <item name="android:textColor">@android:color/white</item>
-        <item name="android:background">@drawable/login_button</item>
+        <item name="android:background">@color/primary</item>
         <item name="android:focusable">true</item>
         <item name="android:textSize">15sp</item>
+        <item name="android:textAllCaps">false</item>
         <item name="android:clickable">true</item>
     </style>
 

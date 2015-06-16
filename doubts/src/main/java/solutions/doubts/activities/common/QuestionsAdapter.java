@@ -44,7 +44,7 @@ public class QuestionsAdapter extends RecyclerView.Adapter<QuestionsAdapter.View
             this.context = view.getContext();
             this.question = (TextView)view.findViewById(R.id.title);
             this.username = (TextView)view.findViewById(R.id.username);
-            this.imageView = (ImageView)view.findViewById(R.id.image);
+            this.imageView = (ImageView)view.findViewById(R.id.doubt_image);
             this.imageView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {

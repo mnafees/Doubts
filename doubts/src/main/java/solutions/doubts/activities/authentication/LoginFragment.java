@@ -20,6 +20,7 @@ import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ProgressBar;
@@ -112,6 +113,8 @@ public class LoginFragment extends Fragment {
             return;
         }
         final String email = mEmail.getText().toString();
+        ((InputMethodManager)getActivity().getSystemService(Context.INPUT_METHOD_SERVICE))
+                .hideSoftInputFromWindow(getView().getWindowToken(),0);
         TransitionUtil.hideWithFadeOut(mLoginElementsContainer);
         TransitionUtil.showWithFadeIn(mThrobber);
 

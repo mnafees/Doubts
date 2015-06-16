@@ -5,6 +5,8 @@
 
 package solutions.doubts.activities.createdoubt;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Color;
@@ -12,7 +14,7 @@ import android.graphics.drawable.ColorDrawable;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.MediaStore;
-import android.support.v7.app.ActionBarActivity;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -25,60 +27,60 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.melnykov.fab.FloatingActionButton;
-import com.rengwuxian.materialedittext.MaterialEditText;
-import com.squareup.otto.Subscribe;
+import com.google.gson.JsonObject;
+import com.koushikdutta.async.future.FutureCallback;
+import com.koushikdutta.ion.Response;
 
 import org.apmem.tools.layouts.FlowLayout;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import butterknife.ButterKnife;
+import butterknife.InjectView;
+import butterknife.OnClick;
 import solutions.doubts.DoubtsApplication;
 import solutions.doubts.R;
 import solutions.doubts.api.models.Question;
-import solutions.doubts.core.events.NetworkEvent;
-import solutions.doubts.core.events.ResourceEvent;
-import solutions.doubts.internal.ApiConstants;
+import solutions.doubts.api.query.RemoteQuery;
 
-public class CreateDoubtActivity extends ActionBarActivity {
+public class CreateDoubtActivity extends AppCompatActivity {
 
     private static final String TAG = "CreateDoubtActivity";
     private static final int REQUEST_IMAGE_CAPTURE = 1;
 
-    private FlowLayout mTagsContainer;
-    private EditText mTitle;
-    private EditText mDescription;
-    private EditText mTags;
-    private ImageView mImageView;
-    private FloatingActionButton mCreateDoubtButton;
+    // UI elements
+    @InjectView(R.id.tags_container)
+    FlowLayout mTagsContainer;
+    @InjectView(R.id.title)
+    EditText mTitle;
+    @InjectView(R.id.description)
+    EditText mDescription;
+    @InjectView(R.id.tags)
+    EditText mTags;
+    @InjectView(R.id.doubt_image)
+    ImageView mDoubtImage;
 
+    // Other members
+    private final RemoteQuery<Question> mRemoteQuery = new RemoteQuery<>(Question.class);
     private final List<String> mTagsList = new ArrayList<>();
     private String mLastEnteredTag;
     private int mTagIndex = 1;
-    private int mNetworkId;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
         setContentView(R.layout.layout_create_doubt);
+        ButterKnife.inject(this);
         DoubtsApplication.getInstance().getBus().register(this);
 
-        final Toolbar toolbar = (Toolbar)findViewById(R.id.action_bar);
-        setSupportActionBar(toolbar);
+        setSupportActionBar((Toolbar)findViewById(R.id.action_bar));
         getSupportActionBar().setDisplayShowTitleEnabled(false);
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
             getSupportActionBar().setBackgroundDrawable(new ColorDrawable(Color.parseColor("#000000ff")));
             getSupportActionBar().setStackedBackgroundDrawable(new ColorDrawable(Color.parseColor("#000000ff")));
         }
 
-        mTagsContainer = (FlowLayout)findViewById(R.id.tags_container);
-
-        mTitle = (MaterialEditText)findViewById(R.id.title);
-        mDescription = (EditText)findViewById(R.id.description_edit_text);
-
-        mTags = (EditText)findViewById(R.id.tags_edit_text);
         mTags.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
@@ -128,50 +130,34 @@ public class CreateDoubtActivity extends ActionBarActivity {
                 return false;
             }
         });
-
-        mImageView = (ImageView)findViewById(R.id.imageView);
-        mImageView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                final Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-                if (takePictureIntent.resolveActivity(getPackageManager()) != null) {
-                    startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE);
-                }
-            }
-        });
-
-        mCreateDoubtButton = (FloatingActionButton)findViewById(R.id.create_doubt_button);
-        mCreateDoubtButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                final Question q = Question.newBuilder()
-                        .title(mTitle.getText().toString())
-                        .description(mDescription.getText().toString())
-                        .tags(mTagsList)
-                        .build();
-                final NetworkEvent networkEvent = NetworkEvent.newBuilder()
-                        .url(ApiConstants.API_ENDPOINT + "/api/v1/questions")
-                        .operation(NetworkEvent.Operation.CREATE)
-                        .clazz(Question.class)
-                        .object(q)
-                        .build();
-                //mNetworkId = networkEvent.getId();
-                //networkEvent.post();
-            }
-        });
     }
 
-    @Subscribe
-    public void onResourceEvent(final ResourceEvent event) {
-        /*if (event.getId() == mNetworkId) {
-            if (event.getType() == ResourceEvent.Type.FAILURE) {
+    @OnClick(R.id.tags_layout)
+    public void onClickTagsLayout() {
+        mTags.requestFocus();
+    }
 
-            } else {
-                // success
-                Toast.makeText(this, "New question created!", Toast.LENGTH_SHORT).show();
-                finish();
+    @OnClick(R.id.doubt_image)
+    public void onClickDoubtImage() {
+        Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+        if (takePictureIntent.resolveActivity(getPackageManager()) != null) {
+            startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE);
+        }
+    }
+
+    @OnClick(R.id.create_doubt_button)
+    public void onClickCreateDoubtButton() {
+        Question q = Question.newQuestion()
+                .title(mTitle.getText().toString())
+                .description(mDescription.getText().toString())
+                .tags(mTagsList)
+                .create();
+        mRemoteQuery.create(q).setCallback(new FutureCallback<Response<JsonObject>>() {
+            @Override
+            public void onCompleted(Exception e, Response<JsonObject> result) {
+
             }
-        }*/
+        });
     }
 
     @Override
@@ -185,20 +171,46 @@ public class CreateDoubtActivity extends ActionBarActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.action_discard:
-
+                confirmAndExit();
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
         }
     }
 
+    private void confirmAndExit() {
+        AlertDialog dialog = new AlertDialog.Builder(this, R.style.Base_Theme_AppCompat_Light_Dialog_Alert)
+                .setTitle("Doubts")
+                .setIcon(R.mipmap.ic_launcher)
+                .setMessage("Are you sure you want to discard this doubt?")
+                .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        finish();
+                    }
+                })
+                .setNegativeButton("No", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        dialogInterface.cancel();
+                    }
+                })
+                .create();
+        dialog.show();
+    }
+
+    @Override
+    public void onBackPressed() {
+        confirmAndExit();
+    }
+
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == RESULT_OK) {
-            final Bundle extras = data.getExtras();
-            final Bitmap imageBitmap = (Bitmap)extras.get("data");
-            mImageView.setScaleType(ImageView.ScaleType.FIT_XY);
-            mImageView.setImageBitmap(imageBitmap);
+            Bundle extras = data.getExtras();
+            Bitmap imageBitmap = (Bitmap)extras.get("data");
+            mDoubtImage.setScaleType(ImageView.ScaleType.FIT_XY);
+            mDoubtImage.setImageBitmap(imageBitmap);
         }
     }
 

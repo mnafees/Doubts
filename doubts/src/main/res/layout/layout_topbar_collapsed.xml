@@ -19,27 +19,30 @@
             android:orientation="vertical">
 
 
-            <de.hdodenhof.circleimageview.CircleImageView xmlns:app="http://schemas.android.com/apk/res-auto"
-                android:id="@+id/profileImage"
+            <com.facebook.drawee.view.SimpleDraweeView
+                xmlns:fresco="http://schemas.android.com/apk/res-auto"
+                android:id="@+id/author_image"
                 android:layout_marginLeft="50dp"
+                android:layout_marginStart="50dp"
                 android:layout_width="30dp"
                 android:layout_height="30dp"
                 android:layout_alignParentStart="true"
                 android:layout_alignParentLeft="true"
                 android:layout_centerVertical="true"
-                android:background="@android:color/transparent"
-                app:border_color="@android:color/white"
-                app:border_width="1dp" />
+                fresco:fadeDuration="300"
+                fresco:actualImageScaleType="focusCrop"
+                fresco:roundAsCircle="true" />
 
             <TextView
                 android:id="@+id/email_username"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="10dp"
+                android:layout_marginStart="10dp"
                 android:layout_centerVertical="true"
-                android:layout_toRightOf="@id/profileImage"
+                android:layout_toRightOf="@id/author_image"
+                android:layout_toEndOf="@id/author_image"
                 android:background="@android:color/transparent"
-                android:text="Mohammed Nafees"
                 android:textAppearance="?android:attr/textAppearanceLarge" />
 
             <TextView
@@ -50,10 +53,11 @@
                 android:layout_centerHorizontal="true"
                 android:layout_marginBottom="10dp"
                 android:background="@android:color/transparent"
-                android:text="Eat. Sleep. Code."
                 android:textAppearance="?android:attr/textAppearanceMedium"
                 android:visibility="gone" />
+
         </RelativeLayout>
+
     </android.support.v7.widget.Toolbar>
 
     <solutions.doubts.thirdparty.SlidingTabLayout

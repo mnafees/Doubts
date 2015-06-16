@@ -17,6 +17,7 @@ import java.util.List;
 import java.util.Map;
 
 import solutions.doubts.api.models.Answer;
+import solutions.doubts.api.models.Question;
 import solutions.doubts.api.models.User;
 import solutions.doubts.internal.ApiConstants;
 
@@ -107,7 +108,7 @@ public class RemoteQuery<T> {
     private boolean allowedType(Class<T> clazz) {
         if (clazz.equals(User.class)) {
             return true;
-        } else if (clazz.equals(QuestionsResource.class)) {
+        } else if (clazz.equals(QuestionsResource.class) || clazz.equals(Question.class)) {
             return true;
         } else if (clazz.equals(Answer.class)) {
             return true;
@@ -118,7 +119,7 @@ public class RemoteQuery<T> {
     private String mapClassToUrl(Class<T> clazz) {
         if (clazz.equals(User.class)) {
             return ApiConstants.USER_RESOURCE;
-        } else if (clazz.equals(QuestionsResource.class)) {
+        } else if (clazz.equals(QuestionsResource.class) || clazz.equals(Question.class)) {
             return ApiConstants.QUESTION_RESOURCE;
         } else if (clazz.equals(Answer.class)) {
             return ApiConstants.ANSWER_RESOURCE;

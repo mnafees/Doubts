@@ -7,6 +7,7 @@ package solutions.doubts.activities.authentication;
 
 import android.os.Bundle;
 import android.support.design.widget.Snackbar;
+import android.support.design.widget.TextInputLayout;
 import android.support.v4.app.Fragment;
 import android.text.Editable;
 import android.text.TextUtils;
@@ -14,13 +15,13 @@ import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.EditText;
 
 import com.google.gson.JsonObject;
 import com.koushikdutta.async.future.FutureCallback;
 import com.koushikdutta.ion.Ion;
 import com.koushikdutta.ion.Response;
 import com.koushikdutta.ion.future.ResponseFuture;
-import com.rengwuxian.materialedittext.MaterialEditText;
 import com.squareup.otto.Subscribe;
 
 import java.util.ArrayList;
@@ -39,10 +40,14 @@ public class RegisterFragment extends Fragment implements InterestsAdapter.Inter
     // UI elements
     @InjectView(R.id.main_container)
     View mMainContainer;
+    @InjectView(R.id.name_text_input_layout)
+    TextInputLayout mNameTextInputLayout;
     @InjectView(R.id.name)
-    MaterialEditText mName;
+    EditText mName;
+    @InjectView(R.id.username_text_input_layout)
+    TextInputLayout mUsernameTextInputLayout;
     @InjectView(R.id.username)
-    MaterialEditText mUsername;
+    EditText mUsername;
     @InjectView(R.id.competitive_exams)
     ExpandableGridView mCompetitiveExams;
     @InjectView(R.id.subjects)
@@ -92,7 +97,7 @@ public class RegisterFragment extends Fragment implements InterestsAdapter.Inter
                         if (result != null) {
                             int count = result.get("count").getAsInt();
                             if (count > 0) {
-                                mUsername.setError("This username already exists");
+                                mUsernameTextInputLayout.setError("This username already exists");
                             }
                         }
                     }
@@ -135,10 +140,10 @@ public class RegisterFragment extends Fragment implements InterestsAdapter.Inter
         }
 
         if (TextUtils.isEmpty(mName.getText().toString())) {
-            mName.setError("Oops! It seems you haven't entered anything");
+            mNameTextInputLayout.setError("Oops! It seems you haven't entered anything");
             return;
         } else if (TextUtils.isEmpty(mUsername.getText().toString())) {
-            mUsername.setError("Oops! It seems you haven't entered anything");
+            mUsernameTextInputLayout.setError("Oops! It seems you haven't entered anything");
             return;
         } else if (mInterests.size() == 0) {
             Snackbar.make(getView(), "Please select at least one interest", Snackbar.LENGTH_LONG).show();
