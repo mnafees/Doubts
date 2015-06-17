@@ -11,4 +11,7 @@ android:
     - extra-android-m2repository
     - extra-android-support
 
+notifications:
+  slack: doubts:mDqAkNdwhJQheqx2gZupuuQH
+
 script: ./gradlew clean build
