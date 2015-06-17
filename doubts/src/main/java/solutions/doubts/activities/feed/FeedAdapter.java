@@ -5,17 +5,12 @@
 
 package solutions.doubts.activities.feed;
 
-import android.animation.Animator;
-import android.annotation.TargetApi;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
-import android.graphics.drawable.BitmapDrawable;
-import android.graphics.drawable.Drawable;
 import android.graphics.drawable.TransitionDrawable;
 import android.net.Uri;
-import android.os.Build;
 import android.support.v4.view.ViewCompat;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -109,11 +104,11 @@ public class FeedAdapter extends RecyclerView.Adapter<FeedAdapter.ViewHolder> {
                 ViewCompat.animate(v)
                         .scaleX(1.5f)
                         .scaleY(1.5f)
-                        .setDuration(300)
+                        .setDuration(150)
                         .withStartAction(new Runnable() {
                             @Override
                             public void run() {
-                                bookmarkDrawable.reverseTransition(300);
+                                bookmarkDrawable.reverseTransition(150);
                             }
                         })
                         .withEndAction(new Runnable() {

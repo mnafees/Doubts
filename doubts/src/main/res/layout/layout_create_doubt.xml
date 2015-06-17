@@ -6,7 +6,6 @@
 
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:fab="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:theme="@style/AppTheme.CreateNewDoubt">
@@ -87,7 +86,7 @@
             android:layout_width="match_parent"
             android:layout_height="200dp"
             android:id="@+id/doubt_image_container"
-            android:layout_below="@+id/tags_container">
+            android:layout_below="@+id/tags_layout">
 
             <ImageView
                 android:layout_width="match_parent"
@@ -115,13 +114,10 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:id="@+id/description_icon_image_view"
-                android:src="@drawable/ic_description_grey600_24dp"
-                android:layout_below="@+id/doubt_image"
-                android:layout_alignParentLeft="true"
-                android:layout_alignParentStart="true" />
+                android:src="@drawable/ic_description_grey600_24dp" />
 
             <EditText
-                android:layout_width="wrap_content"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:id="@+id/description"
                 android:layout_weight="1"
@@ -130,6 +126,7 @@
                 android:textColor="#757575"
                 android:textColorHint="@color/grey_light"
                 android:layout_marginLeft="10dp"
+                android:layout_marginStart="10dp"
                 android:textCursorDrawable="@null"
                 android:background="@android:color/transparent"
                 android:layout_gravity="center_vertical" />
@@ -139,17 +136,26 @@
 
     </RelativeLayout>
 
-    <com.melnykov.fab.FloatingActionButton
+    <mbanje.kurt.fabbutton.FabButton
+        android:layout_width="56dp"
+        android:layout_height="56dp"
         android:id="@+id/create_doubt_button"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
         android:src="@drawable/ic_send_white_24dp"
-        fab:fab_colorNormal="@color/pink"
-        fab:fab_colorPressed="@color/pink_pressed"
+        android:color="@color/pink"
+        android:indeterminate="false"
+        android:max="100"
         android:layout_alignParentBottom="true"
         android:layout_alignParentRight="true"
         android:layout_alignParentEnd="true"
         android:layout_marginRight="16dp"
-        android:layout_marginBottom="16dp" />
+        android:layout_marginEnd="16dp"
+        android:layout_marginBottom="16dp"
+        android:clickable="true"
+        app:fbb_autoStart="true"
+        app:fbb_progressColor="#FFEE58"
+        app:fbb_progressWidthRatio="0.1"
+        app:fbb_endBitmap="@drawable/ic_fab_complete"
+        app:fbb_showEndBitmap="true"
+        app:fbb_hideProgressOnComplete="true"/>
 
 </RelativeLayout>
