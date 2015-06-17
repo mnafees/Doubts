@@ -1,0 +1,12 @@
+language: android
+jdk: oraclejdk7
+env:
+  matrix:
+    - ANDROID_TARGET=android-22
+
+android:
+  components:
+    - build-tools-22.0.1
+    - extra-android-support
+
+script: ./gradlew build
