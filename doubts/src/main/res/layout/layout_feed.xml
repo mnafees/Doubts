@@ -47,12 +47,12 @@
         </android.support.design.widget.AppBarLayout>
 
         <com.melnykov.fab.FloatingActionButton
-            android:id="@+id/add_question_button"
+            android:id="@+id/add_doubt_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:src="@drawable/ic_add_white_24dp"
             fab:fab_colorNormal="@color/pink"
-            fab:fab_colorPressed="@color/pink"
+            fab:fab_colorPressed="@color/pink_pressed"
             fab:fab_colorRipple="@color/pink_pressed"
             android:layout_alignParentBottom="true"
             android:layout_alignParentRight="true"
@@ -69,7 +69,6 @@
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
         android:layout_gravity="start"
-        app:headerLayout="@layout/layout_feed_drawer_profile_top"
         app:menu="@menu/menu_feed_drawer"/>
 
 </android.support.v4.widget.DrawerLayout>

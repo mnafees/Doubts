@@ -32,9 +32,9 @@
         android:name=".DoubtsApplication"
         tools:replace="android:icon" >
         <activity
-            android:name=".MainActivity"
+            android:name=".activities.feed.FeedActivity"
             android:label="@string/app_name"
-            android:theme="@style/AppTheme"
+            android:theme="@style/AppTheme.FeedTheme"
             android:launchMode="singleInstance">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -59,12 +59,6 @@
             android:name=".activities.authentication.AuthenticationActivity"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.LoginTheme" >
-        </activity>
-        <activity
-            android:name=".activities.feed.FeedActivity"
-            android:theme="@style/AppTheme.FeedTheme" >
-        </activity>
-        <activity android:name=".activities.common.QuestionViewActivity" >
         </activity>
         <activity
             android:name=".activities.profile.ProfileActivity"

@@ -12,6 +12,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.graphics.Typeface;
 import android.net.ConnectivityManager;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -21,24 +22,37 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.text.TextUtils;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewTreeObserver;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.facebook.drawee.backends.pipeline.Fresco;
+import com.facebook.drawee.view.SimpleDraweeView;
+import com.koushikdutta.ion.Ion;
 import com.melnykov.fab.FloatingActionButton;
 import com.squareup.otto.Subscribe;
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;
+import butterknife.OnClick;
 import solutions.doubts.DoubtsApplication;
 import solutions.doubts.R;
+import solutions.doubts.activities.authentication.AuthenticationActivity;
 import solutions.doubts.activities.createdoubt.CreateDoubtActivity;
 import solutions.doubts.core.ConnectivityChangeReceiver;
 import solutions.doubts.core.events.ConnectivityChangedEvent;
+import solutions.doubts.core.events.FeedUpdatedEvent;
 import solutions.doubts.core.events.LogoutEvent;
+import solutions.doubts.core.events.SessionUpdatedEvent;
+import solutions.doubts.core.util.StringUtil;
+import solutions.doubts.internal.AuthToken;
+import solutions.doubts.internal.Session;
 
 public class FeedActivity extends AppCompatActivity {
 
@@ -46,11 +60,14 @@ public class FeedActivity extends AppCompatActivity {
     private static final String SEARCHVIEW_TAG = "SearchView";
 
     // UI elements
+    @InjectView(R.id.swipe_refresh_layout)
+    SwipeRefreshLayout mSwipeRefreshLayout;
     @InjectView(R.id.drawer_layout)
     DrawerLayout mDrawerLayout;
     @InjectView(R.id.feed)
     RecyclerView mRecyclerView;
-    private TextView mName;
+    SimpleDraweeView mDrawerHeaderProfileImage;
+    TextView mDrawerHeaderName;
 
     // Other members
     private final ConnectivityChangeReceiver mConnectivityChangeReceiver = new ConnectivityChangeReceiver();
@@ -63,6 +80,43 @@ public class FeedActivity extends AppCompatActivity {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        final Uri data = getIntent().getData();
+        if (data != null) {
+            if ((data.getScheme().equals("http") ||
+                    data.getScheme().equals("https")) &&
+                    data.getPath().contains("/auth/token/")) {
+                final int length = data.getPathSegments().size();
+                if (length != 5) {
+                    // mischief alert!
+                    Toast.makeText(this, "Invalid authentication URL", Toast.LENGTH_LONG).show();
+                    startAuthenticationActivity();
+                    return;
+                } else {
+                    try {
+                        final int id = Integer.valueOf(data.getPathSegments().get(length - 3));
+                        final String username = data.getPathSegments().get(length - 2);
+                        final String token = data.getPathSegments().get(length - 1);
+
+                        Session session = new Session(DoubtsApplication.getInstance(),
+                                DoubtsApplication.getInstance().getPreferences());
+                        AuthToken authToken = new AuthToken(id, username, token);
+                        session.setAuthToken(authToken);
+                        DoubtsApplication.getInstance().setSession(session);
+                    } catch (NumberFormatException e) {
+                        // mischief alert!
+                        Toast.makeText(this, "Invalid authentication URL", Toast.LENGTH_LONG).show();
+                        startAuthenticationActivity();
+                        return;
+                    }
+                }
+            }
+        }
+        if (DoubtsApplication.getInstance().getSession() == null) {
+            startAuthenticationActivity();
+            return;
+        }
+
         Fresco.initialize(this);
         setContentView(R.layout.layout_feed);
         ButterKnife.inject(this);
@@ -110,6 +164,10 @@ public class FeedActivity extends AppCompatActivity {
                         return true;
                     }
                 });
+        View drawerHeader = navigationView.inflateHeaderView(R.layout.layout_feed_drawer_profile_top);
+        mDrawerHeaderProfileImage = (SimpleDraweeView)drawerHeader.findViewById(R.id.profile_image);
+        mDrawerHeaderName = (TextView)drawerHeader.findViewById(R.id.name);
+        DoubtsApplication.getInstance().getSession().getLoggedInUser();
 
         final LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
         linearLayoutManager.setOrientation(LinearLayoutManager.VERTICAL);
@@ -139,33 +197,57 @@ public class FeedActivity extends AppCompatActivity {
             }
         });
 
-        final SwipeRefreshLayout swipeRefreshLayout = (SwipeRefreshLayout)findViewById(R.id.swipe_refresh_layout);
-        swipeRefreshLayout.setColorSchemeColors(getResources().getColor(R.color.primary));
-        swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+        mSwipeRefreshLayout.setColorSchemeColors(getResources().getColor(R.color.primary));
+        mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
                 feedAdapter.update(false);
             }
         });
-        feedAdapter.registerAdapterDataObserver(new RecyclerView.AdapterDataObserver() {
+        mSwipeRefreshLayout.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
             @Override
-            public void onChanged() {
-                swipeRefreshLayout.setRefreshing(false);
-                super.onChanged();
+            public void onGlobalLayout() {
+                /** FIXME */
+                //mSwipeRefreshLayout.setRefreshing(true);
             }
         });
 
-        final FloatingActionButton addQuestionButton = (FloatingActionButton)findViewById(R.id.add_question_button);
-        addQuestionButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                final Intent intent = new Intent(FeedActivity.this, CreateDoubtActivity.class);
-                startActivity(intent);
-            }
-        });
+        FloatingActionButton addQuestionButton = (FloatingActionButton)findViewById(R.id.add_doubt_button);
         addQuestionButton.attachToRecyclerView(mRecyclerView);
 
         mIntentFilter.addAction(ConnectivityManager.CONNECTIVITY_ACTION);
+    }
+
+    private void startAuthenticationActivity() {
+        Intent intent = new Intent(this, AuthenticationActivity.class);
+        startActivity(intent);
+        finish();
+    }
+
+    @Subscribe
+    public void onFeedUpdatedEvent(FeedUpdatedEvent event) {
+        /** FIXME */
+        //mSwipeRefreshLayout.setRefreshing(false);
+    }
+
+    @Subscribe
+    public void onSessionUpdatedEvent(SessionUpdatedEvent event) {
+        mDrawerHeaderName.setText(event.getUser().getName());
+        if (event.getUser().getImage().getUrl() == null ||
+                TextUtils.isEmpty(event.getUser().getImage().getUrl())) {
+            Log.d(TAG, "Setting gravatar for drawer header profile image.");
+            String gravatar = String.format("http://www.gravatar.com/avatar/%s?s=200&d=wavatar",
+                    StringUtil.md5(event.getUser().getEmail()));
+            mDrawerHeaderProfileImage.setImageURI(Uri.parse(gravatar));
+        } else {
+            mDrawerHeaderProfileImage.setImageURI(Uri.parse(event.getUser().getImage().getUrl()));
+        }
+    }
+
+    @OnClick(R.id.add_doubt_button)
+    public void onClickAddDoubtButton() {
+        Intent intent = new Intent(this, CreateDoubtActivity.class);
+        startActivity(intent);
     }
 
     @Override
@@ -178,6 +260,12 @@ public class FeedActivity extends AppCompatActivity {
     public void onPause() {
         super.onPause();
         unregisterReceiver(mConnectivityChangeReceiver);
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        Ion.getDefault(this).cancelAll();
     }
 
     @Subscribe

@@ -24,11 +24,14 @@ import com.squareup.otto.Bus;
 import com.squareup.otto.Subscribe;
 import com.squareup.otto.ThreadEnforcer;
 
+import io.realm.Realm;
 import io.realm.RealmObject;
+import solutions.doubts.activities.feed.FeedActivity;
 import solutions.doubts.api.models.Feed;
+import solutions.doubts.api.models.User;
 import solutions.doubts.core.events.LogoutEvent;
 import solutions.doubts.core.events.ResourceEvent;
-import solutions.doubts.internal.AuthToken;
+import solutions.doubts.internal.Session;
 import solutions.doubts.internal.StringConstants;
 
 public class DoubtsApplication extends Application {
@@ -36,10 +39,10 @@ public class DoubtsApplication extends Application {
     private static final String TAG = "DoubtsApplication";
 
     private SharedPreferences mSharedPreferences;
-    private AuthToken mAuthToken;
     private Bus mBus;
     private RefWatcher mRefWatcher;
     private Feed mFeed;
+    private Session mSession;
 
     private static DoubtsApplication INSTANCE;
 
@@ -58,9 +61,7 @@ public class DoubtsApplication extends Application {
         mSharedPreferences = getSharedPreferences(StringConstants.PREFERENCES_NAME, 0);
         int userId = mSharedPreferences.getInt("user_id", -1);
         if (userId != -1) {
-            mAuthToken = new AuthToken(userId,
-                    mSharedPreferences.getString("username", ""),
-                    mSharedPreferences.getString("auth_token", ""));
+            mSession = new Session(this, mSharedPreferences);
         }
 
         Gson gson = new GsonBuilder()
@@ -104,25 +105,26 @@ public class DoubtsApplication extends Application {
         return INSTANCE;
     }
 
+    public SharedPreferences getPreferences() {
+        return mSharedPreferences;
+    }
+
+    public void setSession(Session session) {
+        if (mSession == null) {
+            mSession = session;
+        }
+    }
+
+    public Session getSession() {
+        return mSession;
+    }
+
     public Bus getBus() {
         return mBus;
     }
 
-    public AuthToken getAuthToken() {
-        return mAuthToken;
-    }
-
-    public void setAuthToken(AuthToken authToken) {
-        mSharedPreferences.edit()
-                .putInt("user_id", authToken.getUserId())
-                .putString("username", authToken.getUsername())
-                .putString("auth_token", authToken.getToken())
-                .apply();
-        mAuthToken = authToken;
-    }
-
     public Feed getFeedInstance() {
-        if (mAuthToken != null) {
+        if (mSession != null) {
             synchronized (DoubtsApplication.class) {
                 if (mFeed == null) {
                     mFeed = new Feed(this);
@@ -151,12 +153,15 @@ public class DoubtsApplication extends Application {
     public void logout() {
         // clear the Shared Preferences
         mSharedPreferences.edit().clear().apply();
-        mAuthToken = null;
+        Realm realm = Realm.getInstance(this);
+        realm.beginTransaction();
+        realm.clear(User.class);
+        realm.commitTransaction();
+        mSession = null;
 
         mBus.post(new LogoutEvent());
 
-        // start MainActivity
-        final Intent intent = new Intent(this, MainActivity.class);
+        final Intent intent = new Intent(this, FeedActivity.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         startActivity(intent);
     }

@@ -43,6 +43,7 @@ import solutions.doubts.api.models.User;
 import solutions.doubts.api.query.RemoteQuery;
 import solutions.doubts.core.events.FeedUpdatedEvent;
 import solutions.doubts.core.util.MaterialColorsUtil;
+import solutions.doubts.core.util.StringUtil;
 
 public class FeedAdapter extends RecyclerView.Adapter<FeedAdapter.ViewHolder> {
 
@@ -141,20 +142,6 @@ public class FeedAdapter extends RecyclerView.Adapter<FeedAdapter.ViewHolder> {
         return new ViewHolder(view);
     }
 
-    public static String md5(String md5) {
-        try {
-            java.security.MessageDigest md = java.security.MessageDigest.getInstance("MD5");
-            byte[] array = md.digest(md5.getBytes());
-            StringBuffer sb = new StringBuffer();
-            for (int i = 0; i < array.length; ++i) {
-                sb.append(Integer.toHexString((array[i] & 0xFF) | 0x100).substring(1,3));
-            }
-            return sb.toString();
-        } catch (java.security.NoSuchAlgorithmException e) {
-        }
-        return null;
-    }
-
     @Subscribe
     public void onFeedUpdatedEvent(final FeedUpdatedEvent event) {
         notifyDataSetChanged();
@@ -186,12 +173,14 @@ public class FeedAdapter extends RecyclerView.Adapter<FeedAdapter.ViewHolder> {
                 holder.doubtImage.setImageURI(Uri.parse(q.getImage().getUrl()));
             }
         }
-        String gravatar = String.format("http://www.gravatar.com/avatar/%s?s=200&d=wavatar", md5(q.getAuthor().getUsername()));
+        String gravatar = String.format("http://www.gravatar.com/avatar/%s?s=200&d=wavatar",
+                StringUtil.md5(q.getAuthor().getUsername()));
         holder.authorImage.setImageURI(Uri.parse(gravatar));
         RoundingParams params = new RoundingParams();
         params.setRoundAsCircle(true);
         holder.authorImage.getHierarchy().setRoundingParams(params);
-        String doubtImage = String.format("http://www.gravatar.com/avatar/%s?s=500&d=retro", md5(q.getTitle()));
+        String doubtImage = String.format("http://www.gravatar.com/avatar/%s?s=500&d=retro",
+                StringUtil.md5(q.getTitle()));
         GenericDraweeHierarchy hierarchy = new GenericDraweeHierarchyBuilder(mContext.getResources())
                 .setFadeDuration(300)
                 .setProgressBarImage(new ProgressBarDrawable())
