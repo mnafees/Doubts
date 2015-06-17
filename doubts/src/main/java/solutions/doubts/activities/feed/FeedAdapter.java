@@ -5,12 +5,18 @@
 
 package solutions.doubts.activities.feed;
 
+import android.animation.Animator;
+import android.annotation.TargetApi;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
+import android.graphics.drawable.TransitionDrawable;
 import android.net.Uri;
+import android.os.Build;
+import android.support.v4.view.ViewCompat;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -89,19 +95,33 @@ public class FeedAdapter extends RecyclerView.Adapter<FeedAdapter.ViewHolder> {
         final View view = LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.layout_card, parent, false);
         final ImageButton bookmarkButton = (ImageButton)view.findViewById(R.id.bookmarkIconButton);
-        final BitmapDrawable hollowBookmarkDrawable = (BitmapDrawable)bookmarkButton.getDrawable();
-        hollowBookmarkDrawable.setColorFilter(Color.parseColor("#F44336"), PorterDuff.Mode.SRC_IN);
-        bookmarkButton.setImageDrawable(hollowBookmarkDrawable);
-        final BitmapDrawable solidBookmarkDrawable = (BitmapDrawable)mContext.getResources().getDrawable(R.drawable.ic_bookmark_black_36dp);
-        solidBookmarkDrawable.setColorFilter(Color.parseColor("#F44336"), PorterDuff.Mode.SRC_IN);
+//        final BitmapDrawable hollowBookmarkDrawable = (BitmapDrawable)bookmarkButton.getDrawable();
+//        hollowBookmarkDrawable.setColorFilter(Color.parseColor("#F44336"), PorterDuff.Mode.SRC_IN);
+//        bookmarkButton.setImageDrawable(hollowBookmarkDrawable);
+//        final BitmapDrawable solidBookmarkDrawable = (BitmapDrawable)mContext.getResources().getDrawable(R.drawable.ic_bookmark_black_36dp);
+//        solidBookmarkDrawable.setColorFilter(Color.parseColor("#F44336"), PorterDuff.Mode.SRC_IN);
+        final TransitionDrawable bookmarkDrawable = (TransitionDrawable) bookmarkButton.getDrawable();
+        bookmarkDrawable.setColorFilter(Color.parseColor("#F44336"), PorterDuff.Mode.SRC_IN);
         bookmarkButton.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View v) {
-                if (bookmarkButton.getDrawable().equals(hollowBookmarkDrawable)) {
-                    bookmarkButton.setImageDrawable(solidBookmarkDrawable);
-                } else {
-                    bookmarkButton.setImageDrawable(hollowBookmarkDrawable);
-                }
+            public void onClick(final View v) {
+                ViewCompat.animate(v).cancel();
+                ViewCompat.animate(v)
+                        .scaleX(1.5f)
+                        .scaleY(1.5f)
+                        .setDuration(300)
+                        .withStartAction(new Runnable() {
+                            @Override
+                            public void run() {
+                                bookmarkDrawable.reverseTransition(300);
+                            }
+                        })
+                        .withEndAction(new Runnable() {
+                            @Override
+                            public void run() {
+                                v.animate().scaleY(1.0f).scaleX(1.0f);
+                            }
+                        });
             }
         });
         view.setOnClickListener(new View.OnClickListener() {
