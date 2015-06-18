@@ -13,6 +13,7 @@ import android.content.IntentFilter;
 import android.graphics.Typeface;
 import android.net.ConnectivityManager;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -123,7 +124,9 @@ public class FeedActivity extends AppCompatActivity {
         ((DoubtsApplication)getApplication()).getBus().register(this);
 
         Toolbar toolbar = (Toolbar)findViewById(R.id.toolbar);
-        toolbar.setTransitionName("toolbarTransition");
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            toolbar.setTransitionName("toolbarTransition");
+        }
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setHomeAsUpIndicator(R.drawable.ic_menu_white_24dp);
@@ -205,10 +208,15 @@ public class FeedActivity extends AppCompatActivity {
             }
         });
         mSwipeRefreshLayout.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+            boolean exec = true;
             @Override
             public void onGlobalLayout() {
-                /** FIXME */
-                //mSwipeRefreshLayout.setRefreshing(true);
+                if(exec) {
+                    mSwipeRefreshLayout.setRefreshing(true);
+                    if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN)
+                        mSwipeRefreshLayout.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+                    exec = !exec;
+                }
             }
         });
 
@@ -226,8 +234,7 @@ public class FeedActivity extends AppCompatActivity {
 
     @Subscribe
     public void onFeedUpdatedEvent(FeedUpdatedEvent event) {
-        /** FIXME */
-        //mSwipeRefreshLayout.setRefreshing(false);
+        mSwipeRefreshLayout.setRefreshing(false);
     }
 
     @Subscribe
