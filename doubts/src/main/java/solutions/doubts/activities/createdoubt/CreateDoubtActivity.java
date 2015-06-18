@@ -6,10 +6,12 @@
 package solutions.doubts.activities.createdoubt;
 
 import android.app.AlertDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Color;
+import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Build;
 import android.os.Bundle;
@@ -18,6 +20,8 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
+import android.util.Pair;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -27,12 +31,20 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.commonsware.cwac.camera.CameraFragment;
+import com.commonsware.cwac.camera.CameraHost;
+import com.commonsware.cwac.camera.CameraView;
+import com.commonsware.cwac.camera.PictureTransaction;
+import com.commonsware.cwac.camera.SimpleCameraHost;
+import com.google.common.base.Function;
 import com.google.gson.JsonObject;
 import com.koushikdutta.async.future.FutureCallback;
 import com.koushikdutta.ion.Response;
 
 import org.apmem.tools.layouts.FlowLayout;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -41,7 +53,9 @@ import butterknife.InjectView;
 import butterknife.OnClick;
 import solutions.doubts.DoubtsApplication;
 import solutions.doubts.R;
+import solutions.doubts.api.S3Upload;
 import solutions.doubts.api.models.Question;
+import solutions.doubts.api.models.S3Image;
 import solutions.doubts.api.query.RemoteQuery;
 
 public class CreateDoubtActivity extends AppCompatActivity {
@@ -67,6 +81,9 @@ public class CreateDoubtActivity extends AppCompatActivity {
     private String mLastEnteredTag;
     private int mTagIndex = 1;
 
+    private CameraFragment mCameraFragment;
+    private CameraHost mCameraHost;
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -75,6 +92,11 @@ public class CreateDoubtActivity extends AppCompatActivity {
         DoubtsApplication.getInstance().getBus().register(this);
 
         setSupportActionBar((Toolbar)findViewById(R.id.action_bar));
+        mRemoteQuery.setContext(this);
+
+        mCameraFragment = (CameraFragment) getFragmentManager().findFragmentById(R.id.camera_fragment);
+
+        setSupportActionBar((Toolbar) findViewById(R.id.action_bar));
         getSupportActionBar().setDisplayShowTitleEnabled(false);
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
             getSupportActionBar().setBackgroundDrawable(new ColorDrawable(Color.parseColor("#000000ff")));
@@ -145,12 +167,13 @@ public class CreateDoubtActivity extends AppCompatActivity {
         }
     }
 
-    @OnClick(R.id.create_doubt_button)
-    public void onClickCreateDoubtButton() {
+
+    protected void createDoubt(S3Image s3image) {
         Question q = Question.newQuestion()
                 .title(mTitle.getText().toString())
                 .description(mDescription.getText().toString())
                 .tags(mTagsList)
+                .image(s3image)
                 .create();
         mRemoteQuery.create(q).setCallback(new FutureCallback<Response<JsonObject>>() {
             @Override
@@ -158,6 +181,23 @@ public class CreateDoubtActivity extends AppCompatActivity {
 
             }
         });
+    }
+
+    @OnClick(R.id.create_doubt_button)
+    public void onClickCreateDoubtButton() {
+        if (TextUtils.isEmpty(mTitle.getText().toString())) {
+            mTitle.setError("Oops, it seems you haven\'t entered anything!");
+            return;
+        }
+        if (mTagsList.size() == 0) {
+            Snackbar.make(mTags, "Please enter at least one tag", Snackbar.LENGTH_LONG)
+                    .show();
+            return;
+        }
+
+        mCreateDoubtButton.setEnabled(false);
+
+        mCameraFragment.takePicture(true, false);
     }
 
     @Override
