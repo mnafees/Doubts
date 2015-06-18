@@ -21,8 +21,8 @@ android {
         applicationId "solutions.doubts"
         minSdkVersion 14
         targetSdkVersion 22
-        versionCode 2
-        versionName "Alpha"
+        versionCode 3
+        versionName "alpha"
     }
     packagingOptions {
         exclude 'META-INF/LICENSE'
