@@ -11,11 +11,13 @@ import com.google.gson.JsonObject;
 import com.google.gson.reflect.TypeToken;
 import com.koushikdutta.async.future.Future;
 import com.koushikdutta.ion.Ion;
+import com.koushikdutta.ion.ProgressCallback;
 import com.koushikdutta.ion.Response;
 
 import java.util.List;
 import java.util.Map;
 
+import solutions.doubts.DoubtsApplication;
 import solutions.doubts.api.models.Answer;
 import solutions.doubts.api.models.Question;
 import solutions.doubts.api.models.User;
@@ -46,10 +48,14 @@ public class RemoteQuery<T> {
         return mContext;
     }
 
-    public Future<Response<JsonObject>> create(T object) {
+    public Future<Response<JsonObject>> create(T object, ProgressCallback progressCallback) {
         return Ion.with(mContext)
                 .load("POST", mapClassToUrl(mClazz))
-                .setJsonPojoBody(object, new TypeToken<T>(){})
+                .setHeader(ApiConstants.HEADER_AUTHORIZATION, DoubtsApplication.getInstance().getSession()
+                        .getAuthToken().toString())
+                .progress(progressCallback)
+                .setJsonPojoBody(object, new TypeToken<T>() {
+                })
                 .asJsonObject()
                 .withResponse();
     }
@@ -59,6 +65,8 @@ public class RemoteQuery<T> {
         if (sort == null) sort = "id";
         return Ion.with(mContext)
                 .load("GET", mapClassToUrl(mClazz))
+                .setHeader(ApiConstants.HEADER_AUTHORIZATION, DoubtsApplication.getInstance().getSession()
+                        .getAuthToken().toString())
                 .addQuery("order", order.name())
                 .addQuery("sort", sort)
                 .addQuery("page.offset", Integer.toString(offset))
@@ -69,15 +77,18 @@ public class RemoteQuery<T> {
     public Future<Response<List<T>>> filterBy(String parameter, String value) {
         return Ion.with(mContext)
                 .load("GET", mapClassToUrl(mClazz))
+                .setHeader(ApiConstants.HEADER_AUTHORIZATION, DoubtsApplication.getInstance().getSession()
+                        .getAuthToken().toString())
                 .addQuery(parameter, value)
-                .as(new TypeToken<List<T>>() {
-                })
+                .as(new TypeToken<List<T>>(){})
                 .withResponse();
     }
 
     public Future<Response<List<T>>> filterBy(Map<String, List<String>> queryMap) {
         return Ion.with(mContext)
                 .load("GET", mapClassToUrl(mClazz))
+                .setHeader(ApiConstants.HEADER_AUTHORIZATION, DoubtsApplication.getInstance().getSession()
+                        .getAuthToken().toString())
                 .addQueries(queryMap)
                 .as(new TypeToken<List<T>>(){})
                 .withResponse();
@@ -86,14 +97,19 @@ public class RemoteQuery<T> {
     public Future<Response<T>> get(int id, String slug) {
         return Ion.with(mContext)
                 .load("GET", mapClassToUrl(mClazz) + "/" + Integer.toString(id) + "/" + slug)
-                .as(new TypeToken<T>(){})
+                .setHeader(ApiConstants.HEADER_AUTHORIZATION, DoubtsApplication.getInstance().getSession()
+                        .getAuthToken().toString())
+                .as(mClazz)
                 .withResponse();
     }
 
     public Future<Response<JsonObject>> update(int id, String slug, T object) {
         return Ion.with(mContext)
                 .load("PUT", mapClassToUrl(mClazz) + "/" + Integer.toString(id) + "/" + slug)
-                .setJsonPojoBody(object, new TypeToken<T>(){})
+                .setHeader(ApiConstants.HEADER_AUTHORIZATION, DoubtsApplication.getInstance().getSession()
+                        .getAuthToken().toString())
+                .setJsonPojoBody(object, new TypeToken<T>() {
+                })
                 .asJsonObject()
                 .withResponse();
     }
@@ -101,6 +117,8 @@ public class RemoteQuery<T> {
     public Future<Response<JsonObject>> delete(int id, String slug) {
         return Ion.with(mContext)
                 .load("DELETE", mapClassToUrl(mClazz) + "/" + Integer.toString(id) + "/" + slug)
+                .setHeader(ApiConstants.HEADER_AUTHORIZATION, DoubtsApplication.getInstance().getSession()
+                        .getAuthToken().toString())
                 .asJsonObject()
                 .withResponse();
     }

@@ -9,8 +9,9 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
-import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.TransitionDrawable;
 import android.net.Uri;
+import android.support.v4.view.ViewCompat;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -42,6 +43,7 @@ import solutions.doubts.api.models.User;
 import solutions.doubts.api.query.RemoteQuery;
 import solutions.doubts.core.events.FeedUpdatedEvent;
 import solutions.doubts.core.util.MaterialColorsUtil;
+import solutions.doubts.core.util.StringUtil;
 
 public class FeedAdapter extends RecyclerView.Adapter<FeedAdapter.ViewHolder> {
 
@@ -89,19 +91,33 @@ public class FeedAdapter extends RecyclerView.Adapter<FeedAdapter.ViewHolder> {
         final View view = LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.layout_card, parent, false);
         final ImageButton bookmarkButton = (ImageButton)view.findViewById(R.id.bookmarkIconButton);
-        final BitmapDrawable hollowBookmarkDrawable = (BitmapDrawable)bookmarkButton.getDrawable();
-        hollowBookmarkDrawable.setColorFilter(Color.parseColor("#F44336"), PorterDuff.Mode.SRC_IN);
-        bookmarkButton.setImageDrawable(hollowBookmarkDrawable);
-        final BitmapDrawable solidBookmarkDrawable = (BitmapDrawable)mContext.getResources().getDrawable(R.drawable.ic_bookmark_black_36dp);
-        solidBookmarkDrawable.setColorFilter(Color.parseColor("#F44336"), PorterDuff.Mode.SRC_IN);
+//        final BitmapDrawable hollowBookmarkDrawable = (BitmapDrawable)bookmarkButton.getDrawable();
+//        hollowBookmarkDrawable.setColorFilter(Color.parseColor("#F44336"), PorterDuff.Mode.SRC_IN);
+//        bookmarkButton.setImageDrawable(hollowBookmarkDrawable);
+//        final BitmapDrawable solidBookmarkDrawable = (BitmapDrawable)mContext.getResources().getDrawable(R.drawable.ic_bookmark_black_36dp);
+//        solidBookmarkDrawable.setColorFilter(Color.parseColor("#F44336"), PorterDuff.Mode.SRC_IN);
+        final TransitionDrawable bookmarkDrawable = (TransitionDrawable) bookmarkButton.getDrawable();
+        bookmarkDrawable.setColorFilter(Color.parseColor("#F44336"), PorterDuff.Mode.SRC_IN);
         bookmarkButton.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View v) {
-                if (bookmarkButton.getDrawable().equals(hollowBookmarkDrawable)) {
-                    bookmarkButton.setImageDrawable(solidBookmarkDrawable);
-                } else {
-                    bookmarkButton.setImageDrawable(hollowBookmarkDrawable);
-                }
+            public void onClick(final View v) {
+                ViewCompat.animate(v).cancel();
+                ViewCompat.animate(v)
+                        .scaleX(1.5f)
+                        .scaleY(1.5f)
+                        .setDuration(150)
+                        .withStartAction(new Runnable() {
+                            @Override
+                            public void run() {
+                                bookmarkDrawable.reverseTransition(150);
+                            }
+                        })
+                        .withEndAction(new Runnable() {
+                            @Override
+                            public void run() {
+                                v.animate().scaleY(1.0f).scaleX(1.0f);
+                            }
+                        });
             }
         });
         view.setOnClickListener(new View.OnClickListener() {
@@ -124,20 +140,6 @@ public class FeedAdapter extends RecyclerView.Adapter<FeedAdapter.ViewHolder> {
             }
         });
         return new ViewHolder(view);
-    }
-
-    public static String md5(String md5) {
-        try {
-            java.security.MessageDigest md = java.security.MessageDigest.getInstance("MD5");
-            byte[] array = md.digest(md5.getBytes());
-            StringBuffer sb = new StringBuffer();
-            for (int i = 0; i < array.length; ++i) {
-                sb.append(Integer.toHexString((array[i] & 0xFF) | 0x100).substring(1,3));
-            }
-            return sb.toString();
-        } catch (java.security.NoSuchAlgorithmException e) {
-        }
-        return null;
     }
 
     @Subscribe
@@ -171,12 +173,14 @@ public class FeedAdapter extends RecyclerView.Adapter<FeedAdapter.ViewHolder> {
                 holder.doubtImage.setImageURI(Uri.parse(q.getImage().getUrl()));
             }
         }
-        String gravatar = String.format("http://www.gravatar.com/avatar/%s?s=200&d=wavatar", md5(q.getAuthor().getUsername()));
+        String gravatar = String.format("http://www.gravatar.com/avatar/%s?s=200&d=wavatar",
+                StringUtil.md5(q.getAuthor().getUsername()));
         holder.authorImage.setImageURI(Uri.parse(gravatar));
         RoundingParams params = new RoundingParams();
         params.setRoundAsCircle(true);
         holder.authorImage.getHierarchy().setRoundingParams(params);
-        String doubtImage = String.format("http://www.gravatar.com/avatar/%s?s=500&d=retro", md5(q.getTitle()));
+        String doubtImage = String.format("http://www.gravatar.com/avatar/%s?s=500&d=retro",
+                StringUtil.md5(q.getTitle()));
         GenericDraweeHierarchy hierarchy = new GenericDraweeHierarchyBuilder(mContext.getResources())
                 .setFadeDuration(300)
                 .setProgressBarImage(new ProgressBarDrawable())

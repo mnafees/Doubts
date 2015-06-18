@@ -16,9 +16,11 @@ import android.graphics.drawable.ColorDrawable;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.MediaStore;
+import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.text.Editable;
+import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.util.Log;
 import android.util.Pair;
@@ -30,6 +32,7 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.commonsware.cwac.camera.CameraFragment;
 import com.commonsware.cwac.camera.CameraHost;
@@ -39,6 +42,7 @@ import com.commonsware.cwac.camera.SimpleCameraHost;
 import com.google.common.base.Function;
 import com.google.gson.JsonObject;
 import com.koushikdutta.async.future.FutureCallback;
+import com.koushikdutta.ion.ProgressCallback;
 import com.koushikdutta.ion.Response;
 
 import org.apmem.tools.layouts.FlowLayout;
@@ -51,6 +55,7 @@ import java.util.List;
 import butterknife.ButterKnife;
 import butterknife.InjectView;
 import butterknife.OnClick;
+import mbanje.kurt.fabbutton.FabButton;
 import solutions.doubts.DoubtsApplication;
 import solutions.doubts.R;
 import solutions.doubts.api.S3Upload;
@@ -74,6 +79,8 @@ public class CreateDoubtActivity extends AppCompatActivity {
     EditText mTags;
     @InjectView(R.id.doubt_image)
     ImageView mDoubtImage;
+    @InjectView(R.id.create_doubt_button)
+    FabButton mCreateDoubtButton;
 
     // Other members
     private final RemoteQuery<Question> mRemoteQuery = new RemoteQuery<>(Question.class);
@@ -105,19 +112,18 @@ public class CreateDoubtActivity extends AppCompatActivity {
 
         mTags.addTextChangedListener(new TextWatcher() {
             @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-            }
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
                 final String tag = s.toString();
-                if (tag.endsWith(",") && tag.length() > 1) {
+                if (tag.endsWith(" ") && tag.length() > 1) {
                     // new tag added
                     final View v = View.inflate(CreateDoubtActivity.this,
                             R.layout.layout_single_tag, null);
                     final TextView tagView = (TextView) v.findViewById(R.id.tag);
                     final String newTag = mTags.getText().toString()
-                            .replace(",", "").replace("#", "");
+                            .replace(" ", "").replace("#", "");
                     if (mTagsList.contains(newTag)) {
                         // return if tag is already added
                         return;
@@ -134,8 +140,7 @@ public class CreateDoubtActivity extends AppCompatActivity {
             }
 
             @Override
-            public void afterTextChanged(Editable s) {
-            }
+            public void afterTextChanged(Editable s) {}
         });
         mTags.setOnKeyListener(new View.OnKeyListener() {
             @Override
@@ -167,7 +172,6 @@ public class CreateDoubtActivity extends AppCompatActivity {
         }
     }
 
-
     protected void createDoubt(S3Image s3image) {
         Question q = Question.newQuestion()
                 .title(mTitle.getText().toString())
@@ -175,10 +179,35 @@ public class CreateDoubtActivity extends AppCompatActivity {
                 .tags(mTagsList)
                 .image(s3image)
                 .create();
-        mRemoteQuery.create(q).setCallback(new FutureCallback<Response<JsonObject>>() {
+        mRemoteQuery.create(q, new ProgressCallback() {
+            @Override
+            public void onProgress(long downloaded, long total) {
+                final float progress = downloaded/total * 100f;
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        mCreateDoubtButton.setProgress(progress);
+                    }
+                });
+            }
+        }).setCallback(new FutureCallback<Response<JsonObject>>() {
             @Override
             public void onCompleted(Exception e, Response<JsonObject> result) {
-
+                if (e != null) {
+                    mCreateDoubtButton.setEnabled(true);
+                    Snackbar.make(mDescription, getString(R.string.network_error_message), Snackbar.LENGTH_SHORT)
+                            .show();
+                } else {
+                    if (result.getHeaders().code() == 200) {
+                        Toast.makeText(CreateDoubtActivity.this, "You doubt has been successfully created", Toast.LENGTH_SHORT)
+                                .show();
+                        finish();
+                    } else {
+                        mCreateDoubtButton.setEnabled(true);
+                        Snackbar.make(mDescription, getString(R.string.network_error_message), Snackbar.LENGTH_SHORT)
+                                .show();
+                    }
+                }
             }
         });
     }
