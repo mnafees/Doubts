@@ -39,6 +39,7 @@ import solutions.doubts.activities.profile.ProfileActivity;
 import solutions.doubts.api.models.Entity;
 import solutions.doubts.api.models.Feed;
 import solutions.doubts.api.models.Question;
+import solutions.doubts.api.models.S3Image;
 import solutions.doubts.api.models.User;
 import solutions.doubts.api.query.RemoteQuery;
 import solutions.doubts.core.events.FeedUpdatedEvent;
@@ -173,13 +174,17 @@ public class FeedAdapter extends RecyclerView.Adapter<FeedAdapter.ViewHolder> {
                 holder.doubtImage.setImageURI(Uri.parse(q.getImage().getUrl()));
             }
         }
+        String id = q.getAuthor().getEmail();
+        if(id == null)
+            id = q.getAuthor().getUsername();
         String gravatar = String.format("http://www.gravatar.com/avatar/%s?s=200&d=wavatar",
-                StringUtil.md5(q.getAuthor().getUsername()));
+                StringUtil.md5(id));
         holder.authorImage.setImageURI(Uri.parse(gravatar));
         RoundingParams params = new RoundingParams();
         params.setRoundAsCircle(true);
         holder.authorImage.getHierarchy().setRoundingParams(params);
-        String doubtImage = String.format("http://www.gravatar.com/avatar/%s?s=500&d=retro",
+        S3Image s3i = q.getImage();
+        String doubtImage = s3i != null && s3i.getUrl() != null ? s3i.getUrl() : String.format("http://www.gravatar.com/avatar/%s?s=500&d=retro",
                 StringUtil.md5(q.getTitle()));
         GenericDraweeHierarchy hierarchy = new GenericDraweeHierarchyBuilder(mContext.getResources())
                 .setFadeDuration(300)

@@ -37,8 +37,7 @@ public class DoubtsCameraFragment extends CameraFragment {
             Log.d(TAG, "saveImage");
             ByteArrayOutputStream baos = new ByteArrayOutputStream();
             bitmap.compress(Bitmap.CompressFormat.JPEG, 90, baos);
-            ByteArrayInputStream bais = new ByteArrayInputStream(baos.toByteArray());
-            S3Upload s3u = new S3Upload(cda, bais, "image/jpeg");
+            S3Upload s3u = new S3Upload(cda, baos.toByteArray(), "image/jpeg");
             s3u.upload(new ProgressCallback() {
                 @Override
                 public void onProgress(final long downloaded, final long total) {

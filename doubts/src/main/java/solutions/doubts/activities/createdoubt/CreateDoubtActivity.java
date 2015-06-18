@@ -193,6 +193,7 @@ public class CreateDoubtActivity extends AppCompatActivity {
         }).setCallback(new FutureCallback<Response<JsonObject>>() {
             @Override
             public void onCompleted(Exception e, Response<JsonObject> result) {
+                Log.d(TAG, result.toString());
                 if (e != null) {
                     mCreateDoubtButton.setEnabled(true);
                     Snackbar.make(mDescription, getString(R.string.network_error_message), Snackbar.LENGTH_SHORT)

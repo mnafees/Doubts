@@ -27,10 +27,10 @@ public class S3Upload {
     private static final String TAG = "S3Upload";
 
     Context mContext;
-    private InputStream mInputStream;
+    private byte[] mInputStream;
     private String mMimeType;
 
-    public S3Upload(Context context, InputStream inputStream, String mimeType) {
+    public S3Upload(Context context, byte[] inputStream, String mimeType) {
         mContext = context;
         mInputStream = inputStream;
         mMimeType = mimeType;
@@ -59,14 +59,13 @@ public class S3Upload {
                         String key = result.getAsJsonPrimitive("key").getAsString();
                         Exception ex = null;
                         try {
-                            Ion.with(mContext)
+                            String s = Ion.with(mContext)
                                     .load("PUT", url)
                                     .setHeader("Content-Type", mMimeType)
                                     .followRedirect(true)
                                     .uploadProgress(progressCallback)
-                                    .setStreamBody(mInputStream)
-                                    .asByteArray()
-                                    .withResponse()
+                                    .setByteArrayBody(mInputStream)
+                                    .asString()
                                     .get();
                         } catch (InterruptedException | ExecutionException e1) {
                             ex = e1;
