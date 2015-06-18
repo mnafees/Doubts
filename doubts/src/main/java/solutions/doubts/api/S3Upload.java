@@ -55,26 +55,25 @@ public class S3Upload {
                             return;
                         }
 
-                        String url = result.getAsJsonPrimitive("url").getAsString();
-                        String key = result.getAsJsonPrimitive("key").getAsString();
-                        Exception ex = null;
-                        try {
-                            String s = Ion.with(mContext)
-                                    .load("PUT", url)
-                                    .setHeader("Content-Type", mMimeType)
-                                    .followRedirect(true)
-                                    .uploadProgress(progressCallback)
-                                    .setByteArrayBody(mInputStream)
-                                    .asString()
-                                    .get();
-                        } catch (InterruptedException | ExecutionException e1) {
-                            ex = e1;
-                            e1.printStackTrace();
-                        }
-                        S3Image s3i = new S3Image();
-                        s3i.setKey(key);
-                        s3i.setUrl(url.split("\\?")[0]);
-                        callback.call(s3i, ex);
+                        final String url = result.getAsJsonPrimitive("url").getAsString();
+                        final String key = result.getAsJsonPrimitive("key").getAsString();
+                        final Exception ex = null;
+                        Ion.with(mContext)
+                                .load("PUT", url)
+                                .setHeader("Content-Type", mMimeType)
+                                .followRedirect(true)
+                                .uploadProgress(progressCallback)
+                                .setByteArrayBody(mInputStream)
+                                .asString()
+                                .setCallback(new FutureCallback<String>() {
+                                    @Override
+                                    public void onCompleted(Exception e, String result) {
+                                        S3Image s3i = new S3Image();
+                                        s3i.setKey(key);
+                                        s3i.setUrl(url.split("\\?")[0]);
+                                        callback.call(s3i, ex);
+                                    }
+                                });
                     }
                 });
     }

@@ -54,7 +54,7 @@ public class DoubtsCameraFragment extends CameraFragment {
             s3u.upload(new ProgressCallback() {
                 @Override
                 public void onProgress(final long downloaded, final long total) {
-                    (new Handler(Looper.getMainLooper())).post(new Runnable() {
+                    getActivity().runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
                             cda.mCreateDoubtButton.setProgress(downloaded / (float) total);
