@@ -26,6 +26,8 @@ public class DoubtsCameraFragment extends CameraFragment {
     }
     protected class DoubtsCameraHost extends SimpleCameraHost {
         private static final String TAG = "DoubtsCameraFragment";
+        private static final int MAX_DIMENSION = 1024;
+        private static final int COMPRESS_QUALITY = 85;
 
         public DoubtsCameraHost(Context _ctxt) {
             super(_ctxt);
@@ -36,7 +38,18 @@ public class DoubtsCameraFragment extends CameraFragment {
             final CreateDoubtActivity cda = (CreateDoubtActivity) DoubtsCameraFragment.this.getActivity();
             Log.d(TAG, "saveImage");
             ByteArrayOutputStream baos = new ByteArrayOutputStream();
-            bitmap.compress(Bitmap.CompressFormat.JPEG, 90, baos);
+            float h = bitmap.getHeight(), w = bitmap.getWidth();
+            if(h > w) {
+                w = w * (MAX_DIMENSION/h);
+                h = MAX_DIMENSION;
+            } else {
+                h = h * (MAX_DIMENSION/w);
+                w = MAX_DIMENSION;
+            }
+            Bitmap b = Bitmap.createScaledBitmap(bitmap, (int)w, (int)h, true);
+            b.compress(Bitmap.CompressFormat.JPEG, COMPRESS_QUALITY, baos);
+            bitmap.recycle();
+            b.recycle();
             S3Upload s3u = new S3Upload(cda, baos.toByteArray(), "image/jpeg");
             s3u.upload(new ProgressCallback() {
                 @Override
