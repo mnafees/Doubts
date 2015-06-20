@@ -1,4 +1,3 @@
 # Doubts
-Doubts Android client
-
-<img src='https://app.ship.io/jobs/ilcmJaKG3u5EYhCt/build_status.png'/>
+###Doubts Android client
+<img src='https://magnum.travis-ci.com/binaryking/Doubts.svg?token=pyv1Lx66U7JMpkTkpDAh&branch=master'/>
