@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ This file is part of Doubts.
+  ~ Copyright (c) 2015 Mohammed Nafees (original author) <nafees.technocool@gmail.com>.
+  -->
+
+<menu
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:appcompat="http://schemas.android.com/apk/res-auto">
+
+    <item
+        android:id="@+id/menu_overflow"
+        android:icon="@drawable/ic_more_vert_white_24dp"
+        appcompat:showAsAction="always">
+
+        <menu>
+
+            <item
+                android:id="@+id/action_refresh"
+                android:title="Refresh"
+                appcompat:showAsAction="never"/>
+
+        </menu>
+
+    </item>
+
+</menu>

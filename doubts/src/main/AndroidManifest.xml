@@ -71,7 +71,11 @@
             android:theme="@style/AppTheme.CreateNewDoubt" >
         </activity>
         <activity
-            android:name=".activities.fullscreenimageview.FullscreenImageViewActivity" >
+            android:name=".activities.questionview.QuestionViewActivity"
+            android:theme="@style/AppTheme">
+        </activity>
+        <activity
+            android:name=".activities.fullscreenimageview.FullscreenImageViewActivity">
         </activity>
         <!-- BETA
         <activity

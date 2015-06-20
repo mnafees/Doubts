@@ -23,8 +23,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
-import android.text.TextUtils;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -121,7 +119,6 @@ public class FeedActivity extends AppCompatActivity {
         Fresco.initialize(this);
         setContentView(R.layout.layout_feed);
         ButterKnife.inject(this);
-        ((DoubtsApplication)getApplication()).getBus().register(this);
 
         Toolbar toolbar = (Toolbar)findViewById(R.id.toolbar);
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
@@ -240,15 +237,7 @@ public class FeedActivity extends AppCompatActivity {
     @Subscribe
     public void onSessionUpdatedEvent(SessionUpdatedEvent event) {
         mDrawerHeaderName.setText(event.getUser().getName());
-        if (event.getUser().getImage().getUrl() == null ||
-                TextUtils.isEmpty(event.getUser().getImage().getUrl())) {
-            Log.d(TAG, "Setting gravatar for drawer header profile image.");
-            String gravatar = String.format("http://www.gravatar.com/avatar/%s?s=200&d=wavatar",
-                    StringUtil.md5(event.getUser().getEmail()));
-            mDrawerHeaderProfileImage.setImageURI(Uri.parse(gravatar));
-        } else {
-            mDrawerHeaderProfileImage.setImageURI(Uri.parse(event.getUser().getImage().getUrl()));
-        }
+        mDrawerHeaderProfileImage.setImageURI(Uri.parse(StringUtil.getProfileImageUrl(event.getUser())));
     }
 
     @OnClick(R.id.add_doubt_button)
@@ -260,12 +249,14 @@ public class FeedActivity extends AppCompatActivity {
     @Override
     public void onResume() {
         super.onResume();
+        ((DoubtsApplication)getApplication()).getBus().register(this);
         registerReceiver(mConnectivityChangeReceiver, mIntentFilter);
     }
 
     @Override
     public void onPause() {
         super.onPause();
+        ((DoubtsApplication)getApplication()).getBus().unregister(this);
         unregisterReceiver(mConnectivityChangeReceiver);
     }
 

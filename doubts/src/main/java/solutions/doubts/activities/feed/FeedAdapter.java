@@ -36,6 +36,8 @@ import butterknife.InjectView;
 import solutions.doubts.DoubtsApplication;
 import solutions.doubts.R;
 import solutions.doubts.activities.profile.ProfileActivity;
+import solutions.doubts.activities.questionview.QuestionCache;
+import solutions.doubts.activities.questionview.QuestionViewActivity;
 import solutions.doubts.api.models.Entity;
 import solutions.doubts.api.models.Feed;
 import solutions.doubts.api.models.Question;
@@ -91,7 +93,7 @@ public class FeedAdapter extends RecyclerView.Adapter<FeedAdapter.ViewHolder> {
     public FeedAdapter.ViewHolder onCreateViewHolder(final ViewGroup parent, int viewType) {
         final View view = LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.layout_card, parent, false);
-        final ImageButton bookmarkButton = (ImageButton)view.findViewById(R.id.bookmarkIconButton);
+        final ImageButton bookmarkButton = (ImageButton)view.findViewById(R.id.bookmark_button);
 //        final BitmapDrawable hollowBookmarkDrawable = (BitmapDrawable)bookmarkButton.getDrawable();
 //        hollowBookmarkDrawable.setColorFilter(Color.parseColor("#F44336"), PorterDuff.Mode.SRC_IN);
 //        bookmarkButton.setImageDrawable(hollowBookmarkDrawable);
@@ -121,13 +123,12 @@ public class FeedAdapter extends RecyclerView.Adapter<FeedAdapter.ViewHolder> {
                         });
             }
         });
-        view.setOnClickListener(new View.OnClickListener() {
+        view.findViewById(R.id.question_info).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                /*final Intent intent = new Intent(FeedAdapter.this.mContext,
-                        QuestionViewActivity.class);
-                intent.putExtra("question", (Question)view.getTag());
-                FeedAdapter.this.mContext.startActivity(intent);*/
+                QuestionCache.getInstance().setLastSelectedQuestion((Question) view.getTag());
+                Intent intent = new Intent(mContext, QuestionViewActivity.class);
+                mContext.startActivity(intent);
             }
         });
         final View authorContainer = view.findViewById(R.id.author_container);
@@ -169,27 +170,16 @@ public class FeedAdapter extends RecyclerView.Adapter<FeedAdapter.ViewHolder> {
             textView.setText("#" + tag.getName().replace(" ", "").toLowerCase());
             holder.tagsLayout.addView(v);
         }
-        if (q.getImage() != null) {
-            if (q.getImage().getUrl() != null) {
-                holder.doubtImage.setImageURI(Uri.parse(q.getImage().getUrl()));
-            }
-        }
-        String id = q.getAuthor().getEmail();
-        if(id == null)
-            id = q.getAuthor().getUsername();
-        String gravatar = String.format("http://www.gravatar.com/avatar/%s?s=200&d=wavatar",
-                StringUtil.md5(id));
-        holder.authorImage.setImageURI(Uri.parse(gravatar));
+        holder.authorImage.setImageURI(Uri.parse(StringUtil.getProfileImageUrl(q.getAuthor())));
         RoundingParams params = new RoundingParams();
         params.setRoundAsCircle(true);
         holder.authorImage.getHierarchy().setRoundingParams(params);
-        S3Image s3i = q.getImage();
-        String doubtImage = s3i != null && s3i.getUrl() != null ? s3i.getUrl() : String.format("http://www.gravatar.com/avatar/%s?s=500&d=retro",
-                StringUtil.md5(q.getTitle()));
         GenericDraweeHierarchy hierarchy = new GenericDraweeHierarchyBuilder(mContext.getResources())
                 .setFadeDuration(300)
                 .setProgressBarImage(new ProgressBarDrawable())
                 .build();
+        S3Image s3i = q.getImage();
+        String doubtImage = s3i != null && s3i.getUrl() != null ? s3i.getUrl() : StringUtil.getDoubtImageUrl(q);
         holder.doubtImage.setHierarchy(hierarchy);
         holder.doubtImage.setImageURI(Uri.parse(doubtImage));
     }

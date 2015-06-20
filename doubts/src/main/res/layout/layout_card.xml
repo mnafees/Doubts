@@ -28,48 +28,51 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
-            <com.facebook.drawee.view.SimpleDraweeView
-                android:layout_width="match_parent"
-                android:layout_height="250dp"
-                android:id="@+id/doubt_image"
-                android:layout_below="@+id/author_container"
-                fresco:fadeDuration="300"
-                fresco:actualImageScaleType="focusCrop"
-                fresco:backgroundImage="@color/grey"/>
-
-            <TextView
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:textAppearance="?android:attr/textAppearanceMedium"
-                android:id="@+id/title"
-                android:singleLine="false"
-                android:padding="10dp"
-                android:layout_gravity="center_horizontal"
-                android:layout_alignParentLeft="true"
-                android:layout_alignParentStart="false"
-                android:layout_below="@+id/doubt_image"
-                android:textColor="@android:color/black"
-                android:textStyle="bold" />
+                android:id="@+id/question_info"
+                android:orientation="vertical"
+                android:layout_below="@+id/author_container">
 
-            <org.apmem.tools.layouts.FlowLayout
-                android:id="@+id/tags_layout"
-                android:orientation="horizontal"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_below="@+id/title"
-                android:layout_marginLeft="10dp"
-                android:layout_marginTop="5dp"
-                android:background="@drawable/border_bottom"
-                android:layout_marginRight="10dp" />
+                <com.facebook.drawee.view.SimpleDraweeView
+                    android:layout_width="match_parent"
+                    android:layout_height="250dp"
+                    android:id="@+id/doubt_image"
+                    fresco:fadeDuration="300"
+                    fresco:actualImageScaleType="focusCrop"
+                    fresco:backgroundImage="@color/grey"/>
 
-            <com.github.curioustechizen.ago.RelativeTimeTextView
-                android:id="@+id/timestamp"
-                android:padding="10dp"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_below="@+id/tags_layout"
-                android:textColor="#757575"
-                android:layout_alignParentRight="true" />
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textAppearance="?android:attr/textAppearanceMedium"
+                    android:id="@+id/title"
+                    android:singleLine="false"
+                    android:padding="10dp"
+                    android:layout_gravity="center_horizontal"
+                    android:textColor="@android:color/black"
+                    android:textStyle="bold" />
+
+                <org.apmem.tools.layouts.FlowLayout
+                    android:id="@+id/tags_layout"
+                    android:orientation="horizontal"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="10dp"
+                    android:layout_marginTop="5dp"
+                    android:background="@drawable/border_bottom"
+                    android:layout_marginRight="10dp" />
+
+                <com.github.curioustechizen.ago.RelativeTimeTextView
+                    android:id="@+id/timestamp"
+                    android:padding="10dp"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textColor="#757575"
+                    android:layout_gravity="center_vertical|right" />
+
+            </LinearLayout>
 
             <LinearLayout
                 android:orientation="horizontal"
@@ -105,7 +108,7 @@
             <ImageButton
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:id="@+id/bookmarkIconButton"
+                android:id="@+id/bookmark_button"
                 android:src="@drawable/bookmark"
                 android:layout_alignParentRight="true"
                 android:layout_alignParentEnd="true"

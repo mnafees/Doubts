@@ -11,11 +11,9 @@
     android:layout_height="match_parent"
     android:background="@android:color/black">
 
-
-    <ImageView
+    <solutions.doubts.thirdparty.facebook.fresco.ZoomableDraweeView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:id="@+id/fullScreenImageView"
-        android:scaleType="fitCenter"
-        android:src="@mipmap/bg_test" />
+        android:id="@+id/doubt_image"/>
+
 </LinearLayout>

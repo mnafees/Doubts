@@ -5,9 +5,14 @@
 
 package solutions.doubts.core.util;
 
+import android.text.TextUtils;
+
+import solutions.doubts.api.models.Question;
+import solutions.doubts.api.models.User;
+
 public class StringUtil {
 
-    public static String md5(String md5) {
+    private static String md5(String md5) {
         try {
             java.security.MessageDigest md = java.security.MessageDigest.getInstance("MD5");
             byte[] array = md.digest(md5.getBytes());
@@ -19,6 +24,39 @@ public class StringUtil {
         } catch (java.security.NoSuchAlgorithmException e) {
         }
         return null;
+    }
+
+
+    /** Alpha */
+    public static String getProfileImageUrl(User user) {
+        String url;
+        if (user.getImage() == null) {
+            if (user.getEmail() == null) {
+                url = String.format("http://www.gravatar.com/avatar/%s?s=200&d=wavatar", md5(user.getUsername()));
+            } else {
+                url = String.format("http://www.gravatar.com/avatar/%s?s=200&d=wavatar", md5(user.getEmail()));
+            }
+            return url;
+        }
+        url = user.getImage().getUrl();
+        if (url == null || TextUtils.isEmpty(url)) {
+            url = String.format("http://www.gravatar.com/avatar/%s?s=200&d=wavatar", md5(user.getEmail()));
+        }
+        return url;
+    }
+
+    /** Alpha */
+    public static String getDoubtImageUrl(Question question) {
+        String url;
+        if (question.getImage() == null) {
+            url = String.format("http://www.gravatar.com/avatar/%s?s=200&d=retro", md5(question.getTitle()));
+            return url;
+        }
+        url = question.getImage().getUrl();
+        if (url == null || TextUtils.isEmpty(url)) {
+            url = String.format("http://www.gravatar.com/avatar/%s?s=500&d=retro", md5(question.getTitle()));
+        }
+        return url;
     }
 
 }
