@@ -71,6 +71,7 @@ public class FeedActivity extends AppCompatActivity {
     // Other members
     private final ConnectivityChangeReceiver mConnectivityChangeReceiver = new ConnectivityChangeReceiver();
     private final IntentFilter mIntentFilter = new IntentFilter();
+    private boolean mSessionSet;
     private int mPreviousTotal;
     private boolean mLoading = true;
     private int mVisibleThreshold = 5;
@@ -167,7 +168,6 @@ public class FeedActivity extends AppCompatActivity {
         View drawerHeader = navigationView.inflateHeaderView(R.layout.layout_feed_drawer_profile_top);
         mDrawerHeaderProfileImage = (SimpleDraweeView)drawerHeader.findViewById(R.id.profile_image);
         mDrawerHeaderName = (TextView)drawerHeader.findViewById(R.id.name);
-        DoubtsApplication.getInstance().getSession().getLoggedInUser();
 
         final LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
         linearLayoutManager.setOrientation(LinearLayoutManager.VERTICAL);
@@ -238,6 +238,7 @@ public class FeedActivity extends AppCompatActivity {
     public void onSessionUpdatedEvent(SessionUpdatedEvent event) {
         mDrawerHeaderName.setText(event.getUser().getName());
         mDrawerHeaderProfileImage.setImageURI(Uri.parse(StringUtil.getProfileImageUrl(event.getUser())));
+        mSessionSet = true;
     }
 
     @OnClick(R.id.add_doubt_button)
@@ -250,6 +251,7 @@ public class FeedActivity extends AppCompatActivity {
     public void onResume() {
         super.onResume();
         ((DoubtsApplication)getApplication()).getBus().register(this);
+        if (!mSessionSet) DoubtsApplication.getInstance().getSession().getLoggedInUser();
         registerReceiver(mConnectivityChangeReceiver, mIntentFilter);
     }
 
