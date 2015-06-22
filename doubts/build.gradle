@@ -21,7 +21,7 @@ android {
         applicationId "solutions.doubts"
         minSdkVersion 14
         targetSdkVersion 22
-        versionCode 3
+        versionCode 4
         versionName "alpha"
     }
     packagingOptions {
