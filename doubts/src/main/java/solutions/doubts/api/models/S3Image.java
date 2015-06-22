@@ -5,12 +5,10 @@
 
 package solutions.doubts.api.models;
 
-import java.io.Serializable;
-
 import io.realm.RealmObject;
 import io.realm.annotations.PrimaryKey;
 
-public class S3Image extends RealmObject implements Serializable {
+public class S3Image extends RealmObject {
 
     @PrimaryKey
     private int id;

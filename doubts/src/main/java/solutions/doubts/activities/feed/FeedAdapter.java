@@ -133,7 +133,6 @@ public class FeedAdapter extends RecyclerView.Adapter<FeedAdapter.ViewHolder> {
             public void onClick(View v) {
                 final Intent intent = new Intent(FeedAdapter.this.mContext,
                         ProfileActivity.class);
-                intent.putExtra("user", ((Question)view.getTag()).getAuthor());
                 FeedAdapter.this.mContext.startActivity(intent);
             }
         });

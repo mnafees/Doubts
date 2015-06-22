@@ -5,12 +5,10 @@
 
 package solutions.doubts.api.models;
 
-import java.io.Serializable;
-
 import io.realm.RealmObject;
 import io.realm.annotations.PrimaryKey;
 
-public class UserFollow extends RealmObject implements Serializable {
+public class UserFollow extends RealmObject {
 
     @PrimaryKey
     private int id;
