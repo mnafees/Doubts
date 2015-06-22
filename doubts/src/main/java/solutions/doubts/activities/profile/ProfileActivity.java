@@ -10,6 +10,7 @@ import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.view.ViewPager;
@@ -26,15 +27,20 @@ import android.widget.EditText;
 
 import com.facebook.drawee.view.SimpleDraweeView;
 
+import butterknife.ButterKnife;
+import butterknife.InjectView;
 import solutions.doubts.DoubtsApplication;
 import solutions.doubts.R;
 import solutions.doubts.activities.profile.fragments.AboutFragment;
 import solutions.doubts.activities.profile.fragments.AnswersFragment;
 import solutions.doubts.activities.profile.fragments.QuestionsFragment;
+import solutions.doubts.api.ServerResponseCallback;
 import solutions.doubts.api.models.User;
+import solutions.doubts.api.query.Query;
 import solutions.doubts.core.util.ColorHolder;
 import solutions.doubts.core.util.PaletteHelperUtil;
 import solutions.doubts.core.util.PaletteHelperUtilListener;
+import solutions.doubts.core.util.StringUtil;
 import solutions.doubts.thirdparty.ObservableVerticalScrollView;
 import solutions.doubts.thirdparty.SlidingTabLayout;
 import solutions.doubts.transitions.ChangeBoundsOnScrollTransition;
@@ -45,9 +51,12 @@ public class ProfileActivity extends AppCompatActivity implements PaletteHelperU
 
     private View mTopPanelContainer;
 
-    private SimpleDraweeView mProfileImage;
-    private EditText mName;
-    private EditText mBio;
+    @InjectView(R.id.author_image)
+    SimpleDraweeView mProfileImage;
+    @InjectView(R.id.name)
+    EditText mName;
+    @InjectView(R.id.bio)
+    EditText mBio;
 
     private Menu mMenu;
     private ObservableVerticalScrollView mScrollView;
@@ -61,25 +70,19 @@ public class ProfileActivity extends AppCompatActivity implements PaletteHelperU
 
     private User mUser;
     private boolean mEditingMode;
-    private int mNetworkEventId;
-    private int mFollowNetworkEventId;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.layout_profile);
-        ((DoubtsApplication)getApplication()).getBus().register(this);
 
-        if (getIntent() != null) {
-            mUser = (User)getIntent().getSerializableExtra("user");
-        } else {
-            mUser = null;
-        }
+        mUser = UserCache.getInstance().getLastSelectedUser();
 
         mTopPanelContainer = findViewById(R.id.topPanelContainer);
         final View expandedTopPanel = getLayoutInflater().inflate(R.layout.layout_topbar_expanded, (ViewGroup) this.mTopPanelContainer, false);
         final View collapsedTopPanel = getLayoutInflater().inflate(R.layout.layout_topbar_collapsed, (ViewGroup) this.mTopPanelContainer, false);
         mTopPanel = expandedTopPanel.findViewById(R.id.top_panel);
+        ButterKnife.inject(this, expandedTopPanel);
 
         mTopPanelTransition = new ChangeBoundsOnScrollTransition((ViewGroup)this.mTopPanelContainer,
                 (ViewGroup) expandedTopPanel, (ViewGroup) collapsedTopPanel);
@@ -139,31 +142,20 @@ public class ProfileActivity extends AppCompatActivity implements PaletteHelperU
         }
     }
 
-    public void setImage(/* final String url */) {
-        /*mProfileImage.getViewTreeObserver().addOnGlobalLayoutListener(
-                new ViewTreeObserver.OnGlobalLayoutListener() {
+    @Override
+    protected void onResume() {
+        super.onResume();
+        Query.with(this)
+                .remote(User.class)
+                .setServerResponseCallback(new ServerResponseCallback<User>() {
                     @Override
-                    public void onGlobalLayout() {
-                        Picasso.with(ProfileActivity.this)
-                                .load("https://fbcdn-sphotos-h-a.akamaihd.net/hphotos-ak-xfp1/v/t1.0-9/10405660_766257123461357_6260509899989635471_n.jpg?oh=cf71870bfc7130ff2e1b4923d8088a3f&oe=557EDD1A&__gda__=1438388115_facbd34c0394105ab06d1e6f650c2a39")
-                                .resize(mProfileImage.getWidth(), mProfileImage.getHeight())
-                                .centerCrop()
-                                .transform(new Transformation() {
-                                    @Override
-                                    public Bitmap transform(Bitmap source) {
-                                        mPaletteHelperUtil.generatePalette(source);
-                                        return source;
-                                    }
-
-                                    @Override
-                                    public String key() {
-                                        return "DBTS";
-                                    }
-                                })
-                                .into(mProfileImage);
+                    public void onCompleted(Exception e, User result) {
+                        mName.setText(result.getName() == null ? result.getUsername() : result.getName());
+                        mProfileImage.setImageURI(Uri.parse(StringUtil.getProfileImageUrl(result)));
+                        mBio.setText(result.getBio());
                     }
-                }
-        );*/
+                })
+                .get(mUser.getId(), mUser.getUsername());
     }
 
     @Override
@@ -171,9 +163,12 @@ public class ProfileActivity extends AppCompatActivity implements PaletteHelperU
         mMenu = menu;
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.menu_profile_activity, menu);
-        mMenu.findItem(R.id.action_edit_profile).setVisible(false);
-        if (mUser == null) {
+        if (mUser.getId() == DoubtsApplication.getInstance().getSession().getAuthToken().getUserId()) {
+            mMenu.findItem(R.id.action_edit_profile).setVisible(true);
             mMenu.findItem(R.id.action_follow).setVisible(false);
+        } else {
+            mMenu.findItem(R.id.action_edit_profile).setVisible(false);
+            mMenu.findItem(R.id.action_follow).setVisible(true);
         }
         if (mColorHolder != null) {
             setInEditingMode(mEditingMode);

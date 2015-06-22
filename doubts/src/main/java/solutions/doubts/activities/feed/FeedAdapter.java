@@ -36,6 +36,7 @@ import butterknife.InjectView;
 import solutions.doubts.DoubtsApplication;
 import solutions.doubts.R;
 import solutions.doubts.activities.profile.ProfileActivity;
+import solutions.doubts.activities.profile.UserCache;
 import solutions.doubts.activities.questionview.QuestionCache;
 import solutions.doubts.activities.questionview.QuestionViewActivity;
 import solutions.doubts.api.models.Entity;
@@ -131,6 +132,7 @@ public class FeedAdapter extends RecyclerView.Adapter<FeedAdapter.ViewHolder> {
         authorContainer.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                UserCache.getInstance().setLastSelectedUser(((Question)view.getTag()).getAuthor());
                 final Intent intent = new Intent(FeedAdapter.this.mContext,
                         ProfileActivity.class);
                 FeedAdapter.this.mContext.startActivity(intent);

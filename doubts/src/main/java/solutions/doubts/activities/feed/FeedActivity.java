@@ -72,6 +72,7 @@ public class FeedActivity extends AppCompatActivity {
     private final ConnectivityChangeReceiver mConnectivityChangeReceiver = new ConnectivityChangeReceiver();
     private final IntentFilter mIntentFilter = new IntentFilter();
     private boolean mSessionSet;
+    private boolean mIsSearchViewShown;
     private int mPreviousTotal;
     private boolean mLoading = true;
     private int mVisibleThreshold = 5;
@@ -220,6 +221,12 @@ public class FeedActivity extends AppCompatActivity {
         addQuestionButton.attachToRecyclerView(mRecyclerView);
 
         mIntentFilter.addAction(ConnectivityManager.CONNECTIVITY_ACTION);
+
+        if (savedInstanceState != null) {
+            if (savedInstanceState.getBoolean("isSearchViewShown")) {
+                enterSearchUi();
+            }
+        }
     }
 
     private void startAuthenticationActivity() {
@@ -302,24 +309,36 @@ public class FeedActivity extends AppCompatActivity {
         }
     }
 
+    @Override
+    public void onBackPressed() {
+        if (mIsSearchViewShown) {
+            exitSearchUi();
+        } else {
+            super.onBackPressed();
+        }
+    }
+
     private void enterSearchUi() {
         FragmentTransaction transaction = getFragmentManager().beginTransaction();
         SearchViewFragment fragment = (SearchViewFragment)getFragmentManager().findFragmentByTag(SEARCHVIEW_TAG);
         transaction.setCustomAnimations(android.R.animator.fade_in, android.R.animator.fade_out);
-        transaction.addSharedElement(findViewById(R.id.toolbar), "toolbarTransition");
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            transaction.addSharedElement(findViewById(R.id.toolbar), "toolbarTransition");
+        }
         if (fragment == null) {
             fragment = new SearchViewFragment();
-            fragment.setOnBackListener(new SearchViewFragment.OnBackListener() {
-                @Override
-                public void backPressed() {
-                    exitSearchUi();
-                }
-            });
             transaction.add(R.id.drawer_layout, fragment, SEARCHVIEW_TAG);
         } else {
             transaction.show(fragment);
         }
+        fragment.setOnBackListener(new SearchViewFragment.OnBackListener() {
+            @Override
+            public void backPressed() {
+                exitSearchUi();
+            }
+        });
         transaction.commit();
+        mIsSearchViewShown = true;
         mDrawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
     }
 
@@ -328,7 +347,13 @@ public class FeedActivity extends AppCompatActivity {
         transaction.setCustomAnimations(R.animator.fade_in, R.animator.fade_out);
         transaction.remove(getFragmentManager().findFragmentByTag(SEARCHVIEW_TAG));
         transaction.commit();
+        mIsSearchViewShown = false;
         mDrawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED);
     }
 
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        outState.putBoolean("isSearchViewShown", mIsSearchViewShown);
+        super.onSaveInstanceState(outState);
+    }
 }

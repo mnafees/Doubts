@@ -6,15 +6,14 @@
 package solutions.doubts.activities.feed;
 
 import android.app.Fragment;
-import android.content.Context;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.ImageButton;
 
@@ -31,7 +30,9 @@ public class SearchViewFragment extends Fragment {
         View v = inflater.inflate(R.layout.layout_feed_search_view, null);
         ImageButton backButton = (ImageButton)v.findViewById(R.id.back_button);
         Toolbar toolbar = (Toolbar)v.findViewById(R.id.toolbar);
-        toolbar.setTransitionName("toolbarTransition");
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            toolbar.setTransitionName("toolbarTransition");
+        }
         EditText query = (EditText)v.findViewById(R.id.query);
         query.requestFocus();
         Drawable backIcon = backButton.getDrawable();
