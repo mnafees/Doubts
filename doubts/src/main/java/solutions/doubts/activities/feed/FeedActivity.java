@@ -94,12 +94,11 @@ public class FeedActivity extends AppCompatActivity {
                     return;
                 } else {
                     try {
-                        final int id = Integer.valueOf(data.getPathSegments().get(length - 3));
-                        final String username = data.getPathSegments().get(length - 2);
-                        final String token = data.getPathSegments().get(length - 1);
+                        int id = Integer.valueOf(data.getPathSegments().get(length - 3));
+                        String username = data.getPathSegments().get(length - 2);
+                        String token = data.getPathSegments().get(length - 1);
 
-                        Session session = new Session(DoubtsApplication.getInstance(),
-                                DoubtsApplication.getInstance().getPreferences());
+                        Session session = new Session();
                         AuthToken authToken = new AuthToken(id, username, token);
                         session.setAuthToken(authToken);
                         DoubtsApplication.getInstance().setSession(session);
@@ -150,7 +149,7 @@ public class FeedActivity extends AppCompatActivity {
                                         .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
                                             @Override
                                             public void onClick(DialogInterface dialogInterface, int i) {
-                                                DoubtsApplication.getInstance().logout();
+                                                DoubtsApplication.getInstance().logout(null);
                                             }
                                         })
                                         .setNegativeButton("No", new DialogInterface.OnClickListener() {

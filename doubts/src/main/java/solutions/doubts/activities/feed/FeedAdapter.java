@@ -42,8 +42,6 @@ import solutions.doubts.api.models.Entity;
 import solutions.doubts.api.models.Feed;
 import solutions.doubts.api.models.Question;
 import solutions.doubts.api.models.S3Image;
-import solutions.doubts.api.models.User;
-import solutions.doubts.api.query.RemoteQuery;
 import solutions.doubts.core.events.FeedUpdatedEvent;
 import solutions.doubts.core.util.MaterialColorsUtil;
 import solutions.doubts.core.util.StringUtil;
@@ -53,7 +51,6 @@ public class FeedAdapter extends RecyclerView.Adapter<FeedAdapter.ViewHolder> {
     private static final String TAG = "FeedAdapter";
     private Context mContext;
     private Feed mFeed;
-    private RemoteQuery<User> mRemoteQuery;
     private MaterialColorsUtil mMaterialColorsUtil;
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
@@ -84,7 +81,6 @@ public class FeedAdapter extends RecyclerView.Adapter<FeedAdapter.ViewHolder> {
         mContext = context;
         DoubtsApplication.getInstance().getBus().register(this);
         mFeed = DoubtsApplication.getInstance().getFeedInstance();
-        mRemoteQuery = new RemoteQuery<>(User.class);
         mMaterialColorsUtil = new MaterialColorsUtil();
         update(true /* first update */);
     }

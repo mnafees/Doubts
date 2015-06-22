@@ -9,132 +9,123 @@ import android.content.Context;
 
 import com.google.gson.JsonObject;
 import com.google.gson.reflect.TypeToken;
-import com.koushikdutta.async.future.Future;
 import com.koushikdutta.ion.Ion;
 import com.koushikdutta.ion.ProgressCallback;
-import com.koushikdutta.ion.Response;
 
 import java.util.List;
 import java.util.Map;
 
+import io.realm.RealmObject;
 import solutions.doubts.DoubtsApplication;
+import solutions.doubts.api.ServerReponse;
+import solutions.doubts.api.ServerResponseCallback;
 import solutions.doubts.api.models.Answer;
 import solutions.doubts.api.models.Question;
 import solutions.doubts.api.models.User;
 import solutions.doubts.internal.ApiConstants;
 
-public class RemoteQuery<T> {
+public class RemoteQuery<T extends RealmObject> {
 
     private Class<T> mClazz;
     private Context mContext;
+    private ServerReponse mServerResponse;
 
-    public enum Order {
-        desc,
-        asc
-    }
-
-    public RemoteQuery(Class<T> clazz) {
+    RemoteQuery(Class<T> clazz, Context context) {
         mClazz = clazz;
-        if (!allowedType(clazz)) {
-            throw new IllegalStateException("Class " + clazz.getName() + " is not allowed");
-        }
-    }
-
-    public void setContext(Context context) {
         mContext = context;
+        mServerResponse = new ServerReponse();
+        mServerResponse.setClazz(clazz);
     }
 
-    public Context getContext() {
-        return mContext;
+    @SuppressWarnings("unchecked")
+    void setServerResponseCallback(ServerResponseCallback callback) {
+        mServerResponse.setServerResponseCallback(callback);
     }
 
-    public Future<Response<JsonObject>> create(T object, ProgressCallback progressCallback) {
-        return Ion.with(mContext)
+    public void create(T object, ProgressCallback progressCallback) {
+        mServerResponse.setClazz(JsonObject.class);
+        Ion.with(mContext)
                 .load("POST", mapClassToUrl(mClazz))
                 .setHeader(ApiConstants.HEADER_AUTHORIZATION, DoubtsApplication.getInstance().getSession()
                         .getAuthToken().toString())
                 .progress(progressCallback)
-                .setJsonPojoBody(object, new TypeToken<T>() {
-                })
+                .setJsonPojoBody(object, new TypeToken<T>(){})
                 .asJsonObject()
-                .withResponse();
+                .withResponse()
+                .setCallback(mServerResponse);
     }
 
-    public Future<Response<T>> getAll(Order order, String sort, int offset) {
-        if (order == null) order = Order.desc;
+    public void getAll(Query.Order order, String sort, int offset) {
+        if (order == null) order = Query.Order.desc;
         if (sort == null) sort = "id";
-        return Ion.with(mContext)
+        Ion.with(mContext)
                 .load("GET", mapClassToUrl(mClazz))
                 .setHeader(ApiConstants.HEADER_AUTHORIZATION, DoubtsApplication.getInstance().getSession()
                         .getAuthToken().toString())
                 .addQuery("order", order.name())
                 .addQuery("sort", sort)
                 .addQuery("page.offset", Integer.toString(offset))
-                .as(mClazz)
-                .withResponse();
+                .asJsonObject()
+                .withResponse()
+                .setCallback(mServerResponse);
     }
 
-    public Future<Response<List<T>>> filterBy(String parameter, String value) {
-        return Ion.with(mContext)
+    public void filterBy(String parameter, String value) {
+        Ion.with(mContext)
                 .load("GET", mapClassToUrl(mClazz))
                 .setHeader(ApiConstants.HEADER_AUTHORIZATION, DoubtsApplication.getInstance().getSession()
                         .getAuthToken().toString())
                 .addQuery(parameter, value)
-                .as(new TypeToken<List<T>>(){})
-                .withResponse();
+                .asJsonObject()
+                .withResponse()
+                .setCallback(mServerResponse);
     }
 
-    public Future<Response<List<T>>> filterBy(Map<String, List<String>> queryMap) {
-        return Ion.with(mContext)
+    public void filterBy(Map<String, List<String>> queryMap) {
+        Ion.with(mContext)
                 .load("GET", mapClassToUrl(mClazz))
                 .setHeader(ApiConstants.HEADER_AUTHORIZATION, DoubtsApplication.getInstance().getSession()
                         .getAuthToken().toString())
                 .addQueries(queryMap)
-                .as(new TypeToken<List<T>>(){})
-                .withResponse();
+                .asJsonObject()
+                .withResponse()
+                .setCallback(mServerResponse);
     }
 
-    public Future<Response<T>> get(int id, String slug) {
-        return Ion.with(mContext)
+    public void get(int id, String slug) {
+        Ion.with(mContext)
                 .load("GET", mapClassToUrl(mClazz) + "/" + Integer.toString(id) + "/" + slug)
                 .setHeader(ApiConstants.HEADER_AUTHORIZATION, DoubtsApplication.getInstance().getSession()
                         .getAuthToken().toString())
-                .as(mClazz)
-                .withResponse();
+                .asJsonObject()
+                .withResponse()
+                .setCallback(mServerResponse);
     }
 
-    public Future<Response<JsonObject>> update(int id, String slug, T object) {
-        return Ion.with(mContext)
+    public void update(int id, String slug, T object) {
+        mServerResponse.setClazz(JsonObject.class);
+        Ion.with(mContext)
                 .load("PUT", mapClassToUrl(mClazz) + "/" + Integer.toString(id) + "/" + slug)
                 .setHeader(ApiConstants.HEADER_AUTHORIZATION, DoubtsApplication.getInstance().getSession()
                         .getAuthToken().toString())
-                .setJsonPojoBody(object, new TypeToken<T>() {
-                })
+                .setJsonPojoBody(object, new TypeToken<T>(){})
                 .asJsonObject()
-                .withResponse();
+                .withResponse()
+                .setCallback(mServerResponse);
     }
 
-    public Future<Response<JsonObject>> delete(int id, String slug) {
-        return Ion.with(mContext)
+    public void delete(int id, String slug) {
+        mServerResponse.setClazz(JsonObject.class);
+        Ion.with(mContext)
                 .load("DELETE", mapClassToUrl(mClazz) + "/" + Integer.toString(id) + "/" + slug)
                 .setHeader(ApiConstants.HEADER_AUTHORIZATION, DoubtsApplication.getInstance().getSession()
                         .getAuthToken().toString())
                 .asJsonObject()
-                .withResponse();
+                .withResponse()
+                .setCallback(mServerResponse);
     }
 
-    private boolean allowedType(Class<T> clazz) {
-        if (clazz.equals(User.class)) {
-            return true;
-        } else if (clazz.equals(QuestionsResource.class) || clazz.equals(Question.class)) {
-            return true;
-        } else if (clazz.equals(Answer.class)) {
-            return true;
-        }
-        return false;
-    }
-
-    private String mapClassToUrl(Class<T> clazz) {
+    private String mapClassToUrl(Class clazz) {
         if (clazz.equals(User.class)) {
             return ApiConstants.USER_RESOURCE;
         } else if (clazz.equals(QuestionsResource.class) || clazz.equals(Question.class)) {

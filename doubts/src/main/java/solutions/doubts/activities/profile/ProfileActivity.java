@@ -25,7 +25,6 @@ import android.view.ViewTreeObserver;
 import android.widget.EditText;
 
 import com.facebook.drawee.view.SimpleDraweeView;
-import com.squareup.otto.Subscribe;
 
 import solutions.doubts.DoubtsApplication;
 import solutions.doubts.R;
@@ -33,12 +32,9 @@ import solutions.doubts.activities.profile.fragments.AboutFragment;
 import solutions.doubts.activities.profile.fragments.AnswersFragment;
 import solutions.doubts.activities.profile.fragments.QuestionsFragment;
 import solutions.doubts.api.models.User;
-import solutions.doubts.core.events.NetworkEvent;
-import solutions.doubts.core.events.ResourceEvent;
 import solutions.doubts.core.util.ColorHolder;
 import solutions.doubts.core.util.PaletteHelperUtil;
 import solutions.doubts.core.util.PaletteHelperUtilListener;
-import solutions.doubts.internal.ApiConstants;
 import solutions.doubts.thirdparty.ObservableVerticalScrollView;
 import solutions.doubts.thirdparty.SlidingTabLayout;
 import solutions.doubts.transitions.ChangeBoundsOnScrollTransition;
@@ -131,67 +127,6 @@ public class ProfileActivity extends AppCompatActivity implements PaletteHelperU
                 return false;
             }
         });
-        startNetworkQuery();
-    }
-
-    private void startNetworkQuery() {
-        String id = "";
-        String username = "";
-        if (mUser == null) {
-            id = Integer.toString(((DoubtsApplication)getApplication()).getUserId());
-            username = ((DoubtsApplication)getApplication()).getUsername();
-        } else {
-            id = Integer.toString(mUser.getId());
-            username = mUser.getUsername();
-
-        }
-        final NetworkEvent networkEvent = NetworkEvent.newBuilder()
-                .operation(NetworkEvent.Operation.GET)
-                .url(
-                        ApiConstants.API_ENDPOINT + "/api/v1/users/" +
-                                id + "/" + username
-
-                )
-                .build();
-        //mNetworkEventId = networkEvent.getId();
-        //networkEvent.post();
-    }
-
-    @Subscribe
-    public void onResourceEvent(final ResourceEvent event) {
-        /*if (event.getId() == mNetworkEventId) {
-            if (event.getType() == ResourceEvent.Type.FAILURE) {
-
-            } else {
-                final Gson gson = new GsonBuilder()
-                        .setExclusionStrategies(new ExclusionStrategy() {
-                            @Override
-                            public boolean shouldSkipField(FieldAttributes f) {
-                                return f.getDeclaringClass().equals(RealmObject.class);
-                            }
-
-                            @Override
-                            public boolean shouldSkipClass(Class<?> clazz) {
-                                return false;
-                            }
-                        })
-                        .create();
-                final User user = gson.fromJson(event.getJsonObject(), User.class);
-                mName.setText(user.getName());
-                mBio.setText(user.getBio());
-                Picasso.with(this)
-                        .load(user.getImage().getUrl())
-                        .resize(mProfileImage.getWidth(), mProfileImage.getHeight())
-                        .into(mProfileImage);
-            }
-        } else if (mFollowNetworkEventId == event.getId()) {
-            if (event.getType() == ResourceEvent.Type.FAILURE) {
-
-            } else {
-                // success
-                Toast.makeText(this, "You are now following this user", Toast.LENGTH_SHORT).show();
-            }
-        }*/
     }
 
     private void setupActionBar() {
@@ -253,24 +188,11 @@ public class ProfileActivity extends AppCompatActivity implements PaletteHelperU
                 setInEditingMode(!mEditingMode);
                 return true;
             case R.id.action_follow:
-                followUser();
+                //followUser();
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
         }
-    }
-
-    public void followUser() {
-        final NetworkEvent networkEvent = NetworkEvent.newBuilder()
-                .operation(NetworkEvent.Operation.CREATE)
-                .object(mUser)
-                .clazz(User.class)
-                .url(ApiConstants.API_ENDPOINT + "/api/v1/users/" +
-                        Integer.toString(((DoubtsApplication)getApplication()).getUserId()) + "/" +
-                        ((DoubtsApplication)getApplication()).getUsername() + "/following")
-                .build();
-        //mFollowNetworkEventId = networkEvent.getId();
-        //networkEvent.post();
     }
 
     @Override

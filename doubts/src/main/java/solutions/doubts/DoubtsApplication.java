@@ -21,16 +21,13 @@ import com.koushikdutta.ion.Ion;
 import com.squareup.leakcanary.LeakCanary;
 import com.squareup.leakcanary.RefWatcher;
 import com.squareup.otto.Bus;
-import com.squareup.otto.Subscribe;
-import com.squareup.otto.ThreadEnforcer;
 
-import io.realm.Realm;
 import io.realm.RealmObject;
 import solutions.doubts.activities.feed.FeedActivity;
 import solutions.doubts.api.models.Feed;
 import solutions.doubts.api.models.User;
+import solutions.doubts.api.query.Query;
 import solutions.doubts.core.events.LogoutEvent;
-import solutions.doubts.core.events.ResourceEvent;
 import solutions.doubts.internal.Session;
 import solutions.doubts.internal.StringConstants;
 
@@ -42,6 +39,7 @@ public class DoubtsApplication extends Application {
     private Bus mBus;
     private RefWatcher mRefWatcher;
     private Feed mFeed;
+    private Gson mGson;
     private Session mSession;
 
     private static DoubtsApplication INSTANCE;
@@ -56,15 +54,15 @@ public class DoubtsApplication extends Application {
 
         mRefWatcher = LeakCanary.install(this);
         INSTANCE = this;
-        mBus = new Bus(ThreadEnforcer.MAIN);
+        mBus = new Bus();
         mBus.register(this);
         mSharedPreferences = getSharedPreferences(StringConstants.PREFERENCES_NAME, 0);
         int userId = mSharedPreferences.getInt("user_id", -1);
         if (userId != -1) {
-            mSession = new Session(this, mSharedPreferences);
+            mSession = new Session();
         }
 
-        Gson gson = new GsonBuilder()
+        mGson = new GsonBuilder()
                 .setFieldNamingPolicy(FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES)
                 .setExclusionStrategies(new ExclusionStrategy() {
                     @Override
@@ -91,8 +89,8 @@ public class DoubtsApplication extends Application {
                     }
                 })
                 .create();
-        Ion.getDefault(this).configure().setGson(gson);
-        Ion.getDefault(this).configure().setLogging("Ion Logs", Log.DEBUG);
+        Ion.getDefault(this).configure().setGson(mGson);
+        Ion.getDefault(this).configure().setLogging("Ion Logs", Log.VERBOSE);
     }
 
     @Override
@@ -105,13 +103,14 @@ public class DoubtsApplication extends Application {
         return INSTANCE;
     }
 
-    public SharedPreferences getPreferences() {
-        return mSharedPreferences;
+    public Gson getGson() {
+        return mGson;
     }
 
     public void setSession(Session session) {
         if (mSession == null) {
             mSession = session;
+            mSession.getLoggedInUser();
         }
     }
 
@@ -134,34 +133,20 @@ public class DoubtsApplication extends Application {
         return mFeed;
     }
 
-    public int getUserId() {
-        return mSharedPreferences.getInt("user_id", -1);
-    }
-
-    public String getUsername() {
-        return mSharedPreferences.getString("username", "");
-    }
-
-    @Subscribe
-    public void onResourceEvent(final ResourceEvent event) {
-        if (event.getType() == ResourceEvent.Type.UNAUTHORISED) {
-            Toast.makeText(this, "Please login again to continue", Toast.LENGTH_LONG).show();
-            logout();
-        }
-    }
-
-    public void logout() {
+    public void logout(String message) {
         // clear the Shared Preferences
         mSharedPreferences.edit().clear().apply();
-        Realm realm = Realm.getInstance(this);
-        realm.beginTransaction();
-        realm.clear(User.class);
-        realm.commitTransaction();
+        Query.with(this)
+                .local(User.class)
+                .delete(mSession.getAuthToken().getUserId());
         mSession = null;
 
         mBus.post(new LogoutEvent());
+        if (message != null) {
+            Toast.makeText(this, message, Toast.LENGTH_LONG).show();
+        }
 
-        final Intent intent = new Intent(this, FeedActivity.class);
+        Intent intent = new Intent(this, FeedActivity.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         startActivity(intent);
     }

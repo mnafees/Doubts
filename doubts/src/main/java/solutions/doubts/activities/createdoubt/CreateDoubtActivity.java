@@ -6,12 +6,10 @@
 package solutions.doubts.activities.createdoubt;
 
 import android.app.AlertDialog;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Color;
-import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Build;
 import android.os.Bundle;
@@ -23,7 +21,6 @@ import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.util.Log;
-import android.util.Pair;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -32,23 +29,15 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.commonsware.cwac.camera.CameraFragment;
 import com.commonsware.cwac.camera.CameraHost;
-import com.commonsware.cwac.camera.CameraView;
-import com.commonsware.cwac.camera.PictureTransaction;
-import com.commonsware.cwac.camera.SimpleCameraHost;
-import com.google.common.base.Function;
 import com.google.gson.JsonObject;
-import com.koushikdutta.async.future.FutureCallback;
 import com.koushikdutta.ion.ProgressCallback;
-import com.koushikdutta.ion.Response;
+import com.squareup.otto.Subscribe;
 
 import org.apmem.tools.layouts.FlowLayout;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -58,10 +47,11 @@ import butterknife.OnClick;
 import mbanje.kurt.fabbutton.FabButton;
 import solutions.doubts.DoubtsApplication;
 import solutions.doubts.R;
-import solutions.doubts.api.S3Upload;
+import solutions.doubts.api.ServerResponseCallback;
 import solutions.doubts.api.models.Question;
 import solutions.doubts.api.models.S3Image;
-import solutions.doubts.api.query.RemoteQuery;
+import solutions.doubts.api.query.Query;
+import solutions.doubts.core.events.LogoutEvent;
 
 public class CreateDoubtActivity extends AppCompatActivity {
 
@@ -83,7 +73,6 @@ public class CreateDoubtActivity extends AppCompatActivity {
     FabButton mCreateDoubtButton;
 
     // Other members
-    private final RemoteQuery<Question> mRemoteQuery = new RemoteQuery<>(Question.class);
     private final List<String> mTagsList = new ArrayList<>();
     private String mLastEnteredTag;
     private int mTagIndex = 1;
@@ -96,10 +85,8 @@ public class CreateDoubtActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.layout_create_doubt);
         ButterKnife.inject(this);
-        DoubtsApplication.getInstance().getBus().register(this);
 
         setSupportActionBar((Toolbar)findViewById(R.id.action_bar));
-        mRemoteQuery.setContext(this);
 
         mCameraFragment = (CameraFragment) getFragmentManager().findFragmentById(R.id.camera_fragment);
 
@@ -159,6 +146,23 @@ public class CreateDoubtActivity extends AppCompatActivity {
         });
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        ((DoubtsApplication)getApplication()).getBus().register(this);
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        ((DoubtsApplication)getApplication()).getBus().unregister(this);
+    }
+
+    @Subscribe
+    public void onLogoutEvent(LogoutEvent event) {
+        finish();
+    }
+
     @OnClick(R.id.tags_layout)
     public void onClickTagsLayout() {
         mTags.requestFocus();
@@ -172,6 +176,7 @@ public class CreateDoubtActivity extends AppCompatActivity {
         }
     }
 
+    @SuppressWarnings("unchecked")
     protected void createDoubt(S3Image s3image) {
         Question q = Question.newQuestion()
                 .title(mTitle.getText().toString())
@@ -179,38 +184,33 @@ public class CreateDoubtActivity extends AppCompatActivity {
                 .tags(mTagsList)
                 .image(s3image)
                 .create();
-        mRemoteQuery.create(q, new ProgressCallback() {
-            @Override
-            public void onProgress(long downloaded, long total) {
-                final float progress = downloaded/total * 100f;
-                runOnUiThread(new Runnable() {
+        Query.with(this)
+                .remote(Question.class)
+                .setServerResponseCallback(new ServerResponseCallback<JsonObject>() {
                     @Override
-                    public void run() {
-                        mCreateDoubtButton.setProgress(progress);
+                    public void onCompleted(Exception e, JsonObject result) {
+                        if (e != null) {
+                            mCreateDoubtButton.setEnabled(true);
+                            Snackbar.make(mDescription, getString(R.string.network_error_message), Snackbar.LENGTH_SHORT)
+                                    .show();
+                        } else {
+                            Log.d(TAG, result.toString());
+                            finish();
+                        }
+                    }
+                })
+                .create(q, new ProgressCallback() {
+                    @Override
+                    public void onProgress(long downloaded, long total) {
+                        final float progress = downloaded / total * 100f;
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                mCreateDoubtButton.setProgress(progress);
+                            }
+                        });
                     }
                 });
-            }
-        }).setCallback(new FutureCallback<Response<JsonObject>>() {
-            @Override
-            public void onCompleted(Exception e, Response<JsonObject> result) {
-                Log.d(TAG, result.toString());
-                if (e != null) {
-                    mCreateDoubtButton.setEnabled(true);
-                    Snackbar.make(mDescription, getString(R.string.network_error_message), Snackbar.LENGTH_SHORT)
-                            .show();
-                } else {
-                    if (result.getHeaders().code() == 200) {
-                        Toast.makeText(CreateDoubtActivity.this, "You doubt has been successfully created", Toast.LENGTH_SHORT)
-                                .show();
-                        finish();
-                    } else {
-                        mCreateDoubtButton.setEnabled(true);
-                        Snackbar.make(mDescription, getString(R.string.network_error_message), Snackbar.LENGTH_SHORT)
-                                .show();
-                    }
-                }
-            }
-        });
     }
 
     @OnClick(R.id.create_doubt_button)

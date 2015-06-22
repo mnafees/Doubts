@@ -9,14 +9,12 @@ import android.content.Context;
 import android.os.Handler;
 import android.widget.Toast;
 
-import com.koushikdutta.async.future.FutureCallback;
-import com.koushikdutta.ion.Response;
-
 import java.util.LinkedList;
 
 import solutions.doubts.DoubtsApplication;
+import solutions.doubts.api.ServerResponseCallback;
+import solutions.doubts.api.query.Query;
 import solutions.doubts.api.query.QuestionsResource;
-import solutions.doubts.api.query.RemoteQuery;
 import solutions.doubts.core.events.FeedUpdatedEvent;
 
 public class Feed {
@@ -25,28 +23,28 @@ public class Feed {
 
     private final Handler mHandler = new Handler(DoubtsApplication.getInstance().getMainLooper());
     private LinkedList<Question> mFeedItems;
-    private RemoteQuery<QuestionsResource> mRemoteQuery;
+    private Context mContext;
     private int mOffset;
 
     public Feed(final Context context) {
+        mContext = context;
         mFeedItems = new LinkedList<>();
-        mRemoteQuery = new RemoteQuery<>(QuestionsResource.class);
-        mRemoteQuery.setContext(context);
     }
 
     public void fetchNext(boolean firstUpdate) {
         if (firstUpdate && mFeedItems.size() > 0) {
             DoubtsApplication.getInstance().getBus().post(new FeedUpdatedEvent());
         } else {
-            mRemoteQuery.getAll(null, null, mOffset).setCallback(
-                    new FutureCallback<Response<QuestionsResource>>() {
+            Query.with(mContext)
+                    .remote(QuestionsResource.class)
+                    .setServerResponseCallback(new ServerResponseCallback<QuestionsResource>() {
                         @Override
-                        public void onCompleted(Exception e, Response<QuestionsResource> result) {
+                        public void onCompleted(Exception e, QuestionsResource result) {
                             if (e != null) {
-                                Toast.makeText(mRemoteQuery.getContext(), e.getMessage(), Toast.LENGTH_LONG)
+                                Toast.makeText(mContext, e.getMessage(), Toast.LENGTH_LONG)
                                         .show();
                             } else {
-                                mFeedItems.addAll(result.getResult().getQuestions());
+                                mFeedItems.addAll(result.getQuestions());
                                 mOffset += 10;
                                 mHandler.post(new Runnable() {
                                     @Override
@@ -56,7 +54,8 @@ public class Feed {
                                 });
                             }
                         }
-                    });
+                    })
+                    .getAll(null, null, mOffset);
         }
     }
 
