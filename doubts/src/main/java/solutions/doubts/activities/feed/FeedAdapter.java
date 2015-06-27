@@ -59,6 +59,8 @@ public class FeedAdapter extends RecyclerView.Adapter<FeedAdapter.ViewHolder> {
         View view;
         @InjectView(R.id.title)
         TextView title;
+        @InjectView(R.id.name)
+        TextView name;
         @InjectView(R.id.username)
         TextView username;
         @InjectView(R.id.doubt_image)
@@ -155,7 +157,8 @@ public class FeedAdapter extends RecyclerView.Adapter<FeedAdapter.ViewHolder> {
         final Question q = mFeed.getItem(position);
         holder.view.setTag(q);
         holder.title.setText(q.getTitle());
-        holder.username.setText(q.getAuthor().getUsername());
+        holder.name.setText(q.getAuthor().getName());
+        holder.username.setText("@" + q.getAuthor().getUsername());
         DateTimeFormatter formatter = ISODateTimeFormat.dateTimeParser();
         long time = formatter.parseMillis(q.getCreated());
         holder.time.setReferenceTime(time);

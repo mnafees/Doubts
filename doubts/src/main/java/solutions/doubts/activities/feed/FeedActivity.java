@@ -20,21 +20,23 @@ import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.transition.Explode;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewTreeObserver;
+import android.view.Window;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.facebook.drawee.backends.pipeline.Fresco;
 import com.facebook.drawee.view.SimpleDraweeView;
 import com.koushikdutta.ion.Ion;
-import com.melnykov.fab.FloatingActionButton;
 import com.squareup.otto.Subscribe;
 
 import butterknife.ButterKnife;
@@ -120,6 +122,8 @@ public class FeedActivity extends AppCompatActivity {
         Fresco.initialize(this);
         setContentView(R.layout.layout_feed);
         ButterKnife.inject(this);
+
+        getWindow().setExitTransition(new Explode());
 
         Toolbar toolbar = (Toolbar)findViewById(R.id.toolbar);
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
@@ -216,9 +220,6 @@ public class FeedActivity extends AppCompatActivity {
                 }
             }
         });
-
-        FloatingActionButton addQuestionButton = (FloatingActionButton)findViewById(R.id.add_doubt_button);
-        addQuestionButton.attachToRecyclerView(mRecyclerView);
 
         mIntentFilter.addAction(ConnectivityManager.CONNECTIVITY_ACTION);
 

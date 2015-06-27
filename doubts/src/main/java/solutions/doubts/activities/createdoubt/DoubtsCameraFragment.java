@@ -3,18 +3,13 @@ package solutions.doubts.activities.createdoubt;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Looper;
 import android.util.Log;
-import android.util.Pair;
 
 import com.commonsware.cwac.camera.CameraFragment;
 import com.commonsware.cwac.camera.PictureTransaction;
 import com.commonsware.cwac.camera.SimpleCameraHost;
-import com.google.common.base.Function;
 import com.koushikdutta.ion.ProgressCallback;
 
-import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 
 import solutions.doubts.api.S3Upload;
@@ -57,7 +52,7 @@ public class DoubtsCameraFragment extends CameraFragment {
                     getActivity().runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
-                            cda.mCreateDoubtButton.setProgress(downloaded / (float) total);
+                            //cda.mCreateDoubtButton.setProgress(downloaded / (float) total);
                         }
                     });
                 }

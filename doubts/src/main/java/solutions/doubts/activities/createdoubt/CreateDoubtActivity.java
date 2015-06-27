@@ -14,12 +14,14 @@ import android.graphics.drawable.ColorDrawable;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.MediaStore;
+import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
+import android.transition.Explode;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.Menu;
@@ -33,7 +35,6 @@ import android.widget.TextView;
 import com.commonsware.cwac.camera.CameraFragment;
 import com.commonsware.cwac.camera.CameraHost;
 import com.google.gson.JsonObject;
-import com.koushikdutta.ion.ProgressCallback;
 import com.squareup.otto.Subscribe;
 
 import org.apmem.tools.layouts.FlowLayout;
@@ -44,7 +45,6 @@ import java.util.List;
 import butterknife.ButterKnife;
 import butterknife.InjectView;
 import butterknife.OnClick;
-import mbanje.kurt.fabbutton.FabButton;
 import solutions.doubts.DoubtsApplication;
 import solutions.doubts.R;
 import solutions.doubts.api.ServerResponseCallback;
@@ -70,7 +70,7 @@ public class CreateDoubtActivity extends AppCompatActivity {
     @InjectView(R.id.doubt_image)
     ImageView mDoubtImage;
     @InjectView(R.id.create_doubt_button)
-    FabButton mCreateDoubtButton;
+    FloatingActionButton mCreateDoubtButton;
 
     // Other members
     private final List<String> mTagsList = new ArrayList<>();
@@ -83,6 +83,7 @@ public class CreateDoubtActivity extends AppCompatActivity {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        getWindow().setEnterTransition(new Explode());
         setContentView(R.layout.layout_create_doubt);
         ButterKnife.inject(this);
 
@@ -199,18 +200,7 @@ public class CreateDoubtActivity extends AppCompatActivity {
                         }
                     }
                 })
-                .create(q, new ProgressCallback() {
-                    @Override
-                    public void onProgress(long downloaded, long total) {
-                        final float progress = downloaded / total * 100f;
-                        runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                mCreateDoubtButton.setProgress(progress);
-                            }
-                        });
-                    }
-                });
+                .create(q, null);
     }
 
     @OnClick(R.id.create_doubt_button)

@@ -118,7 +118,7 @@
 
             <EditText
                 android:layout_width="0dp"
-                android:layout_height="wrap_content"
+                android:layout_height="match_parent"
                 android:id="@+id/description"
                 android:layout_weight="1"
                 android:hint="Description"
@@ -136,26 +136,17 @@
 
     </RelativeLayout>
 
-    <mbanje.kurt.fabbutton.FabButton
-        android:layout_width="56dp"
-        android:layout_height="56dp"
+    <android.support.design.widget.FloatingActionButton
+        android:layout_height="wrap_content"
+        android:layout_width="wrap_content"
         android:id="@+id/create_doubt_button"
         android:src="@drawable/ic_send_white_24dp"
-        android:color="@color/pink"
-        android:indeterminate="false"
-        android:max="100"
+        android:layout_margin="16dp"
+        android:clickable="true"
         android:layout_alignParentBottom="true"
         android:layout_alignParentRight="true"
         android:layout_alignParentEnd="true"
-        android:layout_marginRight="16dp"
-        android:layout_marginEnd="16dp"
-        android:layout_marginBottom="16dp"
-        android:clickable="true"
-        app:fbb_autoStart="true"
-        app:fbb_progressColor="#FFEE58"
-        app:fbb_progressWidthRatio="0.1"
-        app:fbb_endBitmap="@drawable/ic_fab_complete"
-        app:fbb_showEndBitmap="true"
-        app:fbb_hideProgressOnComplete="true"/>
+        app:elevation="4dp"
+        app:borderWidth="0dp"/>
 
 </RelativeLayout>

@@ -5,6 +5,8 @@
 
 package solutions.doubts.activities.questionview;
 
+import android.content.ClipData;
+import android.content.ClipboardManager;
 import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
@@ -14,12 +16,14 @@ import android.os.Bundle;
 import android.support.v4.view.ViewCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.transition.Explode;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.facebook.drawee.backends.pipeline.Fresco;
 import com.facebook.drawee.generic.RoundingParams;
@@ -33,6 +37,7 @@ import org.joda.time.format.ISODateTimeFormat;
 import butterknife.ButterKnife;
 import butterknife.InjectView;
 import butterknife.OnClick;
+import solutions.doubts.DoubtsApplication;
 import solutions.doubts.R;
 import solutions.doubts.activities.fullscreenimageview.FullscreenImageViewActivity;
 import solutions.doubts.api.models.Entity;
@@ -47,6 +52,7 @@ public class QuestionViewActivity extends AppCompatActivity {
 
     // Other private members
     private Question mQuestion;
+    private ClipboardManager mClipboardManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -55,12 +61,15 @@ public class QuestionViewActivity extends AppCompatActivity {
         setContentView(R.layout.layout_question_view);
         ButterKnife.inject(this);
 
+        getWindow().setExitTransition(new Explode());
+
         setSupportActionBar((Toolbar) findViewById(R.id.toolbar));
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setHomeAsUpIndicator(getResources().getDrawable(R.drawable.ic_arrow_back_white_16dp));
         getSupportActionBar().setDisplayShowTitleEnabled(false);
 
         mQuestion = QuestionCache.getInstance().getLastSelectedQuestion();
+        mClipboardManager = (ClipboardManager)getSystemService(CLIPBOARD_SERVICE);
 
         RoundingParams params = new RoundingParams();
         params.setRoundAsCircle(true);
@@ -68,7 +77,8 @@ public class QuestionViewActivity extends AppCompatActivity {
         ((SimpleDraweeView)findViewById(R.id.author_image)).setImageURI(Uri.parse(
                 StringUtil.getProfileImageUrl(mQuestion.getAuthor())
         ));
-        ((TextView)findViewById(R.id.username)).setText(mQuestion.getAuthor().getUsername());
+        ((TextView)findViewById(R.id.name)).setText(mQuestion.getAuthor().getName());
+        ((TextView)findViewById(R.id.username)).setText("@" + mQuestion.getAuthor().getUsername());
         ((TextView)findViewById(R.id.title)).setText(mQuestion.getTitle());
         ((SimpleDraweeView)findViewById(R.id.doubt_image)).setImageURI(Uri.parse(
                 StringUtil.getDoubtImageUrl(mQuestion)
@@ -121,6 +131,10 @@ public class QuestionViewActivity extends AppCompatActivity {
     public boolean onCreateOptionsMenu(Menu menu) {
         final MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.menu_question_view_activity, menu);
+        if (mQuestion.getAuthor().getId() != DoubtsApplication.getInstance().getSession().getAuthToken().getUserId()) {
+            menu.findItem(R.id.action_edit).setVisible(false);
+            menu.findItem(R.id.action_delete).setVisible(false);
+        }
         return super.onCreateOptionsMenu(menu);
     }
 
@@ -131,7 +145,21 @@ public class QuestionViewActivity extends AppCompatActivity {
                 finish();
                 return true;
             case R.id.action_refresh:
+                
+                return true;
+            case R.id.action_edit:
 
+                return true;
+            case R.id.action_delete:
+
+                return true;
+            case R.id.action_link:
+
+                return true;
+            case R.id.action_copy_text:
+                ClipData clipData = ClipData.newPlainText("Question", mQuestion.getTitle());
+                mClipboardManager.setPrimaryClip(clipData);
+                Toast.makeText(this, "Text copied to clipboard.", Toast.LENGTH_SHORT).show();
                 return true;
             default:
                 return super.onOptionsItemSelected(item);

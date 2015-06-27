@@ -6,9 +6,10 @@
 
 <resources>
 
-    <color name="primary">#9C27B0</color>
+    <color name="primary">#4527A0</color>
     <color name="primary_light">#AB47BC</color>
-    <color name="primary_dark">#7B1FA2</color>
+    <color name="primary_dark">#311B92</color>
+    <color name="accent">#4CAF50</color>
     <color name="pink">#EC407A</color>
     <color name="pink_pressed">#F48FB1</color>
     <color name="grey">#757575</color>
