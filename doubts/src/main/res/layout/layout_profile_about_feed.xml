@@ -4,8 +4,8 @@
   ~ Copyright (c) 2015 Mohammed Nafees (original author) <nafees.technocool@gmail.com>.
   -->
 
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
@@ -16,11 +16,11 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textAppearance="?android:attr/textAppearanceMedium"
-        android:text="About Mohammed"
+        tools:text="About Mohammed"
         android:textStyle="bold"
         android:textColor="@color/grey"
         android:textAllCaps="true"
-        android:id="@+id/aboutHeader"
+        android:id="@+id/about_header"
         android:layout_gravity="center_horizontal"
         android:layout_marginBottom="10dp"
         android:textSize="14sp" />
@@ -49,7 +49,7 @@
                 android:layout_height="wrap_content"
                 android:textAppearance="?android:attr/textAppearanceMedium"
                 android:text="235"
-                android:id="@+id/questionsCount"
+                android:id="@+id/question_count"
                 android:layout_gravity="center_horizontal"
                 android:textColor="@color/primary"
                 android:layout_marginTop="5dp"
@@ -121,7 +121,7 @@
                     android:layout_height="wrap_content"
                     android:textAppearance="?android:attr/textAppearanceMedium"
                     android:text="1099"
-                    android:id="@+id/answersCount"
+                    android:id="@+id/answer_count"
                     android:layout_gravity="center_horizontal"
                     android:textColor="@color/primary"
                     android:layout_marginTop="5dp"

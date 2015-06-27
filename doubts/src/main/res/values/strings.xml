@@ -13,5 +13,10 @@
     <string name="competitions_string">Competitions</string>
     <string name="username_string">Username</string>
     <string name="name_string">Name</string>
+    <string name="about">About</string>
+    <string name="questions">Questions</string>
+    <string name="answers">Answers</string>
+    <string name="followers">Followers</string>
+    <string name="about_header_prefix">"About "</string>
 
 </resources>

@@ -52,7 +52,17 @@ public class Session {
         }
     }
 
-    public void getLoggedInUser() {
+    public User getLoggedInUser() {
+        if(mAuthToken == null) {
+            return null;
+        }
+
+        return (User) Query.with(mContext)
+                .local(User.class)
+                .get(mAuthToken.getUserId());
+    }
+
+    public void fetchLoggedInUser() {
         if (mAuthToken != null) {
             User user = (User)Query.with(mContext)
                     .local(User.class)

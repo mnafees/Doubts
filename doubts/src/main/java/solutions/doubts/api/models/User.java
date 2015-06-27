@@ -16,6 +16,7 @@ public class User extends RealmObject {
     private String created;
     private String updated;
     private int questionCount;
+    private int answerCount;
     private S3Image image;
     private String bio;
     private RealmList<Entity> bookmarked;
@@ -129,6 +130,14 @@ public class User extends RealmObject {
 
     public static Builder newUser() {
         return new Builder();
+    }
+
+    public int getAnswerCount() {
+        return answerCount;
+    }
+
+    public void setAnswerCount(int answerCount) {
+        this.answerCount = answerCount;
     }
 
     public static class Builder {

@@ -70,6 +70,7 @@ public class ProfileActivity extends AppCompatActivity implements PaletteHelperU
 
     private User mUser;
     private boolean mEditingMode;
+    private AboutFragment mAboutFragment;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -111,10 +112,12 @@ public class ProfileActivity extends AppCompatActivity implements PaletteHelperU
         mTabsAdapter = new TabsAdapter(getSupportFragmentManager());
         viewPager.setAdapter(mTabsAdapter);
 
-        mTabsAdapter.addTab("About ", new AboutFragment(), 0);
-        mTabsAdapter.addTab("Questions", new QuestionsFragment(), 1);
-        mTabsAdapter.addTab("Answers", new AnswersFragment(), 2);
-        mTabsAdapter.addTab("Followers", new AnswersFragment(), 3);
+        mAboutFragment = new AboutFragment();
+        mAboutFragment.setUser(mUser);
+        mTabsAdapter.addTab(getString(R.string.about), mAboutFragment, 0);
+        mTabsAdapter.addTab(getString(R.string.questions), new QuestionsFragment(), 1);
+        mTabsAdapter.addTab(getString(R.string.answers), new AnswersFragment(), 2);
+        mTabsAdapter.addTab(getString(R.string.followers), new AnswersFragment(), 3);
 
         mTabsLayout = (SlidingTabLayout)expandedTopPanel.findViewById(R.id.sliding_tab_layout);
         mTabsLayout.setCustomTabView(R.layout.layout_tab_strip, android.R.id.text1);
@@ -142,6 +145,13 @@ public class ProfileActivity extends AppCompatActivity implements PaletteHelperU
         }
     }
 
+    private void updateUi(User user) {
+        mName.setText(user.getName() == null ? user.getUsername() : user.getName());
+        mProfileImage.setImageURI(Uri.parse(StringUtil.getProfileImageUrl(user)));
+        mBio.setText(user.getBio());
+        mAboutFragment.setUser(user);
+    }
+
     @Override
     protected void onResume() {
         super.onResume();
@@ -150,9 +160,7 @@ public class ProfileActivity extends AppCompatActivity implements PaletteHelperU
                 .setServerResponseCallback(new ServerResponseCallback<User>() {
                     @Override
                     public void onCompleted(Exception e, User result) {
-                        mName.setText(result.getName() == null ? result.getUsername() : result.getName());
-                        mProfileImage.setImageURI(Uri.parse(StringUtil.getProfileImageUrl(result)));
-                        mBio.setText(result.getBio());
+                        updateUi(result);
                     }
                 })
                 .get(mUser.getId(), mUser.getUsername());

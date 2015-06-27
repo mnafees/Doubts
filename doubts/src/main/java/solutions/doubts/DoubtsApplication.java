@@ -90,7 +90,9 @@ public class DoubtsApplication extends Application {
                 })
                 .create();
         Ion.getDefault(this).configure().setGson(mGson);
-        Ion.getDefault(this).configure().setLogging("Ion Logs", Log.VERBOSE);
+        if(BuildConfig.DEBUG) {
+            Ion.getDefault(this).configure().setLogging("Ion Logs", Log.VERBOSE);
+        }
     }
 
     @Override
@@ -110,7 +112,7 @@ public class DoubtsApplication extends Application {
     public void setSession(Session session) {
         if (mSession == null) {
             mSession = session;
-            mSession.getLoggedInUser();
+            mSession.fetchLoggedInUser();
         }
     }
 

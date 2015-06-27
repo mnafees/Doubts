@@ -45,6 +45,8 @@ import solutions.doubts.DoubtsApplication;
 import solutions.doubts.R;
 import solutions.doubts.activities.authentication.AuthenticationActivity;
 import solutions.doubts.activities.createdoubt.CreateDoubtActivity;
+import solutions.doubts.activities.profile.ProfileActivity;
+import solutions.doubts.activities.profile.UserCache;
 import solutions.doubts.core.ConnectivityChangeReceiver;
 import solutions.doubts.core.events.ConnectivityChangedEvent;
 import solutions.doubts.core.events.FeedUpdatedEvent;
@@ -169,6 +171,14 @@ public class FeedActivity extends AppCompatActivity {
         View drawerHeader = navigationView.inflateHeaderView(R.layout.layout_feed_drawer_profile_top);
         mDrawerHeaderProfileImage = (SimpleDraweeView)drawerHeader.findViewById(R.id.profile_image);
         mDrawerHeaderName = (TextView)drawerHeader.findViewById(R.id.name);
+        drawerHeader.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent profileIntent = new Intent(FeedActivity.this, ProfileActivity.class);
+                UserCache.getInstance().setLastSelectedUser(DoubtsApplication.getInstance().getSession().getLoggedInUser());
+                startActivity(profileIntent);
+            }
+        });
 
         final LinearLayoutManager layoutManager = new LinearLayoutManager(this);
         mRecyclerView.setLayoutManager(layoutManager);
@@ -260,7 +270,7 @@ public class FeedActivity extends AppCompatActivity {
     public void onResume() {
         super.onResume();
         ((DoubtsApplication)getApplication()).getBus().register(this);
-        if (!mSessionSet) DoubtsApplication.getInstance().getSession().getLoggedInUser();
+        if (!mSessionSet) DoubtsApplication.getInstance().getSession().fetchLoggedInUser();
         registerReceiver(mConnectivityChangeReceiver, mIntentFilter);
     }
 
