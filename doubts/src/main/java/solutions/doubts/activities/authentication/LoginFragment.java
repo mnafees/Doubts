@@ -26,6 +26,7 @@ import android.widget.EditText;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import com.google.gson.JsonObject;
 import com.koushikdutta.async.future.FutureCallback;
 import com.koushikdutta.ion.Ion;
 import com.koushikdutta.ion.Response;
@@ -118,14 +119,16 @@ public class LoginFragment extends Fragment {
         TransitionUtil.hideWithFadeOut(mLoginElementsContainer);
         TransitionUtil.showWithFadeIn(mThrobber);
 
+        final JsonObject json = new JsonObject();
+        json.addProperty("email", email);
         Ion.with(this)
                 .load(ApiConstants.API_ENDPOINT + "/auth/login")
-                .setBodyParameter("email", email)
-                .asString()
+                .setJsonObjectBody(json)
+                .asJsonObject()
                 .withResponse()
-                .setCallback(new FutureCallback<Response<String>>() {
+                .setCallback(new FutureCallback<Response<JsonObject>>() {
                     @Override
-                    public void onCompleted(Exception e, Response<String> result) {
+                    public void onCompleted(Exception e, Response<JsonObject> result) {
                         if (e != null) {
                             TransitionUtil.hideWithFadeOut(mThrobber);
                             Snackbar.make(mMainContainer, R.string.network_error_message, Snackbar.LENGTH_SHORT)
@@ -135,16 +138,12 @@ public class LoginFragment extends Fragment {
                         }
 
                         if (result.getHeaders().code() == 200) {
-                            if (result.getRequest().getUri().getLastPathSegment().equals("register")) {
-                                // user needs to register
-                                TransitionUtil.hideWithFadeOut(mThrobber);
-                                TransitionUtil.showWithFadeIn(mLoginElementsContainer);
-                                DoubtsApplication.getInstance().getBus().post(new
-                                        AuthenticationActivity.UserRegistrationEvent(email));
-                            } else {
-                                // login
-                                showEmailSentMessage();
-                            }
+                            showEmailSentMessage(result.getResult().get("message").getAsString());
+                        } else if (result.getHeaders().code() == 404) {
+                            TransitionUtil.hideWithFadeOut(mThrobber);
+                            TransitionUtil.showWithFadeIn(mLoginElementsContainer);
+                            DoubtsApplication.getInstance().getBus().post(new
+                                    AuthenticationActivity.UserRegistrationEvent(email));
                         } else {
                             TransitionUtil.hideWithFadeOut(mThrobber);
                             Snackbar.make(mMainContainer, R.string.network_error_message, Snackbar.LENGTH_SHORT)
@@ -155,9 +154,8 @@ public class LoginFragment extends Fragment {
                 });
     }
 
-    private void showEmailSentMessage() {
-        mEmailMessage.setText("Please check " + mEmail.getText().toString() + " and click on the link in the email we've " +
-                "sent you to log in.");
+    private void showEmailSentMessage(String message) {
+        mEmailMessage.setText(message);
         TransitionUtil.hideWithFadeOut(mThrobber);
         TransitionUtil.showWithFadeIn(mEmailMessage);
     }

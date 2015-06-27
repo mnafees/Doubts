@@ -61,8 +61,6 @@ public class QuestionViewActivity extends AppCompatActivity {
         setContentView(R.layout.layout_question_view);
         ButterKnife.inject(this);
 
-        getWindow().setExitTransition(new Explode());
-
         setSupportActionBar((Toolbar) findViewById(R.id.toolbar));
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setHomeAsUpIndicator(getResources().getDrawable(R.drawable.ic_arrow_back_white_16dp));

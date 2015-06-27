@@ -49,8 +49,6 @@ public class Session {
                     .putString("username", authToken.getUsername())
                     .putString("auth_token", authToken.getToken())
                     .apply();
-        } else {
-            throw new IllegalStateException("Trying to re-set AuthToken");
         }
     }
 
@@ -85,15 +83,17 @@ public class Session {
                 .setServerResponseCallback(new ServerResponseCallback<User>() {
                     @Override
                     public void onCompleted(Exception e, final User result) {
-                        Realm realm = Realm.getInstance(mContext);
-                        realm.executeTransaction(new Realm.Transaction() {
-                            @Override
-                            public void execute(Realm realm) {
-                                realm.copyToRealmOrUpdate(result);
-                            }
-                        });
-                        DoubtsApplication.getInstance().getBus().post(new
-                                SessionUpdatedEvent(result));
+                        if (e == null) {
+                            Realm realm = Realm.getInstance(mContext);
+                            realm.executeTransaction(new Realm.Transaction() {
+                                @Override
+                                public void execute(Realm realm) {
+                                    realm.copyToRealmOrUpdate(result);
+                                }
+                            });
+                            DoubtsApplication.getInstance().getBus().post(new
+                                    SessionUpdatedEvent(result));
+                        }
                     }
                 })
                 .get(mAuthToken.getUserId(), mAuthToken.getUsername());

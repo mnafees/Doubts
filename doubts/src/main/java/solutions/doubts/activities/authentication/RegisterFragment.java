@@ -151,16 +151,18 @@ public class RegisterFragment extends Fragment implements InterestsAdapter.Inter
         }
 
         mMainContainer.setEnabled(false);
+        JsonObject json = new JsonObject();
+        json.addProperty("email", mEmail);
+        json.addProperty("name", mName.getText().toString());
+        json.addProperty("username", mUsername.getText().toString());
         Ion.with(getActivity())
                 .load(ApiConstants.API_ENDPOINT + "/auth/register")
-                .setBodyParameter("name", mName.getText().toString())
-                .setBodyParameter("username", mUsername.getText().toString())
-                .setBodyParameter("email", mEmail)
-                .asString()
+                .setJsonObjectBody(json)
+                .asJsonObject()
                 .withResponse()
-                .setCallback(new FutureCallback<Response<String>>() {
+                .setCallback(new FutureCallback<Response<JsonObject>>() {
                     @Override
-                    public void onCompleted(Exception e, Response<String> result) {
+                    public void onCompleted(Exception e, Response<JsonObject> result) {
                         if (e != null) {
                             Snackbar.make(getView(), getString(R.string.network_error_message), Snackbar.LENGTH_LONG)
                                     .show();
@@ -168,7 +170,7 @@ public class RegisterFragment extends Fragment implements InterestsAdapter.Inter
                         } else {
                             if (result.getHeaders().code() == 200) {
                                 // temporary
-                                Snackbar.make(getView(), "Registered", Snackbar.LENGTH_LONG)
+                                Snackbar.make(getView(), result.getResult().get("message").getAsString(), Snackbar.LENGTH_LONG)
                                         .show();
                             } else {
                                 Snackbar.make(getView(), getString(R.string.network_error_message), Snackbar.LENGTH_LONG)

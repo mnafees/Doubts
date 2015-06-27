@@ -21,7 +21,6 @@ import android.support.v7.widget.Toolbar;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
-import android.transition.Explode;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.Menu;
@@ -83,7 +82,6 @@ public class CreateDoubtActivity extends AppCompatActivity {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        getWindow().setEnterTransition(new Explode());
         setContentView(R.layout.layout_create_doubt);
         ButterKnife.inject(this);
 
