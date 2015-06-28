@@ -12,15 +12,20 @@ import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.TransitionDrawable;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.view.ViewCompat;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
-import android.transition.Explode;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewTreeObserver;
 import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -29,8 +34,8 @@ import com.facebook.drawee.backends.pipeline.Fresco;
 import com.facebook.drawee.generic.RoundingParams;
 import com.facebook.drawee.view.SimpleDraweeView;
 import com.github.curioustechizen.ago.RelativeTimeTextView;
+import com.tumblr.bookends.Bookends;
 
-import org.apmem.tools.layouts.FlowLayout;
 import org.joda.time.format.DateTimeFormatter;
 import org.joda.time.format.ISODateTimeFormat;
 
@@ -40,19 +45,29 @@ import butterknife.OnClick;
 import solutions.doubts.DoubtsApplication;
 import solutions.doubts.R;
 import solutions.doubts.activities.fullscreenimageview.FullscreenImageViewActivity;
-import solutions.doubts.api.models.Entity;
 import solutions.doubts.api.models.Question;
 import solutions.doubts.core.util.StringUtil;
 
 public class QuestionViewActivity extends AppCompatActivity {
 
     // UI elements
-    @InjectView(R.id.bookmark_button)
-    ImageButton mBookmarkButton;
+    private SimpleDraweeView mAuthorImage;
+    private TextView mName, mUsername, mTitle, mAnswerCount;
+    private RelativeTimeTextView mTime;
+    private ImageButton mBookmarkButton;
+
+    @InjectView(R.id.swipe_refresh_layout)
+    SwipeRefreshLayout mSwipeRefreshLayout;
+    @InjectView(R.id.answers)
+    RecyclerView mRecyclerView;
+    @InjectView(R.id.doubt_image)
+    SimpleDraweeView mDoubtImage;
 
     // Other private members
     private Question mQuestion;
     private ClipboardManager mClipboardManager;
+    private AnswersAdapter mAnswersAdapter;
+    private Bookends<AnswersAdapter> mBookends;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -61,37 +76,76 @@ public class QuestionViewActivity extends AppCompatActivity {
         setContentView(R.layout.layout_question_view);
         ButterKnife.inject(this);
 
+        mQuestion = QuestionCache.getInstance().getLastSelectedQuestion();
+        mClipboardManager = (ClipboardManager)getSystemService(CLIPBOARD_SERVICE);
+
+        setupAppBar();
+        initUi();
+        updateUi();
+        fetchAnswers();
+    }
+
+    private void setupAppBar() {
         setSupportActionBar((Toolbar) findViewById(R.id.toolbar));
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setHomeAsUpIndicator(getResources().getDrawable(R.drawable.ic_arrow_back_white_16dp));
         getSupportActionBar().setDisplayShowTitleEnabled(false);
+    }
 
-        mQuestion = QuestionCache.getInstance().getLastSelectedQuestion();
-        mClipboardManager = (ClipboardManager)getSystemService(CLIPBOARD_SERVICE);
+    private void initUi() {
+        mSwipeRefreshLayout.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+            boolean exec = true;
+            @Override
+            public void onGlobalLayout() {
+                if (exec) {
+                    mSwipeRefreshLayout.setRefreshing(true);
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+                        mSwipeRefreshLayout.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+                    }
+                    exec = !exec;
+                }
+            }
+        });
 
+        RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(this);
+        mRecyclerView.setLayoutManager(layoutManager);
+        mAnswersAdapter = new AnswersAdapter(this, mQuestion.getId());
+        mBookends = new Bookends<>(mAnswersAdapter);
+
+        View question = LayoutInflater.from(getBaseContext()).inflate(R.layout.layout_question, mRecyclerView, false);
         RoundingParams params = new RoundingParams();
         params.setRoundAsCircle(true);
-        ((SimpleDraweeView)findViewById(R.id.author_image)).getHierarchy().setRoundingParams(params);
-        ((SimpleDraweeView)findViewById(R.id.author_image)).setImageURI(Uri.parse(
+        mAuthorImage = ButterKnife.findById(question, R.id.author_image);
+        mName = ButterKnife.findById(question, R.id.name);
+        mUsername = ButterKnife.findById(question, R.id.username);
+        mTitle = ButterKnife.findById(question, R.id.title);
+        mTime = ButterKnife.findById(question, R.id.timestamp);
+        mBookmarkButton = ButterKnife.findById(question, R.id.bookmark_button);
+
+        mAnswerCount = (TextView)LayoutInflater.from(getBaseContext())
+                .inflate(R.layout.layout_text_view, mRecyclerView, false);
+
+        mBookends.addHeader(question);
+        mBookends.addHeader(mAnswerCount);
+        mRecyclerView.setAdapter(mBookends);
+    }
+
+    private void updateUi() {
+        RoundingParams params = new RoundingParams();
+        params.setRoundAsCircle(true);
+        mAuthorImage.getHierarchy().setRoundingParams(params);
+        mAuthorImage.setImageURI(Uri.parse(
                 StringUtil.getProfileImageUrl(mQuestion.getAuthor())
         ));
-        ((TextView)findViewById(R.id.name)).setText(mQuestion.getAuthor().getName());
-        ((TextView)findViewById(R.id.username)).setText("@" + mQuestion.getAuthor().getUsername());
-        ((TextView)findViewById(R.id.title)).setText(mQuestion.getTitle());
-        ((SimpleDraweeView)findViewById(R.id.doubt_image)).setImageURI(Uri.parse(
+        mName.setText(mQuestion.getAuthor().getName());
+        mUsername.setText("@" + mQuestion.getAuthor().getUsername());
+        mTitle.setText(mQuestion.getTitle());
+        mDoubtImage.setImageURI(Uri.parse(
                 StringUtil.getDoubtImageUrl(mQuestion)
         ));
-        FlowLayout tagsLayout = (FlowLayout)findViewById(R.id.tags_layout);
-        for (Entity tag : mQuestion.getTags()) {
-            View v = View.inflate(this, R.layout.layout_single_tag, null);
-            TextView textView = (TextView)v.findViewById(R.id.tag);
-            textView.setText("#" + tag.getName().replace(" ", "").toLowerCase());
-            tagsLayout.addView(v);
-        }
         DateTimeFormatter formatter = ISODateTimeFormat.dateTimeParser();
         long time = formatter.parseMillis(mQuestion.getCreated());
-        ((RelativeTimeTextView)findViewById(R.id.timestamp)).setReferenceTime(time);
-
+        mTime.setReferenceTime(time);
         final TransitionDrawable bookmarkDrawable = (TransitionDrawable)mBookmarkButton.getDrawable();
         bookmarkDrawable.setColorFilter(Color.parseColor("#F44336"), PorterDuff.Mode.SRC_IN);
         mBookmarkButton.setOnClickListener(new View.OnClickListener() {
@@ -114,6 +168,19 @@ public class QuestionViewActivity extends AppCompatActivity {
                                 v.animate().scaleY(1.0f).scaleX(1.0f);
                             }
                         });
+            }
+        });
+    }
+
+    private void fetchAnswers() {
+        mSwipeRefreshLayout.setRefreshing(true);
+        mAnswersAdapter.update(new Answers.UpdateCallback() {
+            @Override
+            public void onUpdate(int answerCount) {
+                mSwipeRefreshLayout.setRefreshing(false);
+                mAnswerCount.setText(Integer.toString(answerCount) + " Answer" +
+                        (answerCount > 1 ? "s" : ""));
+                mBookends.notifyDataSetChanged();
             }
         });
     }
@@ -143,7 +210,7 @@ public class QuestionViewActivity extends AppCompatActivity {
                 finish();
                 return true;
             case R.id.action_refresh:
-                
+                fetchAnswers();
                 return true;
             case R.id.action_edit:
 

@@ -71,6 +71,7 @@ public class RemoteQuery<T extends RealmObject> {
     }
 
     public void filterBy(String parameter, String value) {
+        mServerResponse.setClazz(JsonObject.class);
         Ion.with(mContext)
                 .load("GET", mapClassToUrl(mClazz))
                 .setHeader(ApiConstants.HEADER_AUTHORIZATION, DoubtsApplication.getInstance().getSession()

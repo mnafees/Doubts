@@ -7,6 +7,7 @@ package solutions.doubts.core.util;
 
 import android.text.TextUtils;
 
+import solutions.doubts.api.models.Answer;
 import solutions.doubts.api.models.Question;
 import solutions.doubts.api.models.User;
 
@@ -55,6 +56,20 @@ public class StringUtil {
         url = question.getImage().getUrl();
         if (url == null || TextUtils.isEmpty(url)) {
             url = String.format("http://www.gravatar.com/avatar/%s?s=500&d=retro", md5(question.getTitle()));
+        }
+        return url;
+    }
+
+    /** Alpha */
+    public static String getAnswerImageUrl(Answer answer) {
+        String url;
+        if (answer.getImage() == null) {
+            url = String.format("http://www.gravatar.com/avatar/%s?s=200&d=retro", md5(answer.getTitle()));
+            return url;
+        }
+        url = answer.getImage().getUrl();
+        if (url == null || TextUtils.isEmpty(url)) {
+            url = String.format("http://www.gravatar.com/avatar/%s?s=500&d=retro", md5(answer.getTitle()));
         }
         return url;
     }
