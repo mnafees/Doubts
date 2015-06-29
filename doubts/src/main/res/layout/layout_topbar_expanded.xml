@@ -11,7 +11,8 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical"
-    android:background="@color/primary">
+    android:background="@color/primary"
+    android:animateLayoutChanges="true">
 
     <android.support.v7.widget.Toolbar
         android:id="@+id/action_bar"
@@ -42,16 +43,13 @@
 
             </LinearLayout>
 
-            <com.facebook.drawee.view.SimpleDraweeView
+            <ImageView
                 xmlns:fresco="http://schemas.android.com/apk/res-auto"
                 android:id="@+id/author_image"
                 android:layout_width="100dp"
                 android:layout_height="100dp"
                 android:layout_centerInParent="true"
-                android:background="@android:color/transparent"
-                fresco:fadeDuration="300"
-                fresco:actualImageScaleType="focusCrop"
-                fresco:roundAsCircle="true" />
+                android:background="@android:color/transparent" />
 
             <EditText
                 android:id="@+id/bio"

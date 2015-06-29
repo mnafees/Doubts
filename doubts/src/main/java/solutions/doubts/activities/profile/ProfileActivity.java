@@ -7,15 +7,18 @@ package solutions.doubts.activities.profile;
 
 import android.content.res.TypedArray;
 import android.graphics.Color;
-import android.graphics.PorterDuff;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
-import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.AppCompatEditText;
+import android.support.v7.widget.AppCompatTextView;
 import android.support.v7.widget.Toolbar;
+import android.transitions.everywhere.ChangeTransform;
+import android.transitions.everywhere.Scene;
+import android.transitions.everywhere.TransitionSet;
 import android.util.TypedValue;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -24,8 +27,9 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
 import android.widget.EditText;
+import android.widget.ImageView;
 
-import com.facebook.drawee.view.SimpleDraweeView;
+import com.koushikdutta.ion.Ion;
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;
@@ -39,29 +43,29 @@ import solutions.doubts.api.models.User;
 import solutions.doubts.api.query.Query;
 import solutions.doubts.core.util.ColorHolder;
 import solutions.doubts.core.util.PaletteHelperUtil;
-import solutions.doubts.core.util.PaletteHelperUtilListener;
 import solutions.doubts.core.util.StringUtil;
 import solutions.doubts.thirdparty.ObservableVerticalScrollView;
 import solutions.doubts.thirdparty.SlidingTabLayout;
 import solutions.doubts.transitions.ChangeBoundsOnScrollTransition;
+import solutions.doubts.transitions.ScrollTransitionUtility;
 
-public class ProfileActivity extends AppCompatActivity implements PaletteHelperUtilListener,
+public class ProfileActivity extends AppCompatActivity implements
         ObservableVerticalScrollView.OnScrollCallback {
     public static final String TAG = "ProfileActivity";
 
-    private View mTopPanelContainer;
+    private ViewGroup mTopPanelContainer;
 
     @InjectView(R.id.author_image)
-    SimpleDraweeView mProfileImage;
+    ImageView mProfileImage;
     @InjectView(R.id.name)
     EditText mName;
     @InjectView(R.id.bio)
-    EditText mBio;
+    AppCompatTextView mBio;
 
     private Menu mMenu;
     private ObservableVerticalScrollView mScrollView;
 
-    private ChangeBoundsOnScrollTransition mTopPanelTransition;
+    //private ChangeBoundsOnScrollTransition mTopPanelTransition;
     private ColorHolder mColorHolder;
     private final PaletteHelperUtil mPaletteHelperUtil = new PaletteHelperUtil();
     private SlidingTabLayout mTabsLayout;
@@ -71,6 +75,7 @@ public class ProfileActivity extends AppCompatActivity implements PaletteHelperU
     private User mUser;
     private boolean mEditingMode;
     private AboutFragment mAboutFragment;
+    private ScrollTransitionUtility scrollTransitionUtility;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -79,24 +84,30 @@ public class ProfileActivity extends AppCompatActivity implements PaletteHelperU
 
         mUser = UserCache.getInstance().getLastSelectedUser();
 
-        mTopPanelContainer = findViewById(R.id.topPanelContainer);
-        final View expandedTopPanel = getLayoutInflater().inflate(R.layout.layout_topbar_expanded, (ViewGroup) this.mTopPanelContainer, false);
-        final View collapsedTopPanel = getLayoutInflater().inflate(R.layout.layout_topbar_collapsed, (ViewGroup) this.mTopPanelContainer, false);
+        mTopPanelContainer = (ViewGroup) findViewById(R.id.topPanelContainer);
+        final View expandedTopPanel = getLayoutInflater().inflate(R.layout.layout_topbar_expanded, this.mTopPanelContainer, true);
+//        final View collapsedTopPanel = getLayoutInflater().inflate(R.layout.layout_topbar_collapsed, this.mTopPanelContainer, false);
         mTopPanel = expandedTopPanel.findViewById(R.id.top_panel);
         ButterKnife.inject(this, expandedTopPanel);
-
-        mTopPanelTransition = new ChangeBoundsOnScrollTransition((ViewGroup)this.mTopPanelContainer,
-                (ViewGroup) expandedTopPanel, (ViewGroup) collapsedTopPanel);
-        mTopPanelTransition.setDuration(getResources()
+        Scene si = Scene.getSceneForLayout(mTopPanelContainer, R.layout.layout_topbar_expanded, this);
+        Scene sf = Scene.getSceneForLayout(mTopPanelContainer, R.layout.layout_topbar_collapsed, this);
+        TransitionSet ts = new TransitionSet();
+        ts.addTransition(new ChangeTransform());
+        scrollTransitionUtility = new ScrollTransitionUtility(si, sf, ts);
+        scrollTransitionUtility.setScrollHeight(getResources()
                 .getDimensionPixelSize(R.dimen.profile_actionbar_expanded_height) - getActionBarSize());
 
-        mPaletteHelperUtil.setPaletteHelperUtilListener(this);
+
+//        mTopPanelTransition = new ChangeBoundsOnScrollTransition((ViewGroup)this.mTopPanelContainer,
+//                (ViewGroup) expandedTopPanel, (ViewGroup) collapsedTopPanel);
+//        mTopPanelTransition.setDuration(getResources()
+//                .getDimensionPixelSize(R.dimen.profile_actionbar_expanded_height) - getActionBarSize());
 
         //mName = (EditText) expandedTopPanel.findViewById(R.id.email_name);
         mName.setFocusable(false);
         mName.setFocusableInTouchMode(false);
         mName.setClickable(false);
-        mBio = (EditText) expandedTopPanel.findViewById(R.id.bio);
+        mBio = (AppCompatTextView) expandedTopPanel.findViewById(R.id.bio);
         mBio.setFocusable(false);
         mBio.setFocusableInTouchMode(false);
         mBio.setClickable(false);
@@ -123,16 +134,16 @@ public class ProfileActivity extends AppCompatActivity implements PaletteHelperU
         mTabsLayout.setCustomTabView(R.layout.layout_tab_strip, android.R.id.text1);
         mTabsLayout.setDistributeEvenly(true);
         mTabsLayout.setViewPager(viewPager);
-
-        mTopPanelContainer.getViewTreeObserver().addOnPreDrawListener(new ViewTreeObserver.OnPreDrawListener() {
-            @Override
-            public boolean onPreDraw() {
-                if (ProfileActivity.this.mTopPanelTransition.animateOnScroll(mScrollView.getScrollY())) {
-                    ProfileActivity.this.mTopPanelContainer.getViewTreeObserver().removeOnPreDrawListener(this);
-                }
-                return false;
-            }
-        });
+//
+//        mTopPanelContainer.getViewTreeObserver().addOnPreDrawListener(new ViewTreeObserver.OnPreDrawListener() {
+//            @Override
+//            public boolean onPreDraw() {
+//                if (ProfileActivity.this.mTopPanelTransition.animateOnScroll(mScrollView.getScrollY())) {
+//                    ProfileActivity.this.mTopPanelContainer.getViewTreeObserver().removeOnPreDrawListener(this);
+//                }
+//                return false;
+//            }
+//        });
     }
 
     private void setupActionBar() {
@@ -147,7 +158,9 @@ public class ProfileActivity extends AppCompatActivity implements PaletteHelperU
 
     private void updateUi(User user) {
         mName.setText(user.getName() == null ? user.getUsername() : user.getName());
-        mProfileImage.setImageURI(Uri.parse(StringUtil.getProfileImageUrl(user)));
+//        mProfileImage.setImageURI(Uri.parse(StringUtil.getProfileImageUrl(user)));
+        Ion.with(mProfileImage)
+                .load(StringUtil.getProfileImageUrl(user));
         mBio.setText(user.getBio());
         mAboutFragment.setUser(user);
     }
@@ -199,44 +212,8 @@ public class ProfileActivity extends AppCompatActivity implements PaletteHelperU
     }
 
     @Override
-    public void onPaletteGenerated(ColorHolder colorHolder) {
-        mColorHolder = colorHolder;
-        setThemeColors(mColorHolder);
-    }
-
-    private void setThemeColors(final ColorHolder colorHolder) {
-        // change color of the top panel and the icons
-        mTopPanel.setBackgroundColor(colorHolder.background);
-        final Drawable backButton = getResources().getDrawable(R.drawable.ic_arrow_back_white_16dp);
-        backButton.mutate().setColorFilter(colorHolder.bodyText, PorterDuff.Mode.SRC_IN);
-        getSupportActionBar().setHomeAsUpIndicator(backButton);
-        if (mMenu != null) {
-            final Drawable editButton = getResources().getDrawable(R.drawable.ic_mode_edit_white_24dp);
-            editButton.mutate().setColorFilter(colorHolder.bodyText, PorterDuff.Mode.SRC_IN);
-            mMenu.findItem(R.id.action_edit_profile).setIcon(editButton);
-        }
-
-        // change the color of the status bar
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            getWindow().setStatusBarColor(colorHolder.backgroundSecondary);
-            getWindow().setNavigationBarColor(colorHolder.backgroundSecondary);
-        }
-
-        // change color of image view border
-        //mProfileImage.setBorderColor(colorHolder.bodyText);
-
-        // change the color of the main toolbar
-        mName.setTextColor(colorHolder.bodyText);
-        mBio.setTextColor(colorHolder.titleText);
-
-        // change color of the tab layout
-        mTabsLayout.setTextColor(colorHolder.bodyText);
-        mTabsLayout.setSelectedIndicatorColors(colorHolder.backgroundSecondary);
-    }
-
-    @Override
     public void onScrollChanged(int yScroll) {
-        mTopPanelTransition.animateOnScroll(yScroll);
+        scrollTransitionUtility.setScrollPosition(yScroll);
     }
 
     private int getActionBarSize() {
@@ -254,8 +231,6 @@ public class ProfileActivity extends AppCompatActivity implements PaletteHelperU
         mColorHolder = (ColorHolder) savedInstanceState.getSerializable("colorHolder");
         mEditingMode = savedInstanceState.getBoolean("editingMode");
 
-        setThemeColors(mColorHolder);
-
         super.onRestoreInstanceState(savedInstanceState);
     }
 
@@ -270,21 +245,17 @@ public class ProfileActivity extends AppCompatActivity implements PaletteHelperU
     private void setInEditingMode(final boolean editingMode) {
         if (editingMode) {
             final Drawable icon = getResources().getDrawable(R.drawable.ic_done_white_24dp);
-            icon.mutate().setColorFilter(mColorHolder.bodyText, PorterDuff.Mode.SRC_IN);
             mMenu.findItem(R.id.action_edit_profile).setIcon(icon);
-            mName.setBackgroundColor(mColorHolder.backgroundSecondary);
             mName.setFocusable(true);
             mName.setFocusableInTouchMode(true);
             mName.setClickable(true);
             mName.requestFocus();
-            mBio.setBackgroundColor(mColorHolder.backgroundSecondary);
             mBio.setFocusable(true);
             mBio.setFocusableInTouchMode(true);
             mBio.setClickable(true);
             mEditingMode = true;
         } else {
             final Drawable icon = getResources().getDrawable(R.drawable.ic_mode_edit_white_24dp);
-            icon.mutate().setColorFilter(mColorHolder.bodyText, PorterDuff.Mode.SRC_IN);
             mMenu.findItem(R.id.action_edit_profile).setIcon(icon);
             mName.setBackgroundColor(getResources().getColor(android.R.color.transparent));
             mName.setFocusable(false);
