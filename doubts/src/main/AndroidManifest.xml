@@ -66,7 +66,7 @@
             android:theme="@style/AppTheme.ProfileTheme" >
         </activity>
         <activity
-            android:name=".activities.createdoubt.CreateDoubtActivity"
+            android:name=".activities.createquestion.CreateQuestionActivity"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.CreateNewDoubt" >
         </activity>

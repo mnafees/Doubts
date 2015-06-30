@@ -5,7 +5,6 @@
 
 package solutions.doubts.api.models;
 
-import java.io.Serializable;
 import java.util.List;
 
 import io.realm.RealmList;
@@ -17,7 +16,6 @@ public class Question extends RealmObject {
     @PrimaryKey
     private int id;
     private String slug;
-    private String desc;
     private String created;
     private String updated;
     private String title;
@@ -39,14 +37,6 @@ public class Question extends RealmObject {
 
     public void setSlug(String slug) {
         this.slug = slug;
-    }
-
-    public String getDesc() {
-        return this.desc;
-    }
-
-    public void setDesc(String desc) {
-        this.desc = desc;
     }
 
     public String getCreated() {
@@ -116,11 +106,6 @@ public class Question extends RealmObject {
 
         public Builder image(final S3Image image) {
             mQuestion.image = image;
-            return this;
-        }
-
-        public Builder description(final String desc) {
-            mQuestion.desc = desc;
             return this;
         }
 

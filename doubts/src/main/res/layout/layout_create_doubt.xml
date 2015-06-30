@@ -32,7 +32,7 @@
                     android:layout_height="wrap_content"
                     android:id="@+id/title"
                     android:maxLines="5"
-                    android:hint="Doubt Title"
+                    android:hint="Question Title"
                     android:textColorHint="#2196F3"
                     android:textColor="@android:color/white" />
 
@@ -43,8 +43,8 @@
     </android.support.v7.widget.Toolbar>
 
     <RelativeLayout
-        android:layout_width="fill_parent"
-        android:layout_height="fill_parent"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
         android:layout_below="@+id/action_bar">
 
         <org.apmem.tools.layouts.FlowLayout
@@ -67,7 +67,7 @@
                 android:layout_gravity="center_vertical"
                 android:layout_marginRight="10dp" />
 
-            <EditText
+            <solutions.doubts.activities.createquestion.TagsEditText
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:id="@+id/tags"
@@ -82,57 +82,12 @@
 
         </org.apmem.tools.layouts.FlowLayout>
 
-        <RelativeLayout
+        <fragment
             android:layout_width="match_parent"
-            android:layout_height="200dp"
-            android:id="@+id/doubt_image_container"
-            android:layout_below="@+id/tags_layout">
-
-            <ImageView
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:id="@+id/doubt_image"
-                android:layout_centerHorizontal="true"
-                android:src="@drawable/camera_backdrop"
-                android:scaleType="centerInside"/>
-
-            <fragment
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:id="@+id/camera_fragment"
-                android:name="solutions.doubts.activities.createdoubt.DoubtsCameraFragment"/>
-
-        </RelativeLayout>
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:padding="20dp"
-            android:layout_below="@+id/doubt_image_container">
-
-            <ImageView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:id="@+id/description_icon_image_view"
-                android:src="@drawable/ic_description_grey600_24dp" />
-
-            <EditText
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:id="@+id/description"
-                android:layout_weight="1"
-                android:hint="Description"
-                android:textSize="14sp"
-                android:textColor="#757575"
-                android:textColorHint="@color/grey_light"
-                android:layout_marginLeft="10dp"
-                android:layout_marginStart="10dp"
-                android:textCursorDrawable="@null"
-                android:background="@android:color/transparent"
-                android:layout_gravity="center_vertical" />
-
-        </LinearLayout>
-
+            android:layout_height="match_parent"
+            android:id="@+id/camera_fragment"
+            android:name="solutions.doubts.activities.createquestion.DoubtsCameraFragment"
+            android:layout_below="@id/tags_layout"/>
 
     </RelativeLayout>
 

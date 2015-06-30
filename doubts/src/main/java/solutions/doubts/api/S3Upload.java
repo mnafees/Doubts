@@ -3,18 +3,13 @@ package solutions.doubts.api;
 import android.content.Context;
 import android.net.Uri;
 import android.util.Log;
-import android.util.Pair;
 
-import com.google.common.base.Function;
 import com.google.gson.JsonObject;
 import com.koushikdutta.async.future.FutureCallback;
 import com.koushikdutta.ion.Ion;
 import com.koushikdutta.ion.ProgressCallback;
 
-import java.io.InputStream;
-import java.util.concurrent.ExecutionException;
-
-import solutions.doubts.activities.createdoubt.DoubtsCameraFragment;
+import solutions.doubts.activities.createquestion.DoubtsCameraFragment;
 import solutions.doubts.api.models.S3Image;
 import solutions.doubts.internal.ApiConstants;
 

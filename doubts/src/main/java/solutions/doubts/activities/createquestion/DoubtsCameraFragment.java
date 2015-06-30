@@ -1,4 +1,4 @@
-package solutions.doubts.activities.createdoubt;
+package solutions.doubts.activities.createquestion;
 
 import android.content.Context;
 import android.graphics.Bitmap;
@@ -30,7 +30,7 @@ public class DoubtsCameraFragment extends CameraFragment {
 
         @Override
         public void saveImage(PictureTransaction xact, Bitmap bitmap) {
-            final CreateDoubtActivity cda = (CreateDoubtActivity) DoubtsCameraFragment.this.getActivity();
+            final CreateQuestionActivity cda = (CreateQuestionActivity) DoubtsCameraFragment.this.getActivity();
             Log.d(TAG, "saveImage");
             ByteArrayOutputStream baos = new ByteArrayOutputStream();
             float h = bitmap.getHeight(), w = bitmap.getWidth();

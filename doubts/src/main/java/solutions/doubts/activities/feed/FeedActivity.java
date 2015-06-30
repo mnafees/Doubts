@@ -44,7 +44,7 @@ import butterknife.OnClick;
 import solutions.doubts.DoubtsApplication;
 import solutions.doubts.R;
 import solutions.doubts.activities.authentication.AuthenticationActivity;
-import solutions.doubts.activities.createdoubt.CreateDoubtActivity;
+import solutions.doubts.activities.createquestion.CreateQuestionActivity;
 import solutions.doubts.activities.profile.ProfileActivity;
 import solutions.doubts.activities.profile.UserCache;
 import solutions.doubts.core.ConnectivityChangeReceiver;
@@ -262,7 +262,7 @@ public class FeedActivity extends AppCompatActivity {
 
     @OnClick(R.id.add_doubt_button)
     public void onClickAddDoubtButton() {
-        Intent intent = new Intent(this, CreateDoubtActivity.class);
+        Intent intent = new Intent(this, CreateQuestionActivity.class);
         startActivity(intent);
     }
 
