@@ -34,6 +34,9 @@ import android.widget.TextView;
 import com.commonsware.cwac.camera.CameraFragment;
 import com.commonsware.cwac.camera.CameraHost;
 import com.google.gson.JsonObject;
+import com.koushikdutta.async.future.FutureCallback;
+import com.koushikdutta.ion.ProgressCallback;
+import com.koushikdutta.ion.Response;
 import com.squareup.otto.Subscribe;
 
 import org.apmem.tools.layouts.FlowLayout;
@@ -46,7 +49,6 @@ import butterknife.InjectView;
 import butterknife.OnClick;
 import solutions.doubts.DoubtsApplication;
 import solutions.doubts.R;
-import solutions.doubts.api.ServerResponseCallback;
 import solutions.doubts.api.models.Question;
 import solutions.doubts.api.models.S3Image;
 import solutions.doubts.api.query.Query;
@@ -185,9 +187,15 @@ public class CreateDoubtActivity extends AppCompatActivity {
                 .create();
         Query.with(this)
                 .remote(Question.class)
-                .setServerResponseCallback(new ServerResponseCallback<JsonObject>() {
+                .resource("questions")
+                .create(q, new ProgressCallback() {
                     @Override
-                    public void onCompleted(Exception e, JsonObject result) {
+                    public void onProgress(long downloaded, long total) {
+
+                    }
+                }, new FutureCallback<Response<JsonObject>>() {
+                    @Override
+                    public void onCompleted(Exception e, Response<JsonObject> result) {
                         if (e != null) {
                             mCreateDoubtButton.setEnabled(true);
                             Snackbar.make(mDescription, getString(R.string.network_error_message), Snackbar.LENGTH_SHORT)
@@ -197,8 +205,7 @@ public class CreateDoubtActivity extends AppCompatActivity {
                             finish();
                         }
                     }
-                })
-                .create(q, null);
+                });
     }
 
     @OnClick(R.id.create_doubt_button)

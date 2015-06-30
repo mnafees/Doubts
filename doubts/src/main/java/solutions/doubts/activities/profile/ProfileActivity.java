@@ -26,6 +26,8 @@ import android.view.ViewTreeObserver;
 import android.widget.EditText;
 
 import com.facebook.drawee.view.SimpleDraweeView;
+import com.koushikdutta.async.future.FutureCallback;
+import com.koushikdutta.ion.Response;
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;
@@ -34,7 +36,6 @@ import solutions.doubts.R;
 import solutions.doubts.activities.profile.fragments.AboutFragment;
 import solutions.doubts.activities.profile.fragments.AnswersFragment;
 import solutions.doubts.activities.profile.fragments.QuestionsFragment;
-import solutions.doubts.api.ServerResponseCallback;
 import solutions.doubts.api.models.User;
 import solutions.doubts.api.query.Query;
 import solutions.doubts.core.util.ColorHolder;
@@ -157,13 +158,13 @@ public class ProfileActivity extends AppCompatActivity implements PaletteHelperU
         super.onResume();
         Query.with(this)
                 .remote(User.class)
-                .setServerResponseCallback(new ServerResponseCallback<User>() {
+                .resource("users", mUser.getId(), mUser.getUsername())
+                .get(new FutureCallback<Response<User>>() {
                     @Override
-                    public void onCompleted(Exception e, User result) {
-                        updateUi(result);
+                    public void onCompleted(Exception e, Response<User> result) {
+                        updateUi(result.getResult());
                     }
-                })
-                .get(mUser.getId(), mUser.getUsername());
+                });
     }
 
     @Override

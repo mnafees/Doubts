@@ -8,133 +8,164 @@ package solutions.doubts.api.query;
 import android.content.Context;
 
 import com.google.gson.JsonObject;
-import com.google.gson.reflect.TypeToken;
+import com.koushikdutta.async.future.FutureCallback;
 import com.koushikdutta.ion.Ion;
 import com.koushikdutta.ion.ProgressCallback;
+import com.koushikdutta.ion.Response;
 
 import java.util.List;
 import java.util.Map;
 
-import io.realm.RealmObject;
 import solutions.doubts.DoubtsApplication;
-import solutions.doubts.api.ServerReponse;
-import solutions.doubts.api.ServerResponseCallback;
-import solutions.doubts.api.models.Answer;
-import solutions.doubts.api.models.Question;
-import solutions.doubts.api.models.User;
 import solutions.doubts.internal.ApiConstants;
 
-public class RemoteQuery<T extends RealmObject> {
+public class RemoteQuery<T> {
 
     private Class<T> mClazz;
     private Context mContext;
-    private ServerReponse mServerResponse;
 
     RemoteQuery(Class<T> clazz, Context context) {
         mClazz = clazz;
         mContext = context;
-        mServerResponse = new ServerReponse();
-        mServerResponse.setClazz(clazz);
     }
 
-    @SuppressWarnings("unchecked")
-    void setServerResponseCallback(ServerResponseCallback callback) {
-        mServerResponse.setServerResponseCallback(callback);
-    }
-
-    public void create(T object, ProgressCallback progressCallback) {
-        mServerResponse.setClazz(JsonObject.class);
+    private void create(String url, T object, ProgressCallback progressCallback,
+                        FutureCallback<Response<JsonObject>> futureCallback) {
         Ion.with(mContext)
-                .load("POST", mapClassToUrl(mClazz))
+                .load("POST", url)
                 .setHeader(ApiConstants.HEADER_AUTHORIZATION, DoubtsApplication.getInstance().getSession()
                         .getAuthToken().toString())
                 .progress(progressCallback)
-                .setJsonPojoBody(object, new TypeToken<T>(){})
+                .setJsonPojoBody(object)
                 .asJsonObject()
                 .withResponse()
-                .setCallback(mServerResponse);
+                .setCallback(futureCallback);
     }
 
-    public void getAll(Query.Order order, String sort, int offset) {
+    private void getAll(String url, Query.Order order, String sort, int offset,
+                        FutureCallback<Response<T>> futureCallback) {
         if (order == null) order = Query.Order.desc;
         if (sort == null) sort = "id";
         Ion.with(mContext)
-                .load("GET", mapClassToUrl(mClazz))
+                .load("GET", url)
                 .setHeader(ApiConstants.HEADER_AUTHORIZATION, DoubtsApplication.getInstance().getSession()
                         .getAuthToken().toString())
                 .addQuery("order", order.name())
                 .addQuery("sort", sort)
                 .addQuery("page.offset", Integer.toString(offset))
-                .asJsonObject()
+                .as(mClazz)
                 .withResponse()
-                .setCallback(mServerResponse);
+                .setCallback(futureCallback);
     }
 
-    public void filterBy(String parameter, String value) {
-        mServerResponse.setClazz(JsonObject.class);
+    private void filterBy(String url, String parameter, String value,
+                          FutureCallback<Response<T>> futureCallback) {
         Ion.with(mContext)
-                .load("GET", mapClassToUrl(mClazz))
+                .load("GET", url)
                 .setHeader(ApiConstants.HEADER_AUTHORIZATION, DoubtsApplication.getInstance().getSession()
                         .getAuthToken().toString())
                 .addQuery(parameter, value)
-                .asJsonObject()
+                .as(mClazz)
                 .withResponse()
-                .setCallback(mServerResponse);
+                .setCallback(futureCallback);
     }
 
-    public void filterBy(Map<String, List<String>> queryMap) {
+    private void filterBy(String url, Map<String, List<String>> queryMap,
+                       FutureCallback<Response<T>> futureCallback) {
         Ion.with(mContext)
-                .load("GET", mapClassToUrl(mClazz))
+                .load("GET", url)
                 .setHeader(ApiConstants.HEADER_AUTHORIZATION, DoubtsApplication.getInstance().getSession()
                         .getAuthToken().toString())
                 .addQueries(queryMap)
-                .asJsonObject()
+                .as(mClazz)
                 .withResponse()
-                .setCallback(mServerResponse);
+                .setCallback(futureCallback);
     }
 
-    public void get(int id, String slug) {
+    private void get(String url, FutureCallback<Response<T>> futureCallback) {
         Ion.with(mContext)
-                .load("GET", mapClassToUrl(mClazz) + "/" + Integer.toString(id) + "/" + slug)
+                .load("GET", url)
+                .setHeader(ApiConstants.HEADER_AUTHORIZATION, DoubtsApplication.getInstance().getSession()
+                        .getAuthToken().toString())
+                .as(mClazz)
+                .withResponse()
+                .setCallback(futureCallback);
+    }
+
+    private void update(String url, T object, FutureCallback<Response<JsonObject>> futureCallback) {
+        Ion.with(mContext)
+                .load("PUT", url)
+                .setHeader(ApiConstants.HEADER_AUTHORIZATION, DoubtsApplication.getInstance().getSession()
+                        .getAuthToken().toString())
+                .setJsonPojoBody(object)
+                .asJsonObject()
+                .withResponse()
+                .setCallback(futureCallback);
+    }
+
+    private void delete(String url, FutureCallback<Response<JsonObject>> futureCallback) {
+        Ion.with(mContext)
+                .load("DELETE", url)
                 .setHeader(ApiConstants.HEADER_AUTHORIZATION, DoubtsApplication.getInstance().getSession()
                         .getAuthToken().toString())
                 .asJsonObject()
                 .withResponse()
-                .setCallback(mServerResponse);
+                .setCallback(futureCallback);
     }
 
-    public void update(int id, String slug, T object) {
-        mServerResponse.setClazz(JsonObject.class);
-        Ion.with(mContext)
-                .load("PUT", mapClassToUrl(mClazz) + "/" + Integer.toString(id) + "/" + slug)
-                .setHeader(ApiConstants.HEADER_AUTHORIZATION, DoubtsApplication.getInstance().getSession()
-                        .getAuthToken().toString())
-                .setJsonPojoBody(object, new TypeToken<T>(){})
-                .asJsonObject()
-                .withResponse()
-                .setCallback(mServerResponse);
-    }
+    public static class Builder<T> {
 
-    public void delete(int id, String slug) {
-        mServerResponse.setClazz(JsonObject.class);
-        Ion.with(mContext)
-                .load("DELETE", mapClassToUrl(mClazz) + "/" + Integer.toString(id) + "/" + slug)
-                .setHeader(ApiConstants.HEADER_AUTHORIZATION, DoubtsApplication.getInstance().getSession()
-                        .getAuthToken().toString())
-                .asJsonObject()
-                .withResponse()
-                .setCallback(mServerResponse);
-    }
+        private RemoteQuery<T> mRemoteQuery;
+        private String mUrl;
 
-    private String mapClassToUrl(Class clazz) {
-        if (clazz.equals(User.class)) {
-            return ApiConstants.USER_RESOURCE;
-        } else if (clazz.equals(QuestionsResource.class) || clazz.equals(Question.class)) {
-            return ApiConstants.QUESTION_RESOURCE;
-        } else if (clazz.equals(Answer.class)) {
-            return ApiConstants.ANSWER_RESOURCE;
+        public Builder(Class<T> clazz, Context context) {
+            mRemoteQuery = new RemoteQuery<>(clazz, context);
+            mUrl = ApiConstants.API_ENDPOINT + "/api/v1";
         }
-        return null;
+
+        public Builder<T> resource(Object... path) {
+            for (Object o : path) {
+                if (o.getClass().equals(String.class)) {
+                    mUrl += "/" + (String)o;
+                } else if (o.getClass().equals(Integer.class)) {
+                    mUrl += "/" + Integer.toString((int)o);
+                }
+            }
+            return this;
+        }
+
+        public void create(T object, ProgressCallback progressCallback,
+                           FutureCallback<Response<JsonObject>> futureCallback) {
+            mRemoteQuery.create(mUrl, object, progressCallback, futureCallback);
+        }
+
+        public void getAll(Query.Order order, String sort, int offset,
+                        FutureCallback<Response<T>> futureCallback) {
+            mRemoteQuery.getAll(mUrl, order, sort, offset, futureCallback);
+        }
+
+        public void filterBy(String parameter, String value,
+                          FutureCallback<Response<T>> futureCallback) {
+            mRemoteQuery.filterBy(mUrl, parameter, value, futureCallback);
+        }
+
+        public void filterBy(Map<String, List<String>> queryMap,
+                             FutureCallback<Response<T>> futureCallback) {
+            mRemoteQuery.filterBy(mUrl, queryMap, futureCallback);
+        }
+
+        public void get(FutureCallback<Response<T>> futureCallback) {
+            mRemoteQuery.get(mUrl, futureCallback);
+        }
+
+        public void update(T object, FutureCallback<Response<JsonObject>> futureCallback) {
+            mRemoteQuery.update(mUrl, object, futureCallback);
+        }
+
+        public void delete(FutureCallback<Response<JsonObject>> futureCallback) {
+            mRemoteQuery.delete(mUrl, futureCallback);
+        }
+
     }
 
 }

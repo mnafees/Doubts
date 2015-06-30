@@ -7,7 +7,7 @@ package solutions.doubts.api.query;
 
 import android.content.Context;
 
-import solutions.doubts.api.ServerResponseCallback;
+import io.realm.RealmObject;
 
 public class Query {
 
@@ -22,34 +22,31 @@ public class Query {
         mContext = context;
     }
 
-    @SuppressWarnings("unchecked")
-    public RemoteQueryCallbackBuilder remote(Class<?> clazz) {
-        return new RemoteQueryCallbackBuilder(new RemoteQuery(clazz, mContext));
+    public <T>RemoteQuery.Builder<T> remote(Class<T> clazz) {
+        return new RemoteQuery.Builder<>(
+                clazz, mContext
+        );
     }
 
-    @SuppressWarnings("unchecked")
-    public LocalQuery local(Class<?> clazz) {
-        return new LocalQuery(clazz, mContext);
+    public <T extends RealmObject>LocalQuery local(Class<T> clazz) {
+        return new LocalQuery<>(clazz, mContext);
+    }
+
+    public void cancelAll() {
+        QueryStore.getInstance().cancelQueryAndRemove(mContext);
+    }
+
+    Context getContext() {
+        return mContext;
     }
 
     public static Query with(Context context) {
-        return new Query(context);
-    }
-
-    public static class RemoteQueryCallbackBuilder {
-
-        private RemoteQuery mRemoteQuery;
-
-        private RemoteQueryCallbackBuilder(RemoteQuery remoteQuery) {
-            mRemoteQuery = remoteQuery;
+        Query query = QueryStore.getInstance().get(context);
+        if (query == null) {
+            query = new Query(context);
+            QueryStore.getInstance().add(query);
         }
-
-        @SuppressWarnings("unchecked")
-        public RemoteQuery setServerResponseCallback(ServerResponseCallback<?> callback) {
-            mRemoteQuery.setServerResponseCallback(callback);
-            return mRemoteQuery;
-        }
-
+        return query;
     }
 
 }

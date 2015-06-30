@@ -7,14 +7,13 @@ package solutions.doubts.activities.questionview;
 
 import android.content.Context;
 
-import com.google.gson.JsonObject;
-import com.google.gson.reflect.TypeToken;
+import com.koushikdutta.async.future.FutureCallback;
+import com.koushikdutta.ion.Response;
 
 import java.util.LinkedList;
 import java.util.List;
 
-import solutions.doubts.DoubtsApplication;
-import solutions.doubts.api.ServerResponseCallback;
+import solutions.doubts.api.AnswersResource;
 import solutions.doubts.api.models.Answer;
 import solutions.doubts.api.query.Query;
 
@@ -33,26 +32,21 @@ public class Answers {
     public void fetchNext(final UpdateCallback callback) {
         final int previousLength = mAnswers.size();
         Query.with(mContext)
-                .remote(Answer.class)
-                .setServerResponseCallback(new ServerResponseCallback<JsonObject>() {
-                    @Override
-                    public void onCompleted(Exception e, JsonObject result) {
-                        if (e == null) {
-                            if (result.has("answers")) {
-                                List<Answer> answers = DoubtsApplication.getInstance().getGson().fromJson(result.get("answers"),
-                                        new TypeToken<List<Answer>>() {
-                                        }.getType());
+                .remote(AnswersResource.class)
+                .resource("answers")
+                .filterBy("question.id", Integer.toString(mQuestionId),
+                        new FutureCallback<Response<AnswersResource>>() {
+                            @Override
+                            public void onCompleted(Exception e, Response<AnswersResource> result) {
+                                List<Answer> answers = result.getResult().getAnswers();
                                 for (Answer a : answers) {
                                     if (mAnswers.contains(a)) continue;
                                     mAnswers.add(a);
                                 }
                                 if (previousLength != mAnswers.size())
-                                    callback.onUpdate(result.get("count").getAsInt());
+                                    callback.onUpdate(result.getResult().getCount());
                             }
-                        }
-                    }
-                })
-                .filterBy("question.id", Integer.toString(mQuestionId));
+                        });
     }
 
     public Answer getItem(int position) {

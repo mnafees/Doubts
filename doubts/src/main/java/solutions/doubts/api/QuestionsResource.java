@@ -3,7 +3,7 @@
  * Copyright (c) 2015 Mohammed Nafees (original author) <nafees.technocool@gmail.com>.
  */
 
-package solutions.doubts.api.query;
+package solutions.doubts.api;
 
 import java.util.List;
 

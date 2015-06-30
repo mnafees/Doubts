@@ -9,9 +9,11 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.util.Log;
 
+import com.koushikdutta.async.future.FutureCallback;
+import com.koushikdutta.ion.Response;
+
 import io.realm.Realm;
 import solutions.doubts.DoubtsApplication;
-import solutions.doubts.api.ServerResponseCallback;
 import solutions.doubts.api.models.User;
 import solutions.doubts.api.query.Query;
 import solutions.doubts.core.events.SessionUpdatedEvent;
@@ -90,23 +92,26 @@ public class Session {
     private void fetchOrUpdateUser() {
         Query.with(mContext)
                 .remote(User.class)
-                .setServerResponseCallback(new ServerResponseCallback<User>() {
+                .resource("users", mAuthToken.getUserId(), mAuthToken.getUsername())
+                .get(new FutureCallback<Response<User>>() {
                     @Override
-                    public void onCompleted(Exception e, final User result) {
+                    public void onCompleted(Exception e, final Response<User> result) {
                         if (e == null) {
-                            Realm realm = Realm.getInstance(mContext);
-                            realm.executeTransaction(new Realm.Transaction() {
-                                @Override
-                                public void execute(Realm realm) {
-                                    realm.copyToRealmOrUpdate(result);
-                                }
-                            });
-                            DoubtsApplication.getInstance().getBus().post(new
-                                    SessionUpdatedEvent(result));
+                            if (result.getHeaders().code() == 200) {
+                                Log.d(TAG, "Retrieved session user from server");
+                                Realm realm = Realm.getInstance(mContext);
+                                realm.executeTransaction(new Realm.Transaction() {
+                                    @Override
+                                    public void execute(Realm realm) {
+                                        realm.copyToRealmOrUpdate(result.getResult());
+                                    }
+                                });
+                                DoubtsApplication.getInstance().getBus().post(new
+                                        SessionUpdatedEvent(result.getResult()));
+                            }
                         }
                     }
-                })
-                .get(mAuthToken.getUserId(), mAuthToken.getUsername());
+                });
     }
 
 }

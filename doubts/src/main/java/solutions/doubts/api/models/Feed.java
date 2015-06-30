@@ -6,27 +6,26 @@
 package solutions.doubts.api.models;
 
 import android.content.Context;
-import android.os.Handler;
-import android.widget.Toast;
+
+import com.koushikdutta.async.future.FutureCallback;
+import com.koushikdutta.ion.Response;
 
 import java.util.LinkedList;
 
 import solutions.doubts.DoubtsApplication;
-import solutions.doubts.api.ServerResponseCallback;
+import solutions.doubts.api.QuestionsResource;
 import solutions.doubts.api.query.Query;
-import solutions.doubts.api.query.QuestionsResource;
 import solutions.doubts.core.events.FeedUpdatedEvent;
 
 public class Feed {
 
     private static final String TAG = "Feed";
 
-    private final Handler mHandler = new Handler(DoubtsApplication.getInstance().getMainLooper());
     private LinkedList<Question> mFeedItems;
     private Context mContext;
     private int mOffset;
 
-    public Feed(final Context context) {
+    public Feed(Context context) {
         mContext = context;
         mFeedItems = new LinkedList<>();
     }
@@ -37,25 +36,22 @@ public class Feed {
         } else {
             Query.with(mContext)
                     .remote(QuestionsResource.class)
-                    .setServerResponseCallback(new ServerResponseCallback<QuestionsResource>() {
-                        @Override
-                        public void onCompleted(Exception e, QuestionsResource result) {
-                            if (e != null) {
-                                Toast.makeText(mContext, e.getMessage(), Toast.LENGTH_LONG)
-                                        .show();
-                            } else {
-                                mFeedItems.addAll(result.getQuestions());
-                                mOffset += 10;
-                                mHandler.post(new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        DoubtsApplication.getInstance().getBus().post(new FeedUpdatedEvent());
+                    .resource("questions")
+                    .getAll(null, null, mOffset,
+                            new FutureCallback<Response<QuestionsResource>>() {
+                                @Override
+                                public void onCompleted(Exception e, Response<QuestionsResource> result) {
+                                    if (e == null) {
+                                        if (result.getHeaders().code() == 200) {
+                                            mFeedItems.addAll(result.getResult().getQuestions());
+                                            mOffset += 10;
+                                            DoubtsApplication.getInstance().getBus().post(
+                                                    new FeedUpdatedEvent()
+                                            );
+                                        }
                                     }
-                                });
-                            }
-                        }
-                    })
-                    .getAll(null, null, mOffset);
+                                }
+                            });
         }
     }
 
