@@ -28,7 +28,7 @@ import butterknife.ButterKnife;
 import butterknife.InjectView;
 import solutions.doubts.R;
 import solutions.doubts.activities.profile.ProfileActivity;
-import solutions.doubts.activities.profile.UserCache;
+import solutions.doubts.activities.newprofile.UserCache;
 import solutions.doubts.api.models.Answer;
 import solutions.doubts.api.models.S3Image;
 import solutions.doubts.core.util.StringUtil;

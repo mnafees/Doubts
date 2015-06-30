@@ -18,8 +18,6 @@ import com.google.gson.FieldNamingPolicy;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.koushikdutta.ion.Ion;
-import com.squareup.leakcanary.LeakCanary;
-import com.squareup.leakcanary.RefWatcher;
 import com.squareup.otto.Bus;
 
 import io.realm.RealmObject;
@@ -37,22 +35,22 @@ public class DoubtsApplication extends Application {
 
     private SharedPreferences mSharedPreferences;
     private Bus mBus;
-    private RefWatcher mRefWatcher;
+//    private RefWatcher mRefWatcher;
     private Feed mFeed;
     private Gson mGson;
     private Session mSession;
 
     private static DoubtsApplication INSTANCE;
 
-    public static RefWatcher getRefWatcher(Context context) {
-        return INSTANCE.mRefWatcher;
-    }
+//    public static RefWatcher getRefWatcher(Context context) {
+//        return INSTANCE.mRefWatcher;
+//    }
 
     @Override
     public void onCreate() {
         super.onCreate();
 
-        mRefWatcher = LeakCanary.install(this);
+//        mRefWatcher = LeakCanary.install(this);
         INSTANCE = this;
         mBus = new Bus();
         mBus.register(this);

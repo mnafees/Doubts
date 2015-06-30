@@ -33,6 +33,7 @@ import butterknife.ButterKnife;
 import butterknife.InjectView;
 import solutions.doubts.DoubtsApplication;
 import solutions.doubts.R;
+import solutions.doubts.activities.newprofile.UserCache;
 import solutions.doubts.activities.profile.fragments.AboutFragment;
 import solutions.doubts.activities.profile.fragments.AnswersFragment;
 import solutions.doubts.activities.profile.fragments.QuestionsFragment;

@@ -7,7 +7,7 @@
 <resources>
 
     <color name="primary">#4527A0</color>
-    <color name="primary_light">#AB47BC</color>
+    <color name="primary_light">#D1C4E9</color>
     <color name="primary_dark">#311B92</color>
     <color name="accent">#4CAF50</color>
     <color name="pink">#EC407A</color>

@@ -66,6 +66,30 @@
     <style name="AppTheme.ProfileTheme" parent="AppTheme">
     </style>
 
+    <style name="Profile.Toolbar" parent="AppTheme.ProfileTheme">
+        <item name="android:background">@color/primary</item>
+        <item name="android:textColor">#fff</item>
+        <item name="colorAccent">@color/primary_light</item>
+    </style>
+
+    <style name="Profile.Icon" parent="AppTheme.ProfileTheme">
+        <item name="android:layout_marginTop">5dp</item>
+    </style>
+
+    <style name="Profile.IconValue" parent="@android:style/TextAppearance.Medium">
+        <item name="android:textColor">@color/primary</item>
+        <item name="android:textSize">20sp</item>
+        <item name="android:layout_marginTop">5dp</item>
+        <item name="android:layout_marginBottom">5dp</item>
+    </style>
+
+    <style name="Profile.IconLabel" parent="@android:style/TextAppearance.Small">
+        <item name="android:textColor">@color/grey</item>
+        <item name="android:textAllCaps">true</item>
+        <item name="android:textSize">14sp</item>
+        <item name="android:layout_marginBottom">5dp</item>
+    </style>
+
     <style name="AppTheme.ProfileTheme.ActionBar">
         <item name="android:background">@android:color/transparent</item>
     </style>

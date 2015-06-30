@@ -3,7 +3,7 @@
  * Copyright (c) 2015 Mohammed Nafees (original author) <nafees.technocool@gmail.com>.
  */
 
-package solutions.doubts.activities.profile;
+package solutions.doubts.activities.newprofile;
 
 import solutions.doubts.api.models.User;
 

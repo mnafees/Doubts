@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="profile_about">About</string>
+    <string name="profile_questions">Questions</string>
+    <string name="profile_answers">Answers</string>
+    <string name="profile_following">Following</string>
+    <string name="profile_credits">Credits</string>
+</resources>
