@@ -44,11 +44,14 @@ import butterknife.InjectView;
 import butterknife.OnClick;
 import solutions.doubts.DoubtsApplication;
 import solutions.doubts.R;
+import solutions.doubts.activities.createanswer.CreateAnswerActivity;
 import solutions.doubts.activities.fullscreenimageview.FullscreenImageViewActivity;
 import solutions.doubts.api.models.Question;
 import solutions.doubts.core.util.StringUtil;
 
 public class QuestionViewActivity extends AppCompatActivity {
+
+    public static final int CREATE_ANSWER_REQUEST_CODE = 200;
 
     // UI elements
     private SimpleDraweeView mAuthorImage;
@@ -192,6 +195,12 @@ public class QuestionViewActivity extends AppCompatActivity {
         startActivity(intent);
     }
 
+    @OnClick(R.id.add_answer_button)
+    public void onClickAddAnswerButton() {
+        Intent intent = new Intent(this, CreateAnswerActivity.class);
+        startActivityForResult(intent, CREATE_ANSWER_REQUEST_CODE);
+    }
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         final MenuInflater inflater = getMenuInflater();
@@ -231,4 +240,15 @@ public class QuestionViewActivity extends AppCompatActivity {
         }
     }
 
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (resultCode == RESULT_OK) {
+            if (requestCode == CREATE_ANSWER_REQUEST_CODE) {
+                Toast.makeText(this, "Your answer has been posted.", Toast.LENGTH_SHORT)
+                        .show();
+                fetchAnswers();
+            }
+        }
+        super.onActivityResult(requestCode, resultCode, data);
+    }
 }

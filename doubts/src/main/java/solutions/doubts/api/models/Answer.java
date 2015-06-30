@@ -5,6 +5,8 @@
 
 package solutions.doubts.api.models;
 
+import java.util.List;
+
 import io.realm.RealmList;
 import io.realm.RealmObject;
 import io.realm.annotations.PrimaryKey;
@@ -20,7 +22,7 @@ public class Answer extends RealmObject {
     private String desc;
     private String slug;
     private S3Image image;
-    private Entity question;
+    private Question question;
     private RealmList<Entity> tags;
 
     public int getId() {
@@ -87,11 +89,11 @@ public class Answer extends RealmObject {
         this.image = image;
     }
 
-    public Entity getQuestion() {
+    public Question getQuestion() {
         return question;
     }
 
-    public void setQuestion(Entity question) {
+    public void setQuestion(Question question) {
         this.question = question;
     }
 
@@ -107,7 +109,7 @@ public class Answer extends RealmObject {
         return new Builder();
     }
 
-    private static class Builder {
+    public static class Builder {
 
         private Answer mAnswer;
 
@@ -145,17 +147,26 @@ public class Answer extends RealmObject {
             return this;
         }
 
-        public Builder tags(RealmList<Entity> tags) {
-            mAnswer.tags = tags;
+        public Builder tags(List<String> tags) {
+            final RealmList<Entity> list = new RealmList<>();
+            for (final String tag: tags) {
+                list.add(Entity.newEntity().name(tag).create());
+            }
+            mAnswer.tags = list;
             return this;
         }
 
-        public Builder question(Entity question) {
+        public Builder question(Question question) {
             mAnswer.question = question;
             return this;
         }
 
-        public Answer build() {
+        public Builder image(S3Image image) {
+            mAnswer.image = image;
+            return this;
+        }
+
+        public Answer create() {
             return mAnswer;
         }
 

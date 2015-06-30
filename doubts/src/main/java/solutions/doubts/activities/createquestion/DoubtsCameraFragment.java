@@ -12,6 +12,7 @@ import com.koushikdutta.ion.ProgressCallback;
 
 import java.io.ByteArrayOutputStream;
 
+import solutions.doubts.activities.createanswer.CreateAnswerActivity;
 import solutions.doubts.api.S3Upload;
 import solutions.doubts.api.models.S3Image;
 
@@ -30,7 +31,7 @@ public class DoubtsCameraFragment extends CameraFragment {
 
         @Override
         public void saveImage(PictureTransaction xact, Bitmap bitmap) {
-            final CreateQuestionActivity cda = (CreateQuestionActivity) DoubtsCameraFragment.this.getActivity();
+            final Context context = DoubtsCameraFragment.this.getActivity();
             Log.d(TAG, "saveImage");
             ByteArrayOutputStream baos = new ByteArrayOutputStream();
             float h = bitmap.getHeight(), w = bitmap.getWidth();
@@ -45,16 +46,11 @@ public class DoubtsCameraFragment extends CameraFragment {
             b.compress(Bitmap.CompressFormat.JPEG, COMPRESS_QUALITY, baos);
             bitmap.recycle();
             b.recycle();
-            S3Upload s3u = new S3Upload(cda, baos.toByteArray(), "image/jpeg");
+            S3Upload s3u = new S3Upload(context, baos.toByteArray(), "image/jpeg");
             s3u.upload(new ProgressCallback() {
                 @Override
                 public void onProgress(final long downloaded, final long total) {
-                    getActivity().runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            //cda.mCreateDoubtButton.setProgress(downloaded / (float) total);
-                        }
-                    });
+                    // TODO: show some progress while uploading
                 }
             }, new Callback() {
                 @Override
@@ -62,7 +58,13 @@ public class DoubtsCameraFragment extends CameraFragment {
                     if (ex != null) {
                         ex.printStackTrace();
                     } else {
-                        cda.createDoubt(image);
+                        // FIX: Temporary
+                        if (DoubtsCameraFragment.this.getActivity().getClass()
+                                .equals(CreateQuestionActivity.class)) {
+                            ((CreateQuestionActivity)DoubtsCameraFragment.this.getActivity()).createDoubt(image);
+                        } else {
+                            ((CreateAnswerActivity)DoubtsCameraFragment.this.getActivity()).createAnswer(image);
+                        }
                     }
                 }
             });

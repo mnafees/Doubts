@@ -75,19 +75,6 @@ public class DoubtsApplication extends Application {
                         return false;
                     }
                 })
-                .addSerializationExclusionStrategy(new ExclusionStrategy() {
-                    @Override
-                    public boolean shouldSkipField(FieldAttributes f) {
-                        return (f.getName().equals("id") ||
-                                f.getName().equals("slug") ||
-                                f.getName().equals("question_count"));
-                    }
-
-                    @Override
-                    public boolean shouldSkipClass(Class<?> clazz) {
-                        return false;
-                    }
-                })
                 .create();
         Ion.getDefault(this).configure().setGson(mGson);
         if(BuildConfig.DEBUG) {

@@ -38,13 +38,17 @@ public class Answers {
                         new FutureCallback<Response<AnswersResource>>() {
                             @Override
                             public void onCompleted(Exception e, Response<AnswersResource> result) {
-                                List<Answer> answers = result.getResult().getAnswers();
-                                for (Answer a : answers) {
-                                    if (mAnswers.contains(a)) continue;
-                                    mAnswers.add(a);
+                                if (e == null) {
+                                    if (result.getHeaders().code() == 200) {
+                                        List<Answer> answers = result.getResult().getAnswers();
+                                        mAnswers.clear();
+                                        for (Answer a : answers) {
+                                            mAnswers.add(a);
+                                        }
+                                        if (previousLength != mAnswers.size())
+                                            callback.onUpdate(result.getResult().getCount());
+                                    }
                                 }
-                                if (previousLength != mAnswers.size())
-                                    callback.onUpdate(result.getResult().getCount());
                             }
                         });
     }
