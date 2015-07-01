@@ -27,6 +27,7 @@ import org.joda.time.format.ISODateTimeFormat;
 import butterknife.ButterKnife;
 import butterknife.InjectView;
 import solutions.doubts.R;
+import solutions.doubts.activities.fullscreenimageview.FullscreenImageViewActivity;
 import solutions.doubts.activities.profile.ProfileActivity;
 import solutions.doubts.activities.newprofile.UserCache;
 import solutions.doubts.api.models.Answer;
@@ -80,19 +81,26 @@ public class AnswersAdapter extends RecyclerView.Adapter<AnswersAdapter.ViewHold
 
     @Override
     public AnswersAdapter.ViewHolder onCreateViewHolder(final ViewGroup parent, int viewType) {
-        final View view = LayoutInflater.from(parent.getContext())
+        final View v = LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.layout_answer, parent, false);
-        final View authorContainer = view.findViewById(R.id.author_container);
-        authorContainer.setOnClickListener(new View.OnClickListener() {
+        v.findViewById(R.id.author_container).setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View v) {
-                UserCache.getInstance().setLastSelectedUser(((Answer)view.getTag()).getAuthor());
+            public void onClick(View view) {
+                UserCache.getInstance().setLastSelectedUser(((Answer)v.getTag()).getAuthor());
                 final Intent intent = new Intent(AnswersAdapter.this.mContext,
                         ProfileActivity.class);
                 AnswersAdapter.this.mContext.startActivity(intent);
             }
         });
-        return new ViewHolder(view);
+        v.findViewById(R.id.answer_image).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(mContext, FullscreenImageViewActivity.class);
+                intent.putExtra("image_url", StringUtil.getAnswerImageUrl((Answer)v.getTag()));
+                mContext.startActivity(intent);
+            }
+        });
+        return new ViewHolder(v);
     }
 
     @Override

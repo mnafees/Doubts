@@ -191,7 +191,7 @@ public class QuestionViewActivity extends AppCompatActivity {
     @OnClick(R.id.doubt_image)
     public void onClickDoubtImage() {
         Intent intent = new Intent(this, FullscreenImageViewActivity.class);
-        intent.putExtra("doubt_image_url", StringUtil.getDoubtImageUrl(mQuestion));
+        intent.putExtra("image_url", StringUtil.getDoubtImageUrl(mQuestion));
         startActivity(intent);
     }
 

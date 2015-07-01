@@ -31,7 +31,7 @@ public class FullscreenImageViewActivity extends AppCompatActivity {
         Fresco.initialize(this);
         setContentView(R.layout.layout_image_fullscreen);
 
-        String url = getIntent().getStringExtra("doubt_image_url");
+        String url = getIntent().getStringExtra("image_url");
         DraweeController controller = Fresco.newDraweeControllerBuilder()
                 .setUri(Uri.parse(url))
                 .setTapToRetryEnabled(true)
