@@ -25,7 +25,6 @@ import java.util.List;
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;
-import solutions.doubts.DoubtsApplication;
 import solutions.doubts.R;
 import solutions.doubts.activities.newprofile.ProfileActivity;
 import solutions.doubts.activities.newprofile.UserCache;
@@ -131,7 +130,7 @@ public class UserListFragment extends Fragment implements UserObserver {
                 .remote(FollowingResource.class)
                 .resource("users", user.getId(), user.getUsername())
                 .resource("following")
-                .getAll(null, null, 0, new FutureCallback<Response<FollowingResource>>() {
+                .getAll(new FutureCallback<Response<FollowingResource>>() {
                     @Override
                     public void onCompleted(Exception e, Response<FollowingResource> result) {
                         if(result == null)

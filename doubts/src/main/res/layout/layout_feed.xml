@@ -24,12 +24,11 @@
             android:layout_height="match_parent"
             app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
-            <android.support.v7.widget.RecyclerView
-                android:id="@+id/feed"
-                android:scrollbars="vertical"
+            <fragment
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:background="#F5F5F5" />
+                android:layout_height="wrap_content"
+                android:id="@+id/question_fragment"
+                android:name="solutions.doubts.activities.feed.QuestionFragment"/>
 
         </android.support.v4.widget.SwipeRefreshLayout>
 

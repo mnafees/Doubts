@@ -8,7 +8,6 @@ package solutions.doubts.api.query;
 import android.content.Context;
 
 import com.google.gson.JsonObject;
-import com.google.gson.reflect.TypeToken;
 import com.koushikdutta.async.future.FutureCallback;
 import com.koushikdutta.ion.Ion;
 import com.koushikdutta.ion.ProgressCallback;
@@ -22,12 +21,25 @@ import solutions.doubts.internal.ApiConstants;
 
 public class RemoteQuery<T> {
 
+    private static final String TAG = "RemoteQuery";
+
     private Class<T> mClazz;
     private Context mContext;
+    private Query.Order mOrder;
+    private String mSort;
+    private int mOffset;
 
     RemoteQuery(Class<T> clazz, Context context) {
         mClazz = clazz;
         mContext = context;
+        mOrder = Query.Order.desc;
+        mSort = "id";
+    }
+
+    private void sortAndOrderWithOffset(Query.Order order, String sort, int offset) {
+        mOrder = order;
+        mSort = sort;
+        mOffset = offset;
     }
 
     private void create(String url, T object, ProgressCallback progressCallback,
@@ -43,17 +55,14 @@ public class RemoteQuery<T> {
                 .setCallback(futureCallback);
     }
 
-    private void getAll(String url, Query.Order order, String sort, int offset,
-                        FutureCallback<Response<T>> futureCallback) {
-        if (order == null) order = Query.Order.desc;
-        if (sort == null) sort = "id";
+    private void getAll(String url, FutureCallback<Response<T>> futureCallback) {
         Ion.with(mContext)
                 .load("GET", url)
                 .setHeader(ApiConstants.HEADER_AUTHORIZATION, DoubtsApplication.getInstance().getSession()
                         .getAuthToken().toString())
-                .addQuery("order", order.name())
-                .addQuery("sort", sort)
-                .addQuery("page.offset", Integer.toString(offset))
+                .addQuery("order", mOrder.name())
+                .addQuery("sort", mSort)
+                .addQuery("page.offset", Integer.toString(mOffset))
                 .as(mClazz)
                 .withResponse()
                 .setCallback(futureCallback);
@@ -66,6 +75,9 @@ public class RemoteQuery<T> {
                 .setHeader(ApiConstants.HEADER_AUTHORIZATION, DoubtsApplication.getInstance().getSession()
                         .getAuthToken().toString())
                 .addQuery(parameter, value)
+                .addQuery("order", mOrder.name())
+                .addQuery("sort", mSort)
+                .addQuery("page.offset", Integer.toString(mOffset))
                 .as(mClazz)
                 .withResponse()
                 .setCallback(futureCallback);
@@ -78,6 +90,9 @@ public class RemoteQuery<T> {
                 .setHeader(ApiConstants.HEADER_AUTHORIZATION, DoubtsApplication.getInstance().getSession()
                         .getAuthToken().toString())
                 .addQueries(queryMap)
+                .addQuery("order", mOrder.name())
+                .addQuery("sort", mSort)
+                .addQuery("page.offset", Integer.toString(mOffset))
                 .as(mClazz)
                 .withResponse()
                 .setCallback(futureCallback);
@@ -135,14 +150,18 @@ public class RemoteQuery<T> {
             return this;
         }
 
+        public Builder<T> sortAndOrderWithOffset(Query.Order order, String sort, int offset) {
+            mRemoteQuery.sortAndOrderWithOffset(order, sort, offset);
+            return this;
+        }
+
         public void create(T object, ProgressCallback progressCallback,
                            FutureCallback<Response<JsonObject>> futureCallback) {
             mRemoteQuery.create(mUrl, object, progressCallback, futureCallback);
         }
 
-        public void getAll(Query.Order order, String sort, int offset,
-                        FutureCallback<Response<T>> futureCallback) {
-            mRemoteQuery.getAll(mUrl, order, sort, offset, futureCallback);
+        public void getAll(FutureCallback<Response<T>> futureCallback) {
+            mRemoteQuery.getAll(mUrl, futureCallback);
         }
 
         public void filterBy(String parameter, String value,

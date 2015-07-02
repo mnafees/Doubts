@@ -8,6 +8,7 @@ import android.support.v4.util.Pair;
 import android.util.SparseArray;
 
 import solutions.doubts.R;
+import solutions.doubts.activities.feed.QuestionFragment;
 import solutions.doubts.api.models.User;
 import solutions.doubts.fragments.UserListFragment;
 
@@ -22,7 +23,7 @@ public class TabAdapter extends FragmentPagerAdapter implements UserObserver {
                         (Fragment) new AboutFragment()));
         mFragments.append(1,
                 Pair.create(context.getString(R.string.profile_questions),
-                        (Fragment)new AboutFragment()));
+                        (Fragment)new QuestionFragment()));
         mFragments.append(2,
                 Pair.create(context.getString(R.string.profile_answers),
                         (Fragment)new AboutFragment()));

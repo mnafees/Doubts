@@ -20,10 +20,7 @@ import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
-import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -36,7 +33,6 @@ import com.facebook.drawee.backends.pipeline.Fresco;
 import com.facebook.drawee.view.SimpleDraweeView;
 import com.koushikdutta.ion.Ion;
 import com.squareup.otto.Subscribe;
-import com.tumblr.bookends.Bookends;
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;
@@ -47,9 +43,9 @@ import solutions.doubts.activities.authentication.AuthenticationActivity;
 import solutions.doubts.activities.createquestion.CreateQuestionActivity;
 import solutions.doubts.activities.newprofile.ProfileActivity;
 import solutions.doubts.activities.newprofile.UserCache;
+import solutions.doubts.api.models.Feed;
 import solutions.doubts.core.ConnectivityChangeReceiver;
 import solutions.doubts.core.events.ConnectivityChangedEvent;
-import solutions.doubts.core.events.FeedUpdatedEvent;
 import solutions.doubts.core.events.LogoutEvent;
 import solutions.doubts.core.events.SessionUpdatedEvent;
 import solutions.doubts.core.util.StringUtil;
@@ -66,8 +62,7 @@ public class FeedActivity extends AppCompatActivity {
     SwipeRefreshLayout mSwipeRefreshLayout;
     @InjectView(R.id.drawer_layout)
     DrawerLayout mDrawerLayout;
-    @InjectView(R.id.feed)
-    RecyclerView mRecyclerView;
+    QuestionFragment mQuestionFragment;
     SimpleDraweeView mDrawerHeaderProfileImage;
     TextView mDrawerHeaderName;
 
@@ -76,10 +71,6 @@ public class FeedActivity extends AppCompatActivity {
     private final IntentFilter mIntentFilter = new IntentFilter();
     private boolean mSessionSet;
     private boolean mIsSearchViewShown;
-    private int mPreviousTotal;
-    private boolean mLoading = true;
-    private int mVisibleThreshold = 5;
-    private int mFirstVisibleItem, mVisibleItemCount, mTotalItemCount;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -124,7 +115,21 @@ public class FeedActivity extends AppCompatActivity {
         setContentView(R.layout.layout_feed);
         ButterKnife.inject(this);
 
-        Toolbar toolbar = (Toolbar)findViewById(R.id.toolbar);
+        initUi();
+
+        mIntentFilter.addAction(ConnectivityManager.CONNECTIVITY_ACTION);
+
+        if (savedInstanceState != null) {
+            if (savedInstanceState.getBoolean("isSearchViewShown")) {
+                enterSearchUi();
+            }
+        }
+
+        mQuestionFragment.update(true);
+    }
+
+    private void initUi() {
+        Toolbar toolbar = ButterKnife.findById(this, R.id.toolbar);
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             toolbar.setTransitionName("toolbarTransition");
         }
@@ -132,13 +137,13 @@ public class FeedActivity extends AppCompatActivity {
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setHomeAsUpIndicator(R.drawable.ic_menu_white_24dp);
         View titleView = View.inflate(this, R.layout.layout_title_action_bar, null);
-        TextView title = (TextView)titleView.findViewById(R.id.brand_text);
+        TextView title = ButterKnife.findById(titleView, R.id.brand_text);
         title.setTypeface(Typeface.createFromAsset(getAssets(), "fonts/Pacifico.ttf"));
         getSupportActionBar().setTitle("");
         getSupportActionBar().setDisplayShowCustomEnabled(true);
         getSupportActionBar().setCustomView(titleView);
 
-        NavigationView navigationView = (NavigationView)findViewById(R.id.navigation_view);
+        NavigationView navigationView = ButterKnife.findById(this, R.id.navigation_view);
         navigationView.setNavigationItemSelectedListener(
                 new NavigationView.OnNavigationItemSelectedListener() {
                     @Override
@@ -169,8 +174,8 @@ public class FeedActivity extends AppCompatActivity {
                     }
                 });
         View drawerHeader = navigationView.inflateHeaderView(R.layout.layout_feed_drawer_profile_top);
-        mDrawerHeaderProfileImage = (SimpleDraweeView)drawerHeader.findViewById(R.id.profile_image);
-        mDrawerHeaderName = (TextView)drawerHeader.findViewById(R.id.name);
+        mDrawerHeaderProfileImage = ButterKnife.findById(drawerHeader, R.id.profile_image);
+        mDrawerHeaderName = ButterKnife.findById(drawerHeader, R.id.name);
         drawerHeader.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -180,44 +185,11 @@ public class FeedActivity extends AppCompatActivity {
             }
         });
 
-        final LinearLayoutManager layoutManager = new LinearLayoutManager(this);
-        mRecyclerView.setLayoutManager(layoutManager);
-
-        final FeedAdapter feedAdapter = new FeedAdapter(this);
-        Bookends<FeedAdapter> bookends = new Bookends<>(feedAdapter);
-        View footer = LayoutInflater.from(getBaseContext()).inflate(R.layout.layout_feed_activity_feed_footer, null);
-        bookends.addFooter(footer);
-
-        mRecyclerView.setAdapter(feedAdapter);
-
-        mRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
-            @Override
-            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
-                super.onScrolled(recyclerView, dx, dy);
-
-                mVisibleItemCount = recyclerView.getChildCount();
-                mTotalItemCount = layoutManager.getItemCount();
-                mFirstVisibleItem = layoutManager.findFirstVisibleItemPosition();
-
-                if (mLoading) {
-                    if (mTotalItemCount > mPreviousTotal) {
-                        mLoading = false;
-                        mPreviousTotal = mTotalItemCount;
-                    }
-                }
-                if (!mLoading && (mTotalItemCount - mVisibleItemCount)
-                        <= (mFirstVisibleItem + mVisibleThreshold)) {
-                    mLoading = true;
-                    feedAdapter.update(false);
-                }
-            }
-        });
-
         mSwipeRefreshLayout.setColorSchemeColors(getResources().getColor(R.color.primary));
         mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                feedAdapter.update(false);
+                mQuestionFragment.update(false);
             }
         });
         mSwipeRefreshLayout.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
@@ -233,24 +205,19 @@ public class FeedActivity extends AppCompatActivity {
             }
         });
 
-        mIntentFilter.addAction(ConnectivityManager.CONNECTIVITY_ACTION);
-
-        if (savedInstanceState != null) {
-            if (savedInstanceState.getBoolean("isSearchViewShown")) {
-                enterSearchUi();
+        mQuestionFragment = (QuestionFragment)getSupportFragmentManager().findFragmentById(R.id.question_fragment);
+        mQuestionFragment.setUpdateCallback(new Feed.UpdateCallback() {
+            @Override
+            public void onUpdated() {
+                mSwipeRefreshLayout.setRefreshing(false);
             }
-        }
+        });
     }
 
     private void startAuthenticationActivity() {
         Intent intent = new Intent(this, AuthenticationActivity.class);
         startActivity(intent);
         finish();
-    }
-
-    @Subscribe
-    public void onFeedUpdatedEvent(FeedUpdatedEvent event) {
-        mSwipeRefreshLayout.setRefreshing(false);
     }
 
     @Subscribe

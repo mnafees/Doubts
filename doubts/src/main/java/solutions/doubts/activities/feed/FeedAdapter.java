@@ -25,15 +25,16 @@ import com.facebook.drawee.generic.GenericDraweeHierarchyBuilder;
 import com.facebook.drawee.generic.RoundingParams;
 import com.facebook.drawee.view.SimpleDraweeView;
 import com.github.curioustechizen.ago.RelativeTimeTextView;
-import com.squareup.otto.Subscribe;
 
 import org.apmem.tools.layouts.FlowLayout;
 import org.joda.time.format.DateTimeFormatter;
 import org.joda.time.format.ISODateTimeFormat;
 
+import java.util.List;
+import java.util.Map;
+
 import butterknife.ButterKnife;
 import butterknife.InjectView;
-import solutions.doubts.DoubtsApplication;
 import solutions.doubts.R;
 import solutions.doubts.activities.newprofile.ProfileActivity;
 import solutions.doubts.activities.newprofile.UserCache;
@@ -43,7 +44,7 @@ import solutions.doubts.api.models.Entity;
 import solutions.doubts.api.models.Feed;
 import solutions.doubts.api.models.Question;
 import solutions.doubts.api.models.S3Image;
-import solutions.doubts.core.events.FeedUpdatedEvent;
+import solutions.doubts.api.query.Query;
 import solutions.doubts.core.util.MaterialColorsUtil;
 import solutions.doubts.core.util.StringUtil;
 
@@ -82,10 +83,21 @@ public class FeedAdapter extends RecyclerView.Adapter<FeedAdapter.ViewHolder> {
 
     public FeedAdapter(final Context context) {
         mContext = context;
-        DoubtsApplication.getInstance().getBus().register(this);
-        mFeed = DoubtsApplication.getInstance().getFeedInstance();
+        //mFeed = DoubtsApplication.getInstance().getFeedInstance();
+        mFeed = new Feed(context);
         mMaterialColorsUtil = new MaterialColorsUtil();
-        update(true /* first update */);
+    }
+
+    public void setSortAndOrderWithOffset(Query.Order order, String sort) {
+        mFeed.setSortAndOrderWithOffset(order, sort);
+    }
+
+    public void filterBy(String parameter, String value) {
+        mFeed.filterBy(parameter, value);
+    }
+
+    public void filterBy(Map<String, List<String>> queryMap) {
+        mFeed.filterBy(queryMap);
     }
 
     @Override
@@ -143,13 +155,14 @@ public class FeedAdapter extends RecyclerView.Adapter<FeedAdapter.ViewHolder> {
         return new ViewHolder(view);
     }
 
-    @Subscribe
-    public void onFeedUpdatedEvent(final FeedUpdatedEvent event) {
-        notifyDataSetChanged();
-    }
-
-    public void update(boolean firstUpdate) {
-        mFeed.fetchNext(firstUpdate);
+    public void update(boolean firstUpdate, final Feed.UpdateCallback callback) {
+        mFeed.fetchNext(firstUpdate, new Feed.UpdateCallback() {
+            @Override
+            public void onUpdated() {
+                notifyDataSetChanged();
+                callback.onUpdated();
+            }
+        });
     }
 
     @Override

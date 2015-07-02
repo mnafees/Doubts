@@ -1,12 +1,10 @@
 package solutions.doubts.activities.newprofile;
 
-import android.app.Activity;
 import android.net.Uri;
+import android.os.Bundle;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
-import android.os.Bundle;
 import android.support.v4.view.ViewPager;
-import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -59,7 +57,6 @@ public class ProfileFragment extends Fragment {
             userImage.setImageURI(Uri.parse(user.getImage().getUrl()));
         else
             userImage.setImageURI(Uri.parse(StringUtil.getProfileImageUrl(user)));
-        mTabAdapter.onUserChanged(user);
     }
 
     private void initUi(Bundle savedInstanceState) {
@@ -79,6 +76,7 @@ public class ProfileFragment extends Fragment {
 
             @Override
             public void onPageSelected(int position) {
+                mTabAdapter.onUserChanged(UserCache.getInstance().getLastSelectedUser());
             }
 
             @Override
@@ -91,6 +89,7 @@ public class ProfileFragment extends Fragment {
             @Override
             public void onTabSelected(TabLayout.Tab tab) {
                 mViewPager.setCurrentItem(tab.getPosition());
+                mTabAdapter.onUserChanged(UserCache.getInstance().getLastSelectedUser());
             }
 
             @Override

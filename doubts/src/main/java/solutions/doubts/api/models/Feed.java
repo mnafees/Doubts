@@ -11,11 +11,11 @@ import com.koushikdutta.async.future.FutureCallback;
 import com.koushikdutta.ion.Response;
 
 import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
 
-import solutions.doubts.DoubtsApplication;
 import solutions.doubts.api.QuestionsResource;
 import solutions.doubts.api.query.Query;
-import solutions.doubts.core.events.FeedUpdatedEvent;
 
 public class Feed {
 
@@ -23,35 +23,74 @@ public class Feed {
 
     private LinkedList<Question> mFeedItems;
     private Context mContext;
+    private Query.Order mOrder;
+    private String mSort;
     private int mOffset;
+    private String mFilterByParameter;
+    private String mFilterByValue;
+    private Map<String, List<String>> mFilterByMap;
 
     public Feed(Context context) {
         mContext = context;
         mFeedItems = new LinkedList<>();
+        mOrder = Query.Order.desc;
+        mSort = "id";
     }
 
-    public void fetchNext(boolean firstUpdate) {
+    public void setSortAndOrderWithOffset(Query.Order order, String sort) {
+        mOrder = order;
+        mSort = sort;
+    }
+
+    public void filterBy(String parameter, String value) {
+        mFilterByParameter = parameter;
+        mFilterByValue = value;
+    }
+
+    public void filterBy(Map<String, List<String>> queryMap) {
+        mFilterByMap = queryMap;
+    }
+
+    public void fetchNext(boolean firstUpdate, final UpdateCallback callback) {
         if (firstUpdate && mFeedItems.size() > 0) {
-            DoubtsApplication.getInstance().getBus().post(new FeedUpdatedEvent());
+            callback.onUpdated();
         } else {
-            Query.with(mContext)
-                    .remote(QuestionsResource.class)
-                    .resource("questions")
-                    .getAll(null, null, mOffset,
-                            new FutureCallback<Response<QuestionsResource>>() {
-                                @Override
-                                public void onCompleted(Exception e, Response<QuestionsResource> result) {
-                                    if (e == null) {
-                                        if (result.getHeaders().code() == 200) {
-                                            mFeedItems.addAll(result.getResult().getQuestions());
-                                            mOffset += 10;
-                                            DoubtsApplication.getInstance().getBus().post(
-                                                    new FeedUpdatedEvent()
-                                            );
+            if (mFilterByMap != null) {
+                Query.with(mContext)
+                        .remote(QuestionsResource.class)
+                        .resource("questions")
+                        .sortAndOrderWithOffset(mOrder, mSort, mOffset)
+                        .filterBy(mFilterByMap, new FutureCallback<Response<QuestionsResource>>() {
+                                    @Override
+                                    public void onCompleted(Exception e, Response<QuestionsResource> result) {
+                                        if (e == null) {
+                                            if (result.getHeaders().code() == 200) {
+                                                mFeedItems.addAll(result.getResult().getQuestions());
+                                                mOffset += 10;
+                                                callback.onUpdated();
+                                            }
                                         }
                                     }
-                                }
-                            });
+                                });
+            } else {
+                Query.with(mContext)
+                        .remote(QuestionsResource.class)
+                        .resource("questions")
+                        .sortAndOrderWithOffset(mOrder, mSort, mOffset)
+                        .filterBy(mFilterByParameter, mFilterByValue,
+                                new FutureCallback<Response<QuestionsResource>>() {
+                                    @Override
+                                    public void onCompleted(Exception e, Response<QuestionsResource> result) {
+                                        if (e == null) {
+                                            if (result.getHeaders().code() == 200) {
+                                                mFeedItems.addAll(result.getResult().getQuestions());
+                                                mOffset += 10;
+                                                callback.onUpdated();
+                                            }
+                                        }
+                                    }
+                                });
+            }
         }
     }
 
@@ -65,6 +104,12 @@ public class Feed {
 
     public Question getItem(int index) {
         return mFeedItems.get(index);
+    }
+
+    public interface UpdateCallback {
+
+        void onUpdated();
+
     }
 
 }
