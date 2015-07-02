@@ -262,7 +262,7 @@ public class CreateAnswerActivity extends AppCompatActivity {
         AlertDialog dialog = new AlertDialog.Builder(this, R.style.Base_Theme_AppCompat_Light_Dialog_Alert)
                 .setTitle("Doubts")
                 .setIcon(R.mipmap.ic_launcher)
-                .setMessage("Are you sure you want to discard this doubt?")
+                .setMessage("Are you sure you want to discard this answer?")
                 .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
