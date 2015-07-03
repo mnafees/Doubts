@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="question_new_answer_title">New answer on your question!</string>
+    <string name="user_new_profile_title">%1$s followed you!</string>
+    <string name="follow_back">Follow Back</string>
+</resources>

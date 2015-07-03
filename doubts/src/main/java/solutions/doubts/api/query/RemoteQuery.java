@@ -8,6 +8,8 @@ package solutions.doubts.api.query;
 import android.content.Context;
 
 import com.google.gson.JsonObject;
+import com.google.gson.reflect.TypeToken;
+import com.koushikdutta.async.future.Future;
 import com.koushikdutta.async.future.FutureCallback;
 import com.koushikdutta.ion.Ion;
 import com.koushikdutta.ion.ProgressCallback;
@@ -42,9 +44,9 @@ public class RemoteQuery<T> {
         mOffset = offset;
     }
 
-    private void create(String url, T object, ProgressCallback progressCallback,
-                        FutureCallback<Response<JsonObject>> futureCallback) {
-        Ion.with(mContext)
+    private Future<Response<JsonObject>> create(String url, T object, ProgressCallback progressCallback,
+                                                FutureCallback<Response<JsonObject>> futureCallback) {
+        return Ion.with(mContext)
                 .load("POST", url)
                 .setHeader(ApiConstants.HEADER_AUTHORIZATION, DoubtsApplication.getInstance().getSession()
                         .getAuthToken().toString())
@@ -149,15 +151,14 @@ public class RemoteQuery<T> {
             }
             return this;
         }
-
         public Builder<T> sortAndOrderWithOffset(Query.Order order, String sort, int offset) {
             mRemoteQuery.sortAndOrderWithOffset(order, sort, offset);
             return this;
         }
 
-        public void create(T object, ProgressCallback progressCallback,
-                           FutureCallback<Response<JsonObject>> futureCallback) {
-            mRemoteQuery.create(mUrl, object, progressCallback, futureCallback);
+        public Future<Response<JsonObject>> create(T object, ProgressCallback progressCallback,
+                                                   FutureCallback<Response<JsonObject>> futureCallback) {
+            return mRemoteQuery.create(mUrl, object, progressCallback, futureCallback);
         }
 
         public void getAll(FutureCallback<Response<T>> futureCallback) {

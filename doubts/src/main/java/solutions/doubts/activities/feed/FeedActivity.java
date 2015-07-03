@@ -31,6 +31,8 @@ import android.widget.Toast;
 
 import com.facebook.drawee.backends.pipeline.Fresco;
 import com.facebook.drawee.view.SimpleDraweeView;
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.koushikdutta.ion.Ion;
 import com.squareup.otto.Subscribe;
 
@@ -51,6 +53,7 @@ import solutions.doubts.core.events.SessionUpdatedEvent;
 import solutions.doubts.core.util.StringUtil;
 import solutions.doubts.internal.AuthToken;
 import solutions.doubts.internal.Session;
+import solutions.doubts.services.GCMRegistrationService;
 
 public class FeedActivity extends AppCompatActivity {
 
@@ -75,6 +78,12 @@ public class FeedActivity extends AppCompatActivity {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        if(!gpsCheck()) {
+            return;
+        }
+
+        Intent gcmIntent = new Intent(this, GCMRegistrationService.class);
+        startService(gcmIntent);
 
         final Uri data = getIntent().getData();
         if (data != null) {
@@ -236,6 +245,7 @@ public class FeedActivity extends AppCompatActivity {
     @Override
     public void onResume() {
         super.onResume();
+        gpsCheck();
         ((DoubtsApplication)getApplication()).getBus().register(this);
         if (!mSessionSet) DoubtsApplication.getInstance().getSession().fetchLoggedInUser();
         registerReceiver(mConnectivityChangeReceiver, mIntentFilter);
@@ -335,5 +345,16 @@ public class FeedActivity extends AppCompatActivity {
     public void onSaveInstanceState(Bundle outState) {
         outState.putBoolean("isSearchViewShown", mIsSearchViewShown);
         super.onSaveInstanceState(outState);
+    }
+
+    private boolean gpsCheck() {
+        int code = GooglePlayServicesUtil.isGooglePlayServicesAvailable(this);
+        if(code != ConnectionResult.SUCCESS) {
+            GooglePlayServicesUtil.getErrorDialog(code, this, 0).show();
+            finish();
+            return false;
+        }
+        else
+            return true;
     }
 }
