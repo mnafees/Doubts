@@ -25,6 +25,7 @@ import solutions.doubts.R;
 import solutions.doubts.api.models.Device;
 import solutions.doubts.api.models.User;
 import solutions.doubts.api.query.Query;
+import solutions.doubts.internal.Session;
 import solutions.doubts.internal.StringConstants;
 import solutions.doubts.thirdparty.Devices;
 
@@ -65,7 +66,16 @@ public class GCMRegistrationService extends IntentService {
             Device device = new Device();
             device.setName(getDeviceName());
             device.setRegistrationId(token);
-            User user = ((DoubtsApplication)getApplication()).getSession().getLoggedInUser();
+            Session session = ((DoubtsApplication)getApplication()).getSession();
+            if(session == null) {
+                //todo reschedule
+                return;
+            }
+            User user = session.getLoggedInUser();
+            if(user == null) {
+                //todo reschedule
+                return;
+            }
 
             try {
                 Query.with(this)

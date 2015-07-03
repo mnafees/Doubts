@@ -79,11 +79,9 @@ public class FeedActivity extends AppCompatActivity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if(!gpsCheck()) {
+            finish();
             return;
         }
-
-        Intent gcmIntent = new Intent(this, GCMRegistrationService.class);
-        startService(gcmIntent);
 
         final Uri data = getIntent().getData();
         if (data != null) {
@@ -245,7 +243,15 @@ public class FeedActivity extends AppCompatActivity {
     @Override
     public void onResume() {
         super.onResume();
-        gpsCheck();
+
+        if(!gpsCheck()) {
+            finish();
+            return;
+        }
+
+        Intent gcmIntent = new Intent(this, GCMRegistrationService.class);
+        startService(gcmIntent);
+
         ((DoubtsApplication)getApplication()).getBus().register(this);
         if (!mSessionSet) DoubtsApplication.getInstance().getSession().fetchLoggedInUser();
         registerReceiver(mConnectivityChangeReceiver, mIntentFilter);
